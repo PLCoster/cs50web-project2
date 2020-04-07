@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, jsonify, render_template, request
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
@@ -10,4 +10,13 @@ socketio = SocketIO(app)
 
 @app.route("/")
 def index():
-    return "Project 2: TODO"
+    return render_template("index.html")
+
+@socketio.on("submit vote")
+def vote(data):
+    selection = data["selection"]
+    emit("announce vote", {"selection": selection}, broadcast=True)
+
+
+if __name__ == '__main__':
+    socketio.run(app)
