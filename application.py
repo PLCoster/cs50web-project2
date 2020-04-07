@@ -12,11 +12,11 @@ socketio = SocketIO(app)
 def index():
     return render_template("index.html")
 
-@socketio.on("submit vote")
+@socketio.on("send message")
 def vote(data):
-    selection = data["selection"]
+    message = data["message"]
     screen_name = data["screen_name"]
-    emit("announce vote", {"selection": selection, "screen_name": screen_name}, broadcast=True)
+    emit("announce vote", {"message": message, "screen_name": screen_name}, broadcast=True)
 
 
 if __name__ == '__main__':

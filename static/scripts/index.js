@@ -2,8 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let screen_name;
 
-  // Connect to websocket
-  var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+  // Connect to websocket if not already connected:
+  if (!io.connect().connected) {
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+  }
 
   // When connected, run script:
   socket.on('connect', () => {
@@ -14,8 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('#vote > button').forEach(button => {
         button.onclick = () => {
             event.preventDefault();
-            const selection = button.dataset.vote;
-            socket.emit('submit vote', {'selection': selection, 'screen_name': screen_name});
+            const message = document.querySelector('#message').value;
+            if (message) {
+              socket.emit('send message', {'message': message, 'screen_name': screen_name});
+            }
         };
       });
     };
@@ -51,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('vote broadcast received, vote data:', data)
 
       const li = document.createElement('li');
-      li.innerHTML = `${data.screen_name}'s vote recorded: ${data.selection}`;
+      li.innerHTML = `${data.screen_name}'s says: ${data.message}`;
       document.querySelector('#votes').append(li);
     });
 
