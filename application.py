@@ -15,7 +15,8 @@ def index():
 @socketio.on("submit vote")
 def vote(data):
     selection = data["selection"]
-    emit("announce vote", {"selection": selection}, broadcast=True)
+    screen_name = data["screen_name"]
+    emit("announce vote", {"selection": selection, "screen_name": screen_name}, broadcast=True)
 
 
 if __name__ == '__main__':
