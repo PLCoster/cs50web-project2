@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, jsonify, render_template, request
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room, leave_room
 
 from datetime import datetime
 import pytz
@@ -21,7 +21,10 @@ def index():
 
 
 @socketio.on("send message")
-def vote(data):
+def send_message(data):
+  """ Sends a message to all users in the same room, and stores the message on the server """
+
+  print('Server has received a message, Sending message to users in room')
 
   # Get data from incoming message:
   message_text = data["message"]
@@ -44,6 +47,24 @@ def vote(data):
     channels['Home']['next_message'] = 1
 
   emit("announce vote", {"message": message}, broadcast=True)
+
+
+@socketio.on("join channel")
+def join_channel(data):
+  """ Lets a user join a specific channel, relays last 100 messages from the channel to that specific user """
+  room = data['channel']
+  join_room(room)
+  user = request.sid
+
+  # Send sorted channel history back to user who has just joined:
+  message_history = sorted(list(channels[room]['messages'].values()), key = lambda x : x[2])
+
+  print(sorted(list(channels[room]['messages'].values()), key = lambda x : x[2]))
+  print('Channel status:', channels)
+  print('Sending message history:', message_history)
+
+  if message_history:
+    emit("channel logon", {"message_history" : message_history}, room=user)
 
 
 if __name__ == '__main__':
