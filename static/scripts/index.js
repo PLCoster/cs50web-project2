@@ -3,8 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let screen_name;
 
   // Connect to websocket if not already connected:
+
+  console.log('Already Connected?' , io.connect().connected)
+
   if (!io.connect().connected) {
-    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    var socket = io();
+    //io.connect(location.protocol + '//' + document.domain + ':' + location.port);
   }
 
   // When connected, run script:
@@ -19,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const message = document.querySelector('#message').value;
             if (message) {
               socket.emit('send message', {'message': message, 'screen_name': screen_name});
+              document.querySelector('#message').value = '';
             }
         };
       });
@@ -50,15 +55,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       };
 
-       // When a new vote is announced, add to the unordered list
+    // When a new vote is announced, add to the unordered list
     socket.on('announce vote', data => {
       console.log('vote broadcast received, vote data:', data)
 
+      // Create message li
       const li = document.createElement('li');
-      li.innerHTML = `${data.screen_name}'s says: ${data.message}`;
+      li.innerHTML = `${data.message[1]}'s says: ${data.message[0]} - Posted ${data.message[3]} - `;
+
+      // Create message date span
+      const dateSpan = document.createElement('span');
+      dateSpan.setAttribute('data-livestamp', data.message[2])
+      li.appendChild(dateSpan)
+
       document.querySelector('#votes').append(li);
     });
-
   });
 
 });
