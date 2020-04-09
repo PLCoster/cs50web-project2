@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Add to messages element
       document.querySelector('#votes').append(li);
+
     });
   });
-
 });

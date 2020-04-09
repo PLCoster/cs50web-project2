@@ -15,6 +15,15 @@ socketio = SocketIO(app)
 channels = {'Home': {'messages': {}, 'next_message': 1 , 'subchannels':{}}}
 
 
+def sanitize_message(message):
+  """ Helper function that takes a user's message string and replaces special HTML chars with their HTML entities to keep the chars and prevent adding HTML to the message board
+
+  Returns the sanitized message string
+  """
+
+  return message.replace('&', '&amp;').replace('"', '&quot;').replace('\'', '&apos;').replace('<', '&lt;').replace('>', '&gt;')
+
+
 @app.route("/")
 def index():
   return render_template("index.html")
@@ -27,7 +36,7 @@ def send_message(data):
   print('Server has received a message, Sending message to users in room')
 
   # Get data from incoming message:
-  message_text = data["message"]
+  message_text = sanitize_message(data["message"])
   screen_name = data["screen_name"]
 
   # Date and Timestamp the message:
