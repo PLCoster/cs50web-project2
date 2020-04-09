@@ -20,11 +20,15 @@
             <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
             <button>Send!</button>
           </form>
-          <p>
-            <a href='' class='channel-link' data-channel='Home'>Home </a>
-            <a href='' class='channel-link' data-channel='News'>News </a>
-            <a href='' class='channel-link' data-channel='Sports'>Sports </a>
-            <a href='' class='channel-link' data-channel='Gaming'>Gaming </a>
+          <p id="channel-links">
+            <a href="" class="channel-link" data-channel='Home'>Home </a>
+            <a href="" class="channel-link" data-channel='News'>News </a>
+            <a href="" class="channel-link" data-channel='Sports'>Sports </a>
+            <a href="" class="channel-link" data-channel='Gaming'>Gaming </a>
           </p>
+          <form id='new-channel'>
+            <input type="text" id='channel-name' name="channel-name" placeholder="Enter Your Channel Name" required>
+            <button>Create New Channel!</button>
+          </form>
       </body>
 </html>

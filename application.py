@@ -81,6 +81,28 @@ def join_channel(data):
 
   emit("channel logon", {"message_history" : message_history}, room=user)
 
+  # Send current channel list to the user
+  channel_list = list(channels.keys())
+
+  emit('channel added', {'channel_list': channel_list}, room=user)
+
+
+@socketio.on('create channel')
+def create_channel(data):
+  """ Lets a user create a new chat channel, with a unique name """
+
+  # Check name not already in use:
+  if data['new_channel'] in channels.keys():
+    # This should send back some kind of error message
+    return False
+
+  # Otherwise create a new chat channel and send channel list to all users:
+  channels[data['new_channel']] = {'messages': {}, 'next_message': 1 , 'subchannels':{}}
+
+  channel_list = list(channels.keys())
+
+  emit('channel added', {'channel_list': channel_list}, broadcast=True)
+
 
 if __name__ == '__main__':
   socketio.run(app)

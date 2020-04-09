@@ -23,18 +23,48 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
       });
+      new_channel_config();
     };
 
-    const channel_config = function () {
+    const channel_config = function (channel_list) {
       // Function to set up links to change channels:
+
+      // Remove current channel list:
+      document.querySelector('p#channel-links').innerHTML = '';
+
+      // Add all Channel Links:
+      for (let i=0; i < channel_list.length; i++) {
+        let channel_name = channel_list[i];
+
+        const a = document.createElement('a');
+        a.innerHTML = channel_name;
+        a.className = 'channel-link';
+        a.setAttribute('data-channel', channel_name)
+
+        document.querySelector('#channel-links').append(a)
+
+      }
+
+      // Add onclick events to all Channel Links:
       document.querySelectorAll('.channel-link').forEach(button => {
         button.onclick = () => {
           event.preventDefault();
-          socket.emit("join channel", {"channel": button.dataset.channel, "previous": localStorage.getItem('channel')})
-          localStorage.setItem('channel', button.dataset.channel)
+          socket.emit("join channel", {"channel": button.dataset.channel, "previous": localStorage.getItem('channel')});
+          localStorage.setItem('channel', button.dataset.channel);
+        };
+      });
+    };
+
+    const new_channel_config = function () {
+      // Function to set up new channel creator form:
+      document.querySelector('#new-channel').onclick = () => {
+        event.preventDefault();
+        const new_channel = document.querySelector('#channel-name').value;
+        if (new_channel) {
+          socket.emit('create channel', {'new_channel': new_channel});
         }
-      })
-    }
+      };
+    };
 
     // Log in form should set username and then hide login and display vote buttons
     // Only visible if there is no username in local storage
@@ -44,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('screen_name', document.querySelector('#login-screen_name').value);
         screen_name = localStorage.getItem('screen_name');
         message_config();
-        channel_config();
 
         // Hide Login Form and Reveal Vote Buttons:
         document.querySelector('#login').style.display = "none";
@@ -66,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.querySelector('#login').style.display = "none";
       message_config();
-      channel_config();
     }
 
     // Connect to the last saved channel or the home channel if none saved:
@@ -113,6 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Add to messages element
       document.querySelector('#votes').append(li);
 
+    });
+
+    // When a new channel is added, update channel link buttons
+    socket.on('channel added', data => {
+      channel_config(data.channel_list);
     });
   });
 });
