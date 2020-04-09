@@ -10,20 +10,31 @@ document.addEventListener('DOMContentLoaded', () => {
   // When socket is connected, run script:
   socket.on('connect', () => {
 
-    // Function to set up sending messages to the server:
+
     const message_config = function () {
-      // Each button should emit a "submit vote" event
+        // Function to set up button to submit messages to the server:
       document.querySelectorAll('#vote > button').forEach(button => {
         button.onclick = () => {
             event.preventDefault();
             const message = document.querySelector('#message').value;
             if (message) {
-              socket.emit('send message', {'message': message, 'screen_name': screen_name});
+              socket.emit('send message', {'message': message, 'screen_name': screen_name, 'channel': localStorage.getItem('channel')});
               document.querySelector('#message').value = '';
             }
         };
       });
     };
+
+    const channel_config = function () {
+      // Function to set up links to change channels:
+      document.querySelectorAll('.channel-link').forEach(button => {
+        button.onclick = () => {
+          event.preventDefault();
+          socket.emit("join channel", {"channel": button.dataset.channel, "previous": localStorage.getItem('channel')})
+          localStorage.setItem('channel', button.dataset.channel)
+        }
+      })
+    }
 
     // Log in form should set username and then hide login and display vote buttons
     // Only visible if there is no username in local storage
@@ -33,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('screen_name', document.querySelector('#login-screen_name').value);
         screen_name = localStorage.getItem('screen_name');
         message_config();
+        channel_config();
 
         // Hide Login Form and Reveal Vote Buttons:
         document.querySelector('#login').style.display = "none";
@@ -44,16 +56,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('screen_name')) {
       document.querySelector('#login').style.display = "block";
       document.querySelector('#vote').style.display = "none";
-      channel = 'Home';
+      localStorage.setItem('channel', 'Home')
     } else {
       screen_name = localStorage.getItem('screen_name');
-      channel = localStorage.getItem('channel') || 'Home';
+
+      if (!localStorage.getItem('channel')) {
+        localStorage.setItem('channel', 'Home')
+      }
+
       document.querySelector('#login').style.display = "none";
       message_config();
+      channel_config();
     }
 
     // Connect to the last saved channel or the home channel if none saved:
-    socket.emit("join channel", {"channel": channel});
+    socket.emit("join channel", {"channel": localStorage.getItem('channel'), "previous": localStorage.getItem('channel')});
 
     // When a new channel is joined, clear messages and display message history:
     socket.on('channel logon', data => {
@@ -82,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // When a new vote is announced, add to the unordered list
     socket.on('announce vote', data => {
-      console.log('vote broadcast received, vote data:', data);
+      console.log('Message broadcast received, message data:', data);
 
       // Create message li
       const li = document.createElement('li');

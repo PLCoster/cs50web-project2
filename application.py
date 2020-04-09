@@ -11,8 +11,13 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 socketio = SocketIO(app)
 
-# Server Message Channel Storage
-channels = {'Home': {'messages': {}, 'next_message': 1 , 'subchannels':{}}}
+# Server Message Channel Storage - Starts with Standard Main Channel:
+channels = {'Home':
+                  {'messages': {},
+                   'next_message': 1 ,
+                   'subchannels':{
+
+                   }}, 'News': {'messages': {}, 'next_message': 1 , 'subchannels':{}}, 'Sports': {'messages': {}, 'next_message': 1 , 'subchannels':{}}, 'Gaming':{'messages': {}, 'next_message': 1 , 'subchannels':{}}}
 
 
 def sanitize_message(message):
@@ -36,44 +41,45 @@ def send_message(data):
   print('Server has received a message, Sending message to users in room')
 
   # Get data from incoming message:
-  message_text = sanitize_message(data["message"])
-  screen_name = data["screen_name"]
+  message_text = sanitize_message(data['message'])
+  screen_name = data['screen_name']
+  room = data['channel']
 
   # Date and Timestamp the message:
   timestamp = datetime.now(pytz.utc).timestamp()
   date = datetime.now().strftime("%d %b %Y")
 
   # Save message data to channel log:
-  next = channels['Home']['next_message']
+  next = channels[room]['next_message']
   message = [message_text, screen_name, timestamp, date, next]
-  channels['Home']['messages'][next] = message
+  channels[room]['messages'][next] = message
 
   print('Message received by server:', message)
 
   # Store up to 100 messages, then overwrite the first message
-  channels['Home']['next_message'] += 1
-  if channels['Home']['next_message'] > 100:
-    channels['Home']['next_message'] = 1
+  channels[room]['next_message'] += 1
+  if channels[room]['next_message'] > 100:
+    channels[room]['next_message'] = 1
 
-  emit("announce vote", {"message": message}, broadcast=True)
+  emit("announce vote", {"message": message}, room=room)
 
 
 @socketio.on("join channel")
 def join_channel(data):
   """ Lets a user join a specific channel, relays last 100 messages from the channel to that specific user """
-  room = data['channel']
-  join_room(room)
+
+  # Leave the previous channel and join the new channel:
+  leave_room(data['previous'])
+  join_room(data['channel'])
   user = request.sid
 
   # Send sorted channel history back to user who has just joined:
-  message_history = sorted(list(channels[room]['messages'].values()), key = lambda x : x[2])
+  message_history = sorted(list(channels[data['channel']]['messages'].values()), key = lambda x : x[2])
 
-  print(sorted(list(channels[room]['messages'].values()), key = lambda x : x[2]))
   print('Channel status:', channels)
   print('Sending message history:', message_history)
 
-  if message_history:
-    emit("channel logon", {"message_history" : message_history}, room=user)
+  emit("channel logon", {"message_history" : message_history}, room=user)
 
 
 if __name__ == '__main__':
