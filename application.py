@@ -90,6 +90,82 @@ def login():
     else:
         return render_template("login.html")
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Register user for the website"""
+
+    # If user is already logged in, return to home:
+    if session.get("user_id") != None:
+        return redirect("/")
+
+    # If reached via POST by submitting form - try to register new user:
+    if request.method == "POST":
+
+        # Get input from registration form:
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirm = request.form.get("confirmation")
+
+        # If form is incomplete, return and flash apology:
+        if not username or not password or not confirm:
+            flash('Please fill in all three fields to register!')
+            return render_template("register.html")
+
+        # If password and confirmation do not match, return and flash apology:
+        elif password != confirm:
+            flash('Password and confirmation did not match! Please try again.')
+            return render_template("register.html")
+
+        # Ensure password meets password requirements:
+        elif not validate_pass(password):
+            flash('Password must be eight characters long with at least one number and one letter!')
+            return render_template("register.html")
+
+        # Otherwise information from registration is complete:
+        else:
+            # Check username does not already exist, if it does then ask for a different name:
+            if db.execute("SELECT * FROM users WHERE username = :username", {"username" : username}).fetchone():
+                flash('Sorry but that username is already in use, please pick a different username!')
+                return render_template("register.html")
+
+            # Otherwise add user to database using hashed password:
+            hash_pass = generate_password_hash(password)
+
+            # Add new user to users table:
+            db.execute("INSERT INTO users (username, hash) VALUES(:username, :hash)", {"username" : username, "hash" : hash_pass})
+
+            db.commit()
+
+            # Put unique user ID and username into session:
+
+            user_info = db.execute("SELECT id, username FROM users WHERE username=:username", {"username" : username}).fetchall()
+
+            session["user_id"] = user_info[0][0]
+            session["username"] = user_info[0][1]
+
+            # Return to home page, logged in:
+            flash('Welcome to READ-RATE! You have been succesfully registered and logged in!')
+            return redirect("/")
+
+    # If User reaches Route via GET (e.g. clicking registration link):
+    else:
+        return render_template("register.html")
+
+
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # If user not logged in return to home:
+    if session.get("user_id") == None:
+        return redirect("/")
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to home page
+    flash('You have been logged out. See you again soon!')
+    return redirect("/")
 
 
 @socketio.on("send message")
