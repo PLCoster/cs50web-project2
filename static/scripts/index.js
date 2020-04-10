@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
             const message = document.querySelector('#message').value;
             if (message) {
+              console.log('Sending Message: ', {'message': message, 'screen_name': screen_name, 'channel': localStorage.getItem('channel')});
               socket.emit('send message', {'message': message, 'screen_name': screen_name, 'channel': localStorage.getItem('channel')});
               document.querySelector('#message').value = '';
             }
@@ -39,9 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const a = document.createElement('a');
         a.innerHTML = channel_name;
         a.className = 'channel-link';
-        a.setAttribute('data-channel', channel_name)
+        a.setAttribute('data-channel', channel_name);
+        a.setAttribute('href', '');
 
-        document.querySelector('#channel-links').append(a)
+        document.querySelector('#channel-links').append(a);
 
       }
 
@@ -51,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
           event.preventDefault();
           socket.emit("join channel", {"channel": button.dataset.channel, "previous": localStorage.getItem('channel')});
           localStorage.setItem('channel', button.dataset.channel);
+          console.log('Channel now set to: ', localStorage.getItem('channel'));
         };
       });
     };
@@ -63,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (new_channel) {
           socket.emit('create channel', {'new_channel': new_channel});
         }
+        document.querySelector('#channel-name').value = '';
       };
     };
 

@@ -1,34 +1,31 @@
-<html>
-      <head>
-          <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
-          <script src="/static/scripts/jquery.js"></script>
-          <script src="/static/scripts/moment.js"></script>
-          <script src="/static/scripts/livestamp.js"></script>
-          <script src="/static/scripts/index.js"></script>
-          <title>Vote</title>
-      </head>
-      <body>
-          <ul id="votes">
-          </ul>
-          <hr>
-          <form id="login">
-            <label for="login-screen_name" class="sr-only">Username</label>
-            <input type="text" id="login-screen_name" class="form-control" placeholder="Screen Name" name="screen_name" required autofocus>
-            <button class="login btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-          </form>
-          <form id='vote'>
-            <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
-            <button>Send!</button>
-          </form>
-          <p id="channel-links">
-            <a href="" class="channel-link" data-channel='Home'>Home </a>
-            <a href="" class="channel-link" data-channel='News'>News </a>
-            <a href="" class="channel-link" data-channel='Sports'>Sports </a>
-            <a href="" class="channel-link" data-channel='Gaming'>Gaming </a>
-          </p>
-          <form id='new-channel'>
-            <input type="text" id='channel-name' name="channel-name" placeholder="Enter Your Channel Name" required>
-            <button>Create New Channel!</button>
-          </form>
-      </body>
-</html>
+{% extends "layout.html" %}
+
+{% block title %}Chatroom{% endblock %}
+
+
+{% block main %}
+  <ul id="votes">
+  </ul>
+  <hr>
+  <form id="login">
+    <label for="login-screen_name" class="sr-only">Username</label>
+    <input type="text" id="login-screen_name" class="form-control" placeholder="Screen Name" name="screen_name" required autofocus>
+    <button class="login btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+  </form>
+  <form id='vote'>
+    <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
+    <button>Send!</button>
+  </form>
+  <p id="channel-links">
+  </p>
+  <form id='new-channel'>
+    <input type="text" id='channel-name' name="channel-name" placeholder="Enter Your Channel Name" required>
+    <button>Create New Channel!</button>
+  </form>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+  <script src="/static/scripts/jquery.js"></script>
+  <script src="/static/scripts/moment.js"></script>
+  <script src="/static/scripts/livestamp.js"></script>
+  <script src="/static/scripts/index.js"></script>
+{% endblock %}
+

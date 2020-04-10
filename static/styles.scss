@@ -1,0 +1,464 @@
+/* Custom CSS Styles to override Bootstrap */
+
+/*
+New Colors:
+261447
+ff3864
+f39c6b
+cc978e
+c0bda5
+ede9cb
+*/
+
+/*
+  ========================================
+  SASS Variables
+  ========================================
+*/
+
+$primary-light: #16425b;
+$primary-dark: #e9ede6;
+$primary-container: #eeeeee;
+$text-on-prim-light: #eeeeee;
+$text-on-container: #16425b;
+$highlight-dark: #333;
+
+/*
+  ========================================
+  Custom styles
+  ========================================
+*/
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  background-color: $primary-container;
+  color: $text-on-container;
+  font: 300 16px/22px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-image: url("login_bg.jpg");
+  margin-bottom: 150px;
+}
+
+h1, h2, h3, h4, h5 {
+  color: $text-on-container;
+}
+
+h1 {
+  font-size: 32px;
+  line-height: 44px;
+}
+
+h2 {
+  font-size: 28px;
+  line-height: 30px;
+}
+
+h3 {
+  font-size: 21px;
+}
+
+h4 {
+  font-size:18px;
+}
+
+h5 {
+  font-size: 16px;
+}
+
+strong {
+  font-weight: 400;
+}
+
+cite, em {
+  font-style: italic;
+}
+
+.text-muted {
+  color: $text-on-container;
+}
+
+/*
+==========================
+NAVBAR
+==========================
+*/
+#navbar {
+  background-color: $primary-light;
+}
+
+#logo h1 {
+  margin-top: 6px;
+  margin-left: 5px;
+  text-align: left;
+  font-size: 18px;
+  line-height: 16px;
+  font-weight: 700;
+  color: $primary-dark;
+  display: inline-block;
+}
+
+#logo:hover {
+  color: $primary-dark;
+}
+
+#logo img {
+ float: left;
+}
+
+.navbar-nav .nav-item .nav-link {
+  font-weight: 700;
+  color: $text-on-prim-light;
+}
+
+.dropdown-menu {
+  background-color: $primary-light;
+  color: $text-on-prim-light;
+  font-weight: 700;
+  min-width: 200px;
+
+  a {
+    background-color: $primary-light;
+    color: $text-on-prim-light;
+    font-weight: 700;
+  }
+
+  p {
+    font-size: 14px;
+    margin-left: 24px;
+    margin-right: 24px;
+    margin-bottom: 0;
+    color: $highlight-dark;
+    font-weight: 400;
+  }
+}
+
+/*
+==========================
+SEARCH BAR
+==========================
+*/
+#searchbar {
+  min-width: 366px;
+}
+
+.custom-select {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border: 1px solid $primary-dark;
+  margin-right: -1px;
+  color: $primary-light;
+  background-color: $primary-dark;
+}
+
+.custom-select:hover, .custom-select:focus {
+  color: $text-on-prim-light;
+  background-color: $primary-dark;
+}
+
+.search-text {
+  border-radius: 0;
+  border: 1px solid $primary-dark;
+  width: 220px;
+}
+
+.search {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -10px;
+}
+
+
+/*
+==========================
+FOOTER
+==========================
+*/
+.footer {
+  color: $text-on-prim-light;
+  margin-top: 20px;
+  padding: 10px 0 !important;
+  font-weight: 400;
+  background-color: $primary-dark;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+
+  .footer-text {
+    margin: 2px 0;
+  }
+
+  a {
+    color: $primary-light;
+  }
+
+}
+
+
+/*
+===========================
+CONTAINER
+===========================
+*/
+.container {
+  background-color: $primary-container;
+  border-radius: 10px;
+  border: 1px solid $highlight-dark;
+  -webkit-box-shadow: 11px 11px 10px -4px rgba(0,0,0,0.5);
+  -moz-box-shadow: 11px 11px 10px -4px rgba(0,0,0,0.5);
+  box-shadow: 11px 11px 10px -4px rgba(0,0,0,0.5);
+  margin-top: 20px;
+
+  h1, h2, .row {
+    padding-top: 20px;
+  }
+}
+
+/*
+===========================
+BUTTONS
+===========================
+*/
+.btn-primary {
+  color: $primary-light;
+  background-color: $primary-dark;
+  border-color: $primary-dark;
+}
+
+.btn-primary:hover {
+  color: $text-on-prim-light;
+  background-color: $primary-dark;
+  border-color: $primary-dark;
+}
+
+/*
+==========================
+CARDS
+==========================
+*/
+
+.card {
+  background-color: none;
+
+  .num-ratings {
+    margin-left: 84px;
+    padding-bottom: none;
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
+
+.card:hover {
+  background-color:  rgba(50, 50, 50, 0.03);
+}
+
+.card-body {
+  padding-bottom: 0px;
+}
+
+a .card-subtitle {
+  font-size: 12px;
+  color:  $text-on-container;
+  text-decoration: none;
+}
+
+.card img.book-cover-S, .details-book-cover-S {
+  float: left;
+  max-height: 70px;
+  margin-right: 10px;
+}
+
+/*
+==========================
+STAR RATING IMGS
+==========================
+*/
+
+.card .star-rating {
+  float: left;
+  width: 80px;
+}
+
+.bdstar-rating {
+  max-width: 80px;
+}
+
+/*
+==========================
+BOOK DETAILS PAGE
+==========================
+*/
+
+.details-book-cover-L {
+  margin-bottom: 20px;
+}
+
+.review {
+
+  .bdstar-rating {
+    max-width: 80px;
+  }
+
+  h4 {
+    padding-top: 10px;
+  }
+
+  h5 {
+    line-height: 20px;
+    margin-bottom: 0;
+  }
+
+  p.date {
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  select {
+    max-width: 180px;
+    border-radius: 3px;
+  }
+
+  .btn {
+    float: right;
+    clear: both;
+  }
+
+  form {
+    clear: both;
+  }
+
+  .edit {
+    margin-bottom: 10px;
+  }
+
+  .btn-danger {
+    margin: 5px 0 10px 0;
+  }
+}
+
+.cancel {
+  display: none;
+}
+
+.edit_review {
+  display: none;
+}
+
+/*
+==========================
+LOGIN, REGISTER, ACCOUNT
+==========================
+*/
+
+.login.container, .register.container {
+  margin-top: 100px;
+  border-radius: 10px;
+  border: 1px solid $highlight-dark;
+  background-color: $primary-container;
+  -webkit-box-shadow: 11px 11px 10px -4px rgba(0,0,0,0.5);
+  -moz-box-shadow: 11px 11px 10px -4px rgba(0,0,0,0.5);
+  box-shadow: 11px 11px 10px -4px rgba(0,0,0,0.5);
+  max-width: 420px;
+}
+
+.login .btn, .register .btn {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+.form-signin .form-control {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+
+.login .form-signin input[type="text"], .register #inputPassword, #new-pass {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.login .form-signin input[type="password"], .register #checkPassword, #check-pass {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.register p {
+  margin-bottom: 0;
+}
+
+.register #inputPassword {
+  margin-top: 20px;
+}
+
+.delete_account {
+  display: none;
+}
+
+
+/*
+=============================
+RESPONSIVE
+=============================
+*/
+/* Hide large book images on small screens:*/
+@media screen and (max-width: 576px) {
+  .book-cover-L {
+    display: none;
+  }
+  .card.mb-4.shadow-sm {
+    margin-bottom: 5px !important;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  img.book-cover-S {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .details-book-cover-L {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .details-book-cover-S {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 767px)
+{
+  #searchbar {
+    display: inline-block;
+  }
+
+  #searchbar select {
+    max-width: 80px;
+    margin-right: -5px;
+  }
+
+  #searchbar button {
+    margin-left: -15px;
+  }
+}

@@ -1,0 +1,426 @@
+/* Custom CSS Styles to override Bootstrap */
+/*
+New Colors:
+261447
+ff3864
+f39c6b
+cc978e
+c0bda5
+ede9cb
+*/
+/*
+  ========================================
+  SASS Variables
+  ========================================
+*/
+/*
+  ========================================
+  Custom styles
+  ========================================
+*/
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  background-color: #eeeeee;
+  color: #16425b;
+  font: 300 16px/22px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-image: url("login_bg.jpg");
+  margin-bottom: 150px;
+}
+
+h1, h2, h3, h4, h5 {
+  color: #16425b;
+}
+
+h1 {
+  font-size: 32px;
+  line-height: 44px;
+}
+
+h2 {
+  font-size: 28px;
+  line-height: 30px;
+}
+
+h3 {
+  font-size: 21px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+h5 {
+  font-size: 16px;
+}
+
+strong {
+  font-weight: 400;
+}
+
+cite, em {
+  font-style: italic;
+}
+
+.text-muted {
+  color: #16425b;
+}
+
+/*
+==========================
+NAVBAR
+==========================
+*/
+#navbar {
+  background-color: #16425b;
+}
+
+#logo h1 {
+  margin-top: 6px;
+  margin-left: 5px;
+  text-align: left;
+  font-size: 18px;
+  line-height: 16px;
+  font-weight: 700;
+  color: #e9ede6;
+  display: inline-block;
+}
+
+#logo:hover {
+  color: #e9ede6;
+}
+
+#logo img {
+  float: left;
+}
+
+.navbar-nav .nav-item .nav-link {
+  font-weight: 700;
+  color: #eeeeee;
+}
+
+.dropdown-menu {
+  background-color: #16425b;
+  color: #eeeeee;
+  font-weight: 700;
+  min-width: 200px;
+}
+.dropdown-menu a {
+  background-color: #16425b;
+  color: #eeeeee;
+  font-weight: 700;
+}
+.dropdown-menu p {
+  font-size: 14px;
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-bottom: 0;
+  color: #333;
+  font-weight: 400;
+}
+
+/*
+==========================
+SEARCH BAR
+==========================
+*/
+#searchbar {
+  min-width: 366px;
+}
+
+.custom-select {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border: 1px solid #e9ede6;
+  margin-right: -1px;
+  color: #16425b;
+  background-color: #e9ede6;
+}
+
+.custom-select:hover, .custom-select:focus {
+  color: #eeeeee;
+  background-color: #e9ede6;
+}
+
+.search-text {
+  border-radius: 0;
+  border: 1px solid #e9ede6;
+  width: 220px;
+}
+
+.search {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -10px;
+}
+
+/*
+==========================
+FOOTER
+==========================
+*/
+.footer {
+  color: #eeeeee;
+  margin-top: 20px;
+  padding: 10px 0 !important;
+  font-weight: 400;
+  background-color: #e9ede6;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+}
+.footer .footer-text {
+  margin: 2px 0;
+}
+.footer a {
+  color: #16425b;
+}
+
+/*
+===========================
+CONTAINER
+===========================
+*/
+.container {
+  background-color: #eeeeee;
+  border-radius: 10px;
+  border: 1px solid #333;
+  -webkit-box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
+  box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
+  margin-top: 20px;
+}
+.container h1, .container h2, .container .row {
+  padding-top: 20px;
+}
+
+/*
+===========================
+BUTTONS
+===========================
+*/
+.btn-primary {
+  color: #16425b;
+  background-color: #e9ede6;
+  border-color: #e9ede6;
+}
+
+.btn-primary:hover {
+  color: #eeeeee;
+  background-color: #e9ede6;
+  border-color: #e9ede6;
+}
+
+/*
+==========================
+CARDS
+==========================
+*/
+.card {
+  background-color: none;
+}
+.card .num-ratings {
+  margin-left: 84px;
+  padding-bottom: none;
+  line-height: 20px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.card:hover {
+  background-color: rgba(50, 50, 50, 0.03);
+}
+
+.card-body {
+  padding-bottom: 0px;
+}
+
+a .card-subtitle {
+  font-size: 12px;
+  color: #16425b;
+  text-decoration: none;
+}
+
+.card img.book-cover-S, .details-book-cover-S {
+  float: left;
+  max-height: 70px;
+  margin-right: 10px;
+}
+
+/*
+==========================
+STAR RATING IMGS
+==========================
+*/
+.card .star-rating {
+  float: left;
+  width: 80px;
+}
+
+.bdstar-rating {
+  max-width: 80px;
+}
+
+/*
+==========================
+BOOK DETAILS PAGE
+==========================
+*/
+.details-book-cover-L {
+  margin-bottom: 20px;
+}
+
+.review .bdstar-rating {
+  max-width: 80px;
+}
+.review h4 {
+  padding-top: 10px;
+}
+.review h5 {
+  line-height: 20px;
+  margin-bottom: 0;
+}
+.review p.date {
+  font-size: 12px;
+  font-weight: 700;
+}
+.review select {
+  max-width: 180px;
+  border-radius: 3px;
+}
+.review .btn {
+  float: right;
+  clear: both;
+}
+.review form {
+  clear: both;
+}
+.review .edit {
+  margin-bottom: 10px;
+}
+.review .btn-danger {
+  margin: 5px 0 10px 0;
+}
+
+.cancel {
+  display: none;
+}
+
+.edit_review {
+  display: none;
+}
+
+/*
+==========================
+LOGIN, REGISTER, ACCOUNT
+==========================
+*/
+.login.container, .register.container {
+  margin-top: 100px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background-color: #eeeeee;
+  -webkit-box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
+  box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
+  max-width: 420px;
+}
+
+.login .btn, .register .btn {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+.form-signin .form-control {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+
+.login .form-signin input[type=text], .register #inputPassword, #new-pass {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.login .form-signin input[type=password], .register #checkPassword, #check-pass {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.register p {
+  margin-bottom: 0;
+}
+
+.register #inputPassword {
+  margin-top: 20px;
+}
+
+.delete_account {
+  display: none;
+}
+
+/*
+=============================
+RESPONSIVE
+=============================
+*/
+/* Hide large book images on small screens:*/
+@media screen and (max-width: 576px) {
+  .book-cover-L {
+    display: none;
+  }
+
+  .card.mb-4.shadow-sm {
+    margin-bottom: 5px !important;
+  }
+}
+@media screen and (min-width: 576px) {
+  img.book-cover-S {
+    display: none;
+  }
+}
+@media screen and (max-width: 768px) {
+  .details-book-cover-L {
+    display: none;
+  }
+}
+@media screen and (min-width: 768px) {
+  .details-book-cover-S {
+    display: none;
+  }
+}
+@media screen and (max-width: 767px) {
+  #searchbar {
+    display: inline-block;
+  }
+
+  #searchbar select {
+    max-width: 80px;
+    margin-right: -5px;
+  }
+
+  #searchbar button {
+    margin-left: -15px;
+  }
+}
+
+/*# sourceMappingURL=styles.css.map */

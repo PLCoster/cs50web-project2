@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block main %}
+  <!--Login Container-->
+  <div class="login container">
+    <form class="form-signin" action="/login" method="POST">
+      <img class="mb-4" src="/static/book_icon.png" alt="" width="72" height="72">
+      <h3 class="mb-3 font-weight-normal">Please sign in to continue:</h3>
+      <label for="inputUsername" class="sr-only">Username</label>
+      <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="username" required autofocus>
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password" required>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      <p class="mb-3 text-muted">Not registered? <a href="/register">Click here to Sign Up!</a></p>
+    </form>
+  </div>
+{% endblock %}

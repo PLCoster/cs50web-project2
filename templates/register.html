@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block main %}
+  <!--Registration Container-->
+  <div class="register container">
+    <form class="form-signin" action="/register" method="post">
+      <img class="mb-4" src="/static/book_icon.png" alt="" width="72" height="72">
+      <h3 class="mb-3 font-weight-normal">Register for an account:</h3>
+      <label for="inputUsername" class="sr-only">Username</label>
+      <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="username" required autofocus>
+      <label for="inputPassword" class="sr-only">Password</label>
+      <input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password" required>
+      <label for="checkPassword" class="sr-only">Password</label>
+      <input type="password" id="checkPassword" class="form-control" placeholder="Re-type Password" name="confirmation" required>
+      <p>Note: Passwords must have a minimum of eight characters, including at least one number and letter.</p>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Register and Sign In</button>
+      <p class="mb-3 text-muted">Already Registered? <a href="/login">Click here to Log In!</a></p>
+    </form>
+  </div>
+{% endblock %}
