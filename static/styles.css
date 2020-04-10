@@ -24,7 +24,7 @@ html {
 }
 
 body {
-  background-color: #eeeeee;
+  background-color: #f9f9f9;
   color: #16425b;
   font: 300 16px/22px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background-image: url("login_bg.jpg");
@@ -55,6 +55,10 @@ h4 {
 
 h5 {
   font-size: 16px;
+}
+
+a, a:hover {
+  color: #16425b;
 }
 
 strong {
@@ -99,18 +103,18 @@ NAVBAR
 
 .navbar-nav .nav-item .nav-link {
   font-weight: 700;
-  color: #eeeeee;
+  color: #e9ede6;
 }
 
 .dropdown-menu {
   background-color: #16425b;
-  color: #eeeeee;
+  color: #e9ede6;
   font-weight: 700;
   min-width: 200px;
 }
 .dropdown-menu a {
   background-color: #16425b;
-  color: #eeeeee;
+  color: #e9ede6;
   font-weight: 700;
 }
 .dropdown-menu p {
@@ -141,7 +145,7 @@ SEARCH BAR
 }
 
 .custom-select:hover, .custom-select:focus {
-  color: #eeeeee;
+  color: #e9ede6;
   background-color: #e9ede6;
 }
 
@@ -163,11 +167,11 @@ FOOTER
 ==========================
 */
 .footer {
-  color: #eeeeee;
+  color: #e9ede6;
   margin-top: 20px;
   padding: 10px 0 !important;
   font-weight: 400;
-  background-color: #e9ede6;
+  background-color: #7f97a5;
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -186,7 +190,7 @@ CONTAINER
 ===========================
 */
 .container {
-  background-color: #eeeeee;
+  background-color: #f9f9f9;
   border-radius: 10px;
   border: 1px solid #333;
   -webkit-box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
@@ -204,14 +208,14 @@ BUTTONS
 ===========================
 */
 .btn-primary {
-  color: #16425b;
-  background-color: #e9ede6;
+  color: #e9ede6;
+  background-color: #16425b;
   border-color: #e9ede6;
 }
 
 .btn-primary:hover {
-  color: #eeeeee;
-  background-color: #e9ede6;
+  color: #16425b;
+  background-color: #7f97a5;
   border-color: #e9ede6;
 }
 
@@ -323,7 +327,7 @@ LOGIN, REGISTER, ACCOUNT
   margin-top: 100px;
   border-radius: 10px;
   border: 1px solid #333;
-  background-color: #eeeeee;
+  background-color: #f9f9f9;
   -webkit-box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
   box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);

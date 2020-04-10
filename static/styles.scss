@@ -16,10 +16,11 @@ ede9cb
   ========================================
 */
 
-$primary-light: #16425b;
-$primary-dark: #e9ede6;
-$primary-container: #eeeeee;
-$text-on-prim-light: #eeeeee;
+$theme-dark: #16425b;
+$theme-med: #7f97a5;
+$theme-light: #e9ede6;
+$primary-container: #f9f9f9;
+$text-on-theme-dark: #e9ede6;
 $text-on-container: #16425b;
 $highlight-dark: #333;
 
@@ -68,6 +69,10 @@ h5 {
   font-size: 16px;
 }
 
+a, a:hover {
+  color: $theme-dark;
+}
+
 strong {
   font-weight: 400;
 }
@@ -86,7 +91,7 @@ NAVBAR
 ==========================
 */
 #navbar {
-  background-color: $primary-light;
+  background-color: $theme-dark;
 }
 
 #logo h1 {
@@ -96,12 +101,12 @@ NAVBAR
   font-size: 18px;
   line-height: 16px;
   font-weight: 700;
-  color: $primary-dark;
+  color: $theme-light;
   display: inline-block;
 }
 
 #logo:hover {
-  color: $primary-dark;
+  color: $theme-light;
 }
 
 #logo img {
@@ -110,18 +115,18 @@ NAVBAR
 
 .navbar-nav .nav-item .nav-link {
   font-weight: 700;
-  color: $text-on-prim-light;
+  color: $text-on-theme-dark;
 }
 
 .dropdown-menu {
-  background-color: $primary-light;
-  color: $text-on-prim-light;
+  background-color: $theme-dark;
+  color: $text-on-theme-dark;
   font-weight: 700;
   min-width: 200px;
 
   a {
-    background-color: $primary-light;
-    color: $text-on-prim-light;
+    background-color: $theme-dark;
+    color: $text-on-theme-dark;
     font-weight: 700;
   }
 
@@ -147,20 +152,20 @@ SEARCH BAR
 .custom-select {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
-  border: 1px solid $primary-dark;
+  border: 1px solid $theme-light;
   margin-right: -1px;
-  color: $primary-light;
-  background-color: $primary-dark;
+  color: $theme-dark;
+  background-color: $theme-light;
 }
 
 .custom-select:hover, .custom-select:focus {
-  color: $text-on-prim-light;
-  background-color: $primary-dark;
+  color: $text-on-theme-dark;
+  background-color: $theme-light;
 }
 
 .search-text {
   border-radius: 0;
-  border: 1px solid $primary-dark;
+  border: 1px solid $theme-light;
   width: 220px;
 }
 
@@ -177,11 +182,11 @@ FOOTER
 ==========================
 */
 .footer {
-  color: $text-on-prim-light;
+  color: $text-on-theme-dark;
   margin-top: 20px;
   padding: 10px 0 !important;
   font-weight: 400;
-  background-color: $primary-dark;
+  background-color: $theme-med;
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -192,7 +197,7 @@ FOOTER
   }
 
   a {
-    color: $primary-light;
+    color: $theme-dark;
   }
 
 }
@@ -223,15 +228,15 @@ BUTTONS
 ===========================
 */
 .btn-primary {
-  color: $primary-light;
-  background-color: $primary-dark;
-  border-color: $primary-dark;
+  color: $theme-light;
+  background-color: $theme-dark;
+  border-color: $theme-light;
 }
 
 .btn-primary:hover {
-  color: $text-on-prim-light;
-  background-color: $primary-dark;
-  border-color: $primary-dark;
+  color: $theme-dark;
+  background-color: $theme-med;
+  border-color: $theme-light;
 }
 
 /*
