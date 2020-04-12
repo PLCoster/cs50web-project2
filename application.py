@@ -4,30 +4,31 @@ import pytz
 from flask import Flask, session, flash, jsonify, redirect, render_template, request
 from flask_session import Session
 from flask_socketio import SocketIO, emit, join_room, leave_room
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
+from models import *
 
 from datetime import datetime
+
+if not os.getenv("DATABASE_URL"):
+    raise RuntimeError("DATABASE_URL is not set")
+
+if not os.getenv("SECRET_KEY"):
+    raise RuntimeError("SECRET_KEY is not set")
 
 
 # Flask App Configuration
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db.init_app(app)
 socketio = SocketIO(app)
-
-if not os.getenv("DATABASE_URL"):
-    raise RuntimeError("DATABASE_URL is not set")
 
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
-# Set up database
-engine = create_engine(os.getenv("DATABASE_URL"))
-db = scoped_session(sessionmaker(bind=engine))
 
 # Server Message Channel Storage - Starts with Standard Main Channel:
 channels = {'Home':
@@ -46,6 +47,29 @@ def sanitize_message(message):
   return message.replace('&', '&amp;').replace('"', '&quot;').replace('\'', '&apos;').replace('<', '&lt;').replace('>', '&gt;')
 
 
+def validate_pass(password):
+    """Checks password string for minimum length and a least one number and one letter"""
+
+    if len(password) < 8:
+        return False
+
+    letter = False
+    number = False
+    numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    letters = list(map(chr, range(97, 123)))
+
+    for i in range(len(password)):
+        if password[i] in numbers:
+            number = True
+        if password[i].lower() in letters:
+            letter = True
+
+    if letter and number:
+        return True
+    else:
+        return False
+
+
 @app.route("/")
 def index():
   return render_template("index.html")
@@ -55,7 +79,7 @@ def index():
 def login():
     """Log user into site"""
 
-    # If user is already logged in, return to home:
+    # If user is already logged in, return to home screen:
     if session.get("user_id") != None:
         return redirect("/")
 
@@ -72,29 +96,32 @@ def login():
             return render_template("login.html")
 
         # Query database for username:
-        user = db.execute("SELECT * FROM users WHERE username = :username", {"username" : username}).fetchone()
+        user_query = User.query.filter_by(username=username).first()
+
+        print(user_query)
 
         # Check username exists and password is correct:
-        if not user or not check_password_hash(user[2], password):
+        if not user_query or not check_password_hash(user_query.pass_hash, password):
             flash("Invalid username and/or password! Please try again!")
             return render_template("login.html")
 
         # Otherwise log in user and redirect to homepage:
-        session["user_id"] = user[0]
-        session["username"] = user[1]
+        session["user_id"] = user_query.id
+        session["username"] = user_query.username
 
-        flash('Log in Successful! Welcome back to READ-RATE!')
+        flash('Log in Successful! Welcome back to Flack Teams!')
         return redirect("/")
 
     # If User reaches Route via GET (e.g. clicking login link):
     else:
         return render_template("login.html")
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user for the website"""
 
-    # If user is already logged in, return to home:
+    # If user is already logged in, return to home screen:
     if session.get("user_id") != None:
         return redirect("/")
 
@@ -124,27 +151,33 @@ def register():
         # Otherwise information from registration is complete:
         else:
             # Check username does not already exist, if it does then ask for a different name:
-            if db.execute("SELECT * FROM users WHERE username = :username", {"username" : username}).fetchone():
+
+            user_query = User.query.filter_by(username=username).first()
+
+            print(user_query)
+
+            if user_query:
                 flash('Sorry but that username is already in use, please pick a different username!')
                 return render_template("register.html")
 
             # Otherwise add user to database using hashed password:
-            hash_pass = generate_password_hash(password)
+            pass_hash = generate_password_hash(password)
 
             # Add new user to users table:
-            db.execute("INSERT INTO users (username, hash) VALUES(:username, :hash)", {"username" : username, "hash" : hash_pass})
 
-            db.commit()
+            new_user = User(username=username, pass_hash=pass_hash)
+            db.session.add(new_user)
+            db.session.commit()
 
             # Put unique user ID and username into session:
 
-            user_info = db.execute("SELECT id, username FROM users WHERE username=:username", {"username" : username}).fetchall()
+            user_info = User.query.filter_by(username=username).first()
 
-            session["user_id"] = user_info[0][0]
-            session["username"] = user_info[0][1]
+            session["user_id"] = user_info.id
+            session["username"] = user_info.username
 
             # Return to home page, logged in:
-            flash('Welcome to READ-RATE! You have been succesfully registered and logged in!')
+            flash('Welcome to FLack Teams! You have been succesfully registered and logged in!')
             return redirect("/")
 
     # If User reaches Route via GET (e.g. clicking registration link):
