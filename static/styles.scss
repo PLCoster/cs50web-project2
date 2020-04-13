@@ -142,6 +142,95 @@ NAVBAR
 
 /*
 ==========================
+SIDE NAV
+==========================
+*/
+.sidenav {
+  height: 100%;
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  text-align: left;
+  color: $theme-light;
+  background-color: $theme-dark;
+  overflow-x: hidden;
+  padding-top: 10px;
+  padding-left: 20px;
+
+  .navbar-brand {
+  }
+
+  hr {
+    margin: 0 20px 10px 0;
+    background-color: #fff;
+  }
+
+  h3, h4, h5 {
+    color: #fff;
+  }
+
+  ul {
+    list-style-type: none;
+    margin-left: -40px;
+  }
+
+  li {
+    font-weight: 400;
+    text-align: left;
+  }
+
+  li:hover {
+    color: #fff;
+    cursor: pointer;
+  }
+
+  li.active {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  footer {
+    position: fixed;
+    left: 20;
+    bottom: 0;
+    font-weight: 400;
+
+    a {
+      color: $theme-light;
+    }
+
+  }
+}
+
+/*
+==========================
+CHAT ROOM
+==========================
+*/
+
+#vote {
+  position: fixed;
+  bottom: 20px;
+  left: 220px;
+  width: 100%;
+  margin-right: 20px;
+  text-align: left;
+
+  #message {
+    width: 50%;
+  }
+}
+
+.online {
+  color: #96E072;
+}
+
+
+
+/*
+==========================
 SEARCH BAR
 ==========================
 */

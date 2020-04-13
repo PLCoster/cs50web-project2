@@ -248,7 +248,7 @@ def join_channel(data):
   print('Channel status:', channels)
   print('Sending message history:', message_history)
 
-  emit("channel logon", {"message_history" : message_history}, room=user)
+  emit("channel logon", {"message_history" : message_history, "channel_name" : data['channel']}, room=user)
   print("channel logo emitted")
   # Send current channel list to the user
   channel_list = list(channels.keys())

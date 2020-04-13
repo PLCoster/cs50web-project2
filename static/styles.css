@@ -128,6 +128,79 @@ NAVBAR
 
 /*
 ==========================
+SIDE NAV
+==========================
+*/
+.sidenav {
+  height: 100%;
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  text-align: left;
+  color: #e9ede6;
+  background-color: #16425b;
+  overflow-x: hidden;
+  padding-top: 10px;
+  padding-left: 20px;
+}
+.sidenav hr {
+  margin: 0 20px 10px 0;
+  background-color: #fff;
+}
+.sidenav h3, .sidenav h4, .sidenav h5 {
+  color: #fff;
+}
+.sidenav ul {
+  list-style-type: none;
+  margin-left: -40px;
+}
+.sidenav li {
+  font-weight: 400;
+  text-align: left;
+}
+.sidenav li:hover {
+  color: #fff;
+  cursor: pointer;
+}
+.sidenav li.active {
+  color: #fff;
+  font-weight: 700;
+}
+.sidenav footer {
+  position: fixed;
+  left: 20;
+  bottom: 0;
+  font-weight: 400;
+}
+.sidenav footer a {
+  color: #e9ede6;
+}
+
+/*
+==========================
+CHAT ROOM
+==========================
+*/
+#vote {
+  position: fixed;
+  bottom: 20px;
+  left: 220px;
+  width: 100%;
+  margin-right: 20px;
+  text-align: left;
+}
+#vote #message {
+  width: 50%;
+}
+
+.online {
+  color: #96E072;
+}
+
+/*
+==========================
 SEARCH BAR
 ==========================
 */

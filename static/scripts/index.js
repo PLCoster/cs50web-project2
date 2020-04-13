@@ -31,26 +31,26 @@ document.addEventListener('DOMContentLoaded', () => {
       // Function to set up links to change channels:
 
       // Remove current channel list:
-      document.querySelector('p#channel-links').innerHTML = '';
+      document.querySelector('#channel-links').innerHTML = '';
 
       // Add all Channel Links:
       for (let i=0; i < channel_list.length; i++) {
         let channel_name = channel_list[i];
 
-        const a = document.createElement('a');
-        a.innerHTML = channel_name;
-        a.className = 'channel-link';
-        a.setAttribute('data-channel', channel_name);
-        a.setAttribute('href', '');
+        const li = document.createElement('li');
+        li.innerHTML = channel_name;
+        li.className = 'channel-link';
+        li.setAttribute('data-channel', channel_name);
+        li.setAttribute('href', '');
 
-        document.querySelector('#channel-links').append(a);
-
+        document.querySelector('#channel-links').append(li);
       }
 
       // Add onclick events to all Channel Links:
       document.querySelectorAll('.channel-link').forEach(button => {
         button.onclick = () => {
           event.preventDefault();
+          console.log("You clicked on a channel link!")
           socket.emit("join channel", {"channel": button.dataset.channel, "previous": localStorage.getItem('channel')});
           localStorage.setItem('channel', button.dataset.channel);
           console.log('Channel now set to: ', localStorage.getItem('channel'));
@@ -108,6 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('channel logon', data => {
       // Clear current messages
       document.querySelector('#votes').innerHTML = '';
+
+      // Update current channel title
+      document.querySelector('#curr-channel').innerHTML= data['channel_name'];
 
       console.log('Getting message history...', data['message_history'])
 

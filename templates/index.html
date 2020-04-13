@@ -1,23 +1,45 @@
-{% extends "layout.html" %}
+{% extends "layout_index.html" %}
 
 {% block title %}Chatroom{% endblock %}
 
 
 {% block main %}
-  <ul id="votes">
-  </ul>
+  <!-- Side Nav Bar -->
+  <div class="sidenav">
+    <a class="navbar-brand" id="logo" href="/">
+      <img src="/static/Images/nav_logo.png" alt="" width="42" height="42">
+      <h1>Flack<br>Teams</h1>
+    </a>
+    <hr>
+    <h3 id="curr-channel"></h3>
+    <h4><span class="online">&#9673;</span> {{session.username}}</h4>
+    <hr>
+    <h5>Sub-channels:</h5>
+    <ul id="channel-links">
+    </ul>
+    <footer>
+      <p class="footer-text">&copy; 2020 <a href="https://plcoster.github.io/homepage/index.html">P.L.Coster</a></p>
+    </footer>
+  </div>
+
+  <!-- Message Display Section -->
+  <div id="message-list">
+    <ul id="votes">
+    </ul>
+  </div>
   <hr>
   <form id="login">
     <label for="login-screen_name" class="sr-only">Username</label>
     <input type="text" id="login-screen_name" class="form-control" placeholder="Screen Name" name="screen_name" required autofocus>
     <button class="login btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
   </form>
-  <form id='vote'>
-    <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
-    <button>Send!</button>
-  </form>
-  <p id="channel-links">
-  </p>
+  <div>
+    <form id='vote'>
+      <hr>
+      <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
+      <button>Send!</button>
+    </form>
+  </div>
   <form id='new-channel'>
     <input type="text" id='channel-name' name="channel-name" placeholder="Enter Your Channel Name" required>
     <button>Create New Channel!</button>
