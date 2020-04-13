@@ -72,6 +72,11 @@ def validate_pass(password):
 
 @app.route("/")
 def index():
+  """ Main single-page app for the site """
+
+  if session.get("user_id") == None:
+    return redirect("/login")
+
   return render_template("index.html")
 
 
@@ -189,16 +194,16 @@ def register():
 def logout():
     """Log user out"""
 
-    # If user not logged in return to home:
+    # If user not logged in return to login screen:
     if session.get("user_id") == None:
-        return redirect("/")
+        return redirect("/login")
 
     # Forget any user_id
     session.clear()
 
     # Redirect user to home page
-    flash('You have been logged out. See you again soon!')
-    return redirect("/")
+    flash('You have been logged out from Flack Teams. See you again soon!')
+    return redirect("/login")
 
 
 @socketio.on("send message")

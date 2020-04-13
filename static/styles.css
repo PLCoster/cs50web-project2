@@ -144,23 +144,35 @@ SIDE NAV
   overflow-x: hidden;
   padding-top: 10px;
   padding-left: 20px;
+  padding-bottom: 80px;
 }
 .sidenav hr {
   margin: 0 20px 10px 0;
   background-color: #fff;
 }
 .sidenav h3, .sidenav h4, .sidenav h5 {
+  font-weight: 600;
   color: #fff;
+}
+.sidenav #new-channel, .sidenav #channel-options-hide {
+  display: none;
+}
+.sidenav #new-channel button, .sidenav #channel-name {
+  width: 140px;
+  font-size: 16px;
+  text-align: center;
 }
 .sidenav ul {
   list-style-type: none;
   margin-left: -40px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 .sidenav li {
   font-weight: 400;
   text-align: left;
 }
-.sidenav li:hover {
+.sidenav li:hover, .sidenav #channel-options-display:hover, .sidenav #channel-options-hide:hover {
   color: #fff;
   cursor: pointer;
 }
@@ -169,9 +181,6 @@ SIDE NAV
   font-weight: 700;
 }
 .sidenav footer {
-  position: fixed;
-  left: 20;
-  bottom: 0;
   font-weight: 400;
 }
 .sidenav footer a {

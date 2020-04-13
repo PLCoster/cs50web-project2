@@ -59,6 +59,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const new_channel_config = function () {
+
+      // Set up sidebar onclick display of channel creator:
+      document.querySelector('#channel-options-display').onclick = function() {
+        document.querySelector('#new-channel').style.display = 'block';
+        document.querySelector('#channel-links').style.display = 'none';
+        document.querySelector('#channel-options-hide').style.display = 'block';
+        this.style.display = 'none';
+        }
+
+      document.querySelector('#channel-options-hide').onclick = function () {
+        document.querySelector('#new-channel').style.display = 'none';
+        document.querySelector('#channel-links').style.display = 'block';
+        document.querySelector('#channel-options-display').style.display = 'block';
+        this.style.display = 'none';
+      }
+
       // Function to set up new channel creator form:
       document.querySelector('#new-channel').onclick = () => {
         event.preventDefault();

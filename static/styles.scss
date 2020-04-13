@@ -158,6 +158,7 @@ SIDE NAV
   overflow-x: hidden;
   padding-top: 10px;
   padding-left: 20px;
+  padding-bottom: 80px;
 
   .navbar-brand {
   }
@@ -168,12 +169,25 @@ SIDE NAV
   }
 
   h3, h4, h5 {
+    font-weight: 600;
     color: #fff;
+  }
+
+  #new-channel, #channel-options-hide {
+    display: none;
+  }
+
+  #new-channel button, #channel-name {
+    width: 140px;
+    font-size: 16px;
+    text-align: center;
   }
 
   ul {
     list-style-type: none;
     margin-left: -40px;
+    max-height: 200px;
+    overflow-y: auto;
   }
 
   li {
@@ -181,7 +195,7 @@ SIDE NAV
     text-align: left;
   }
 
-  li:hover {
+  li:hover, #channel-options-display:hover, #channel-options-hide:hover {
     color: #fff;
     cursor: pointer;
   }
@@ -192,15 +206,11 @@ SIDE NAV
   }
 
   footer {
-    position: fixed;
-    left: 20;
-    bottom: 0;
     font-weight: 400;
 
     a {
       color: $theme-light;
     }
-
   }
 }
 
