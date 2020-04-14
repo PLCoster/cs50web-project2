@@ -10,3 +10,5 @@ class User(db.Model):
     pass_hash = db.Column(db.String, nullable=False)
     workspaces = db.Column(db.String, nullable=False, default='{}')
     profile_img = db.Column(db.String, nullable=False)
+    curr_ws = db.Column(db.String, nullable=False, default='Welcome!')
+    curr_chan = db.Column(db.String, nullable=False, default='Getting Started')

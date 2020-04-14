@@ -12,7 +12,7 @@
     </a>
     <hr>
     <h5>Current Workspace:</h5>
-    <h3 id="curr-channel"></h3>
+    <h3 id="curr-workspace"></h3>
     <h4><span class="online">&#9673;</span> {{session.screen_name}}</h4>
     <hr>
     <!-- Channel List -->
@@ -43,7 +43,8 @@
 
   <!-- Message Display Section -->
   <div id="message-list">
-    <ul id="votes">
+    <h5 id="curr-channel"></h5>
+    <ul id="messages">
     </ul>
   </div>
 
@@ -55,12 +56,6 @@
       <button>Send!</button>
     </form>
   </div>
-
-  <form id="login">
-    <label for="login-screen_name" class="sr-only">Username</label>
-    <input type="text" id="login-screen_name" class="form-control" placeholder="Screen Name" name="screen_name" required autofocus>
-    <button class="login btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-  </form>
 
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
   <script src="/static/scripts/jquery.js"></script>

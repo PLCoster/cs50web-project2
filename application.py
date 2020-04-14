@@ -30,13 +30,10 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Server Message Channel Storage - Starts with Standard Main Channel:
-channels = {'Home':
-                  {'messages': {},
-                   'next_message': 1 ,
-                   'subchannels':{
-
-                   }}, 'News': {'messages': {}, 'next_message': 1 , 'subchannels':{}}, 'Sports': {'messages': {}, 'next_message': 1 , 'subchannels':{}}, 'Gaming':{'messages': {}, 'next_message': 1 , 'subchannels':{}}}
+# Server Message Channel Storage - Starts with Standard Welcome Channel:
+workspaces = {'Welcome!':
+                  {'channels':{'Getting Started': {'messages': {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started here!', 'Flack-Teams Help', 1586888725710, '14 Apr 2020', 1]}, 'next_message': 2}, 'Announcements': {'messages': {}, 'next_message': 1 },
+                  'News': {'messages': {}, 'next_message': 1 }}}}
 
 def sanitize_message(message):
   """ Helper function that takes a user's message string and replaces special HTML chars with their HTML entities to keep the chars and prevent adding HTML to the message board
@@ -113,8 +110,10 @@ def login():
         # Otherwise log in user and redirect to homepage:
         session["user_id"] = user_query.id
         session["screen_name"] = user_query.screen_name
+        session["curr_ws"] = user_query.curr_ws
+        session["curr_chan"] = user_query.curr_chan
 
-        flash('Log in Successful! Welcome back to Flack Teams!')
+        #flash('Log in Successful! Welcome back to Flack Teams!')
         return redirect("/")
 
     # If User reaches Route via GET (e.g. clicking login link):
@@ -179,6 +178,8 @@ def register():
             user_info = User.query.filter_by(username=username).first()
             session["user_id"] = user_info.id
             session["screen_name"] = user_info.screen_name
+            session["curr_ws"] = user_info.curr_ws
+            session["curr_chan"] = user_info.curr_chan
 
             # Return to main page, logged in:
             #flash('Welcome to Flack Teams! You have been succesfully registered and logged in!')
@@ -205,11 +206,48 @@ def logout():
     return redirect("/login")
 
 
+@socketio.on("join workspace")
+def sign_in(data):
+  """ Joins a user to a workspace and a channel in that workspace """
+
+  # If initial login, join last workspace and channel user was signed in to:
+  if data["sign in"]:
+    join_room(session["curr_ws"])
+    join_room(f"{session['curr_ws']}~{session['curr_chan']}")
+  # Otherwise user is changing workspace, sign out of current and switch to new:
+  else:
+    pass
+
+  user = request.sid
+
+  current_chan = workspaces[session["curr_ws"]]["channels"][session["curr_chan"]]
+
+  # Send sorted channel history back to user who has just joined:
+  message_history = sorted(list(current_chan["messages"].values()), key = lambda x : x[2])
+
+  print('Channel status:', workspaces)
+  print('Sending message history:', message_history)
+
+  emit("workspace logon", {"workspace_name" : session["curr_ws"]}, room=user)
+  print("workspace logon emitted")
+
+  emit("channel logon", {"channel_name" : session["curr_chan"], "message_history" : message_history}, room=user)
+  print("channel logon emitted")
+
+  # Send current channel list to the user
+  channel_list = list(workspaces[session["curr_ws"]]["channels"].keys())
+
+  emit('channel_list amended', {'channel_list': channel_list}, room=user)
+  print("channel_list amended emitted")
+
+
 @socketio.on("send message")
 def send_message(data):
   """ Sends a message to all users in the same room, and stores the message on the server """
 
   print('Server has received a message, Sending message to users in room')
+
+  print('USER ROOM ID', request.sid)
 
   # Get data from incoming message:
   message_text = sanitize_message(data['message'])
@@ -223,16 +261,16 @@ def send_message(data):
   date = datetime.now().strftime("%d %b %Y")
 
   # Save message data to channel log:
-  next = channels[room]['next_message']
+  next = workspaces[room]['next_message']
   message = [message_text, screen_name, timestamp, date, next]
-  channels[room]['messages'][next] = message
+  workspaces[room]['messages'][next] = message
 
   print('Message received by server:', message)
 
   # Store up to 100 messages, then overwrite the first message
-  channels[room]['next_message'] += 1
-  if channels[room]['next_message'] > 100:
-    channels[room]['next_message'] = 1
+  workspaces[room]['next_message'] += 1
+  if workspaces[room]['next_message'] > 100:
+    workspaces[room]['next_message'] = 1
 
   emit("announce vote", {"message": message}, room=room)
 
@@ -247,15 +285,15 @@ def join_channel(data):
   user = request.sid
 
   # Send sorted channel history back to user who has just joined:
-  message_history = sorted(list(channels[data['channel']]['messages'].values()), key = lambda x : x[2])
+  message_history = sorted(list(workspaces[data['channel']]['messages'].values()), key = lambda x : x[2])
 
-  print('Channel status:', channels)
+  print('Channel status:', workspaces)
   print('Sending message history:', message_history)
 
   emit("channel logon", {"message_history" : message_history, "channel_name" : data['channel']}, room=user)
   print("channel logo emitted")
   # Send current channel list to the user
-  channel_list = list(channels.keys())
+  channel_list = list(workspaces.keys())
 
   emit('channel added', {'channel_list': channel_list}, room=user)
   print("channel list emitted")
@@ -266,14 +304,14 @@ def create_channel(data):
   """ Lets a user create a new chat channel, with a unique name """
 
   # Check name not already in use:
-  if data['new_channel'] in channels.keys():
+  if data['new_channel'] in workspaces.keys():
     # This should send back some kind of error message
     return False
 
   # Otherwise create a new chat channel and send channel list to all users:
-  channels[data['new_channel']] = {'messages': {}, 'next_message': 1 , 'subchannels':{}}
+  workspaces[data['new_channel']] = {'messages': {}, 'next_message': 1 , 'subchannels':{}}
 
-  channel_list = list(channels.keys())
+  channel_list = list(workspaces.keys())
 
   emit('channel added', {'channel_list': channel_list}, broadcast=True)
 

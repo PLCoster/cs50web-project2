@@ -7,9 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     var socket = io();
   }
 
-  // When socket is connected, run script:
+  // SOCKET.IO Functions:
   socket.on('connect', () => {
-
 
     const message_config = function () {
         // Function to set up button to submit messages to the server:
@@ -86,44 +85,19 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     };
 
-    // Log in form should set username and then hide login and display chat input form
-    // Only visible if there is no username in local storage
-    document.querySelector('#login').onsubmit = () => {
-      event.preventDefault();
-      if (document.querySelector('#login-screen_name').value) {
-        localStorage.setItem('screen_name', document.querySelector('#login-screen_name').value);
-        screen_name = localStorage.getItem('screen_name');
-        message_config();
+    // Connect user to their last workspace and channel:
+    socket.emit('join workspace', {'sign in': true});
 
-        // Hide Login Form and Reveal chat input form Buttons:
-        document.querySelector('#login').style.display = "none";
-        document.querySelector('#chat-input-form').style.display = "inline";
-        }
-      };
-
-    // Check local storage for username, channel or subchannel if none, ask for a username:
-    if (!localStorage.getItem('screen_name')) {
-      document.querySelector('#login').style.display = "block";
-      document.querySelector('#chat-input-form').style.display = "none";
-      localStorage.setItem('channel', 'Home')
-    } else {
-      screen_name = localStorage.getItem('screen_name');
-
-      if (!localStorage.getItem('channel')) {
-        localStorage.setItem('channel', 'Home')
-      }
-
-      document.querySelector('#login').style.display = "none";
-      message_config();
-    }
-
-    // Connect to the last saved channel or the home channel if none saved:
-    socket.emit("join channel", {"channel": localStorage.getItem('channel'), "previous": localStorage.getItem('channel')});
+    socket.on('workspace logon', data => {
+      // When a new workspace is joined, update workspace info:
+      document.querySelector('#curr-workspace').innerHTML = data['workspace_name']
+    })
 
     // When a new channel is joined, clear messages and display message history:
     socket.on('channel logon', data => {
+
       // Clear current messages
-      document.querySelector('#votes').innerHTML = '';
+      document.querySelector('#messages').innerHTML = '';
 
       // Update current channel title
       document.querySelector('#curr-channel').innerHTML= data['channel_name'];
@@ -144,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         li.appendChild(dateSpan);
 
         // Add to messages element
-        document.querySelector('#votes').append(li);
+        document.querySelector('#messages').append(li);
       }
     })
 
@@ -162,12 +136,12 @@ document.addEventListener('DOMContentLoaded', () => {
       li.appendChild(dateSpan);
 
       // Add to messages element
-      document.querySelector('#votes').append(li);
+      document.querySelector('#messages').append(li);
 
     });
 
     // When a new channel is added, update channel link buttons
-    socket.on('channel added', data => {
+    socket.on('channel_list amended', data => {
       channel_config(data.channel_list);
     });
   });
