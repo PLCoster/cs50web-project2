@@ -32,7 +32,7 @@ Session(app)
 
 # Server Message Channel Storage - Starts with Standard Welcome Channel:
 workspaces = {'Welcome!':
-                  {'channels':{'Getting Started': {'messages': {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started here!', 'Flack-Teams Help', 1586888725710, '14 Apr 2020', 1]}, 'next_message': 2}, 'Announcements': {'messages': {}, 'next_message': 1 },
+                  {'channels':{'Getting Started': {'messages': {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started!', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1]}, 'next_message': 2}, 'Announcements': {'messages': {}, 'next_message': 1 },
                   'News': {'messages': {}, 'next_message': 1 }}}}
 
 def sanitize_message(message):
@@ -112,6 +112,7 @@ def login():
         session["screen_name"] = user_query.screen_name
         session["curr_ws"] = user_query.curr_ws
         session["curr_chan"] = user_query.curr_chan
+        session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
 
         #flash('Log in Successful! Welcome back to Flack Teams!')
         return redirect("/")
@@ -180,6 +181,7 @@ def register():
             session["screen_name"] = user_info.screen_name
             session["curr_ws"] = user_info.curr_ws
             session["curr_chan"] = user_info.curr_chan
+            session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
 
             # Return to main page, logged in:
             #flash('Welcome to Flack Teams! You have been succesfully registered and logged in!')
@@ -213,7 +215,7 @@ def sign_in(data):
   # If initial login, join last workspace and channel user was signed in to:
   if data["sign in"]:
     join_room(session["curr_ws"])
-    join_room(f"{session['curr_ws']}~{session['curr_chan']}")
+    join_room(session["curr_ws_chan"])
   # Otherwise user is changing workspace, sign out of current and switch to new:
   else:
     pass
@@ -245,34 +247,34 @@ def sign_in(data):
 def send_message(data):
   """ Sends a message to all users in the same room, and stores the message on the server """
 
-  print('Server has received a message, Sending message to users in room')
-
-  print('USER ROOM ID', request.sid)
+  print('Server has received a message, Sending message to users in channel')
 
   # Get data from incoming message:
   message_text = sanitize_message(data['message'])
-  screen_name = data['screen_name']
-  room = data['channel']
+  screen_name = session['screen_name']
+  workspace = session['curr_ws']
+  channel = session['curr_chan']
+  ws_channel = session['curr_ws_chan']
 
-  print('Room: ', room)
+  print('Workspace: ', workspace, 'Channel: ', channel)
 
   # Date and Timestamp the message:
   timestamp = datetime.now(pytz.utc).timestamp()
   date = datetime.now().strftime("%d %b %Y")
 
   # Save message data to channel log:
-  next = workspaces[room]['next_message']
+  next = workspaces[workspace]['channels'][channel]['next_message']
   message = [message_text, screen_name, timestamp, date, next]
-  workspaces[room]['messages'][next] = message
+  workspaces[workspace]['channels'][channel]['messages'][next] = message
 
   print('Message received by server:', message)
 
   # Store up to 100 messages, then overwrite the first message
-  workspaces[room]['next_message'] += 1
-  if workspaces[room]['next_message'] > 100:
-    workspaces[room]['next_message'] = 1
+  workspaces[workspace]['channels'][channel]['next_message'] += 1
+  if workspaces[workspace]['channels'][channel]['next_message'] > 100:
+    workspaces[workspace]['channels'][channel]['next_message'] = 1
 
-  emit("announce vote", {"message": message}, room=room)
+  emit("emit message", {"message": message}, room=ws_channel)
 
 
 @socketio.on("join channel")

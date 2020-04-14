@@ -11,20 +11,20 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('connect', () => {
 
     const message_config = function () {
+      console.log('Message Config running')
         // Function to set up button to submit messages to the server:
-      document.querySelectorAll('#chat-input-form > button').forEach(button => {
-        button.onclick = () => {
-            event.preventDefault();
-            const message = document.querySelector('#message').value;
-            if (message) {
-              console.log('Sending Message: ', {'message': message, 'screen_name': screen_name, 'channel': localStorage.getItem('channel')});
-              socket.emit('send message', {'message': message, 'screen_name': screen_name, 'channel': localStorage.getItem('channel')});
-              document.querySelector('#message').value = '';
+      document.querySelector('#send-chat-input').onclick = () => {
+        event.preventDefault();
+        const message = document.querySelector('#message').value;
+        console.log('Trying to send message to server:', message);
+        if (message) {
+          console.log('Sending Message: ', {'message': message});
+          socket.emit('send message', {'message': message});
+          document.querySelector('#message').value = '';
             }
         };
-      });
-      new_channel_config();
-    };
+        new_channel_config();
+      };
 
     const channel_config = function (channel_list) {
       // Function to set up links to change channels:
@@ -85,6 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     };
 
+    message_config();
+
     // Connect user to their last workspace and channel:
     socket.emit('join workspace', {'sign in': true});
 
@@ -123,8 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     // When a new vote is announced, add to the unordered list
-    socket.on('announce vote', data => {
-      console.log('Message broadcast received, message data:', data);
+    socket.on('emit message', data => {
+      console.log('Message received, message data:', data);
 
       // Create message li
       const li = document.createElement('li');

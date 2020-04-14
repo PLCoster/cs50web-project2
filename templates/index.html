@@ -41,9 +41,12 @@
     </footer>
   </div>
 
-  <!-- Message Display Section -->
+  <!-- Channel Display Section -->
   <div id="message-list">
-    <h5 id="curr-channel"></h5>
+    <h5>Current Channel:</h5>
+    <h4 id="curr-channel"></h4>
+    <hr>
+    <!-- Channel Messages -->
     <ul id="messages">
     </ul>
   </div>
@@ -53,7 +56,7 @@
     <hr>
     <form id='chat-input-form'>
       <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
-      <button>Send!</button>
+      <button id='send-chat-input'>Send!</button>
     </form>
   </div>
 
