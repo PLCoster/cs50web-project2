@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const message_config = function () {
         // Function to set up button to submit messages to the server:
-      document.querySelectorAll('#vote > button').forEach(button => {
+      document.querySelectorAll('#chat-input-form > button').forEach(button => {
         button.onclick = () => {
             event.preventDefault();
             const message = document.querySelector('#message').value;
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     };
 
-    // Log in form should set username and then hide login and display vote buttons
+    // Log in form should set username and then hide login and display chat input form
     // Only visible if there is no username in local storage
     document.querySelector('#login').onsubmit = () => {
       event.preventDefault();
@@ -95,16 +95,16 @@ document.addEventListener('DOMContentLoaded', () => {
         screen_name = localStorage.getItem('screen_name');
         message_config();
 
-        // Hide Login Form and Reveal Vote Buttons:
+        // Hide Login Form and Reveal chat input form Buttons:
         document.querySelector('#login').style.display = "none";
-        document.querySelector('#vote').style.display = "inline";
+        document.querySelector('#chat-input-form').style.display = "inline";
         }
       };
 
     // Check local storage for username, channel or subchannel if none, ask for a username:
     if (!localStorage.getItem('screen_name')) {
       document.querySelector('#login').style.display = "block";
-      document.querySelector('#vote').style.display = "none";
+      document.querySelector('#chat-input-form').style.display = "none";
       localStorage.setItem('channel', 'Home')
     } else {
       screen_name = localStorage.getItem('screen_name');

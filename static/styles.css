@@ -192,20 +192,44 @@ SIDE NAV
 CHAT ROOM
 ==========================
 */
-#vote {
+#chat-input {
   position: fixed;
-  bottom: 20px;
-  left: 220px;
+  bottom: 0;
+  left: 200px;
   width: 100%;
-  margin-right: 20px;
+  padding-bottom: 20px;
   text-align: left;
+  z-index: 2;
+  background-color: #f9f9f9;
 }
-#vote #message {
+#chat-input hr {
+  margin-top: 0;
+  padding-left: -20px;
+}
+#chat-input #chat-input-form {
+  padding-left: 20px;
+}
+#chat-input #message {
   width: 50%;
+}
+
+#message-list {
+  text-align: left;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .online {
   color: #96E072;
+}
+
+.profile-icon {
+  height: 50px;
+  margin-top: 5px;
+}
+
+#message-list {
+  margin-left: 200px;
 }
 
 /*
@@ -413,7 +437,7 @@ LOGIN, REGISTER, ACCOUNT
   -webkit-box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
   box-shadow: 11px 11px 10px -4px rgba(0, 0, 0, 0.5);
-  max-width: 420px;
+  max-width: 450px;
 }
 
 .login .btn, .register .btn {
@@ -423,7 +447,7 @@ LOGIN, REGISTER, ACCOUNT
 
 .form-signin {
   width: 100%;
-  max-width: 330px;
+  max-width: 400px;
   padding: 15px;
   margin: 0 auto;
 }
@@ -453,14 +477,29 @@ LOGIN, REGISTER, ACCOUNT
 }
 
 .register p {
+  font-size: 14px;
+  line-height: 16px;
   margin-bottom: 0;
+  margin-top: 5px;
 }
-
 .register #inputPassword {
   margin-top: 20px;
 }
-
-.delete_account {
+.register [type=radio] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.register [type=radio] + img {
+  cursor: pointer;
+  margin: 4px 4px;
+  height: 60px;
+}
+.register [type=radio]:checked + img {
+  outline: 2px solid #000;
+}
+.register .delete_account {
   display: none;
 }
 

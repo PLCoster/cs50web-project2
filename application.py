@@ -112,7 +112,7 @@ def login():
 
         # Otherwise log in user and redirect to homepage:
         session["user_id"] = user_query.id
-        session["username"] = user_query.username
+        session["screen_name"] = user_query.screen_name
 
         flash('Log in Successful! Welcome back to Flack Teams!')
         return redirect("/")
@@ -135,12 +135,14 @@ def register():
 
         # Get input from registration form:
         username = request.form.get("username")
+        screen_name = request.form.get("screenname")
         password = request.form.get("password")
         confirm = request.form.get("confirmation")
+        profile_img = request.form.get("profile")
 
         # If form is incomplete, return and flash apology:
-        if not username or not password or not confirm:
-            flash('Please fill in all three fields to register!')
+        if not all([username, screen_name, password, confirm, profile_img]):
+            flash('Please fill in all fields to register!')
             return render_template("register.html")
 
         # If password and confirmation do not match, return and flash apology:
@@ -169,20 +171,17 @@ def register():
             pass_hash = generate_password_hash(password)
 
             # Add new user to users table:
-
-            new_user = User(username=username, pass_hash=pass_hash)
+            new_user = User(username=username, screen_name=screen_name, pass_hash=pass_hash, profile_img=profile_img)
             db.session.add(new_user)
             db.session.commit()
 
             # Put unique user ID and username into session:
-
             user_info = User.query.filter_by(username=username).first()
-
             session["user_id"] = user_info.id
-            session["username"] = user_info.username
+            session["screen_name"] = user_info.screen_name
 
-            # Return to home page, logged in:
-            flash('Welcome to FLack Teams! You have been succesfully registered and logged in!')
+            # Return to main page, logged in:
+            #flash('Welcome to Flack Teams! You have been succesfully registered and logged in!')
             return redirect("/")
 
     # If User reaches Route via GET (e.g. clicking registration link):

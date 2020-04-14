@@ -13,7 +13,7 @@
     <hr>
     <h5>Current Workspace:</h5>
     <h3 id="curr-channel"></h3>
-    <h4><span class="online">&#9673;</span> {{session.username}}</h4>
+    <h4><span class="online">&#9673;</span> {{session.screen_name}}</h4>
     <hr>
     <!-- Channel List -->
     <div class='channel-display'>
@@ -46,19 +46,22 @@
     <ul id="votes">
     </ul>
   </div>
-  <hr>
+
+  <!-- Chat text Entry -->
+  <div id='chat-input'>
+    <hr>
+    <form id='chat-input-form'>
+      <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
+      <button>Send!</button>
+    </form>
+  </div>
+
   <form id="login">
     <label for="login-screen_name" class="sr-only">Username</label>
     <input type="text" id="login-screen_name" class="form-control" placeholder="Screen Name" name="screen_name" required autofocus>
     <button class="login btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
   </form>
-  <div>
-    <form id='vote'>
-      <hr>
-      <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
-      <button>Send!</button>
-    </form>
-  </div>
+
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
   <script src="/static/scripts/jquery.js"></script>
   <script src="/static/scripts/moment.js"></script>

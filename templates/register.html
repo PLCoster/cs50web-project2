@@ -6,15 +6,43 @@
   <!--Registration Container-->
   <div class="register container">
     <form class="form-signin" action="/register" method="post">
+
       <img class="mb-4" src="/static/Images/page_logo.png" alt="" height="72">
       <h3 class="mb-3 font-weight-normal">Register for an account:</h3>
+
       <label for="inputUsername" class="sr-only">Username</label>
       <input type="text" id="inputUsername" class="form-control" placeholder="Username" name="username" required autofocus>
+      <p class="mb-3 text-muted">Your Username signs you in to Flack-Teams.</p>
+
+      <label for="inputScreenname" class="sr-only">Screen Name</label>
+      <input type="text" id="inputScreenname" class="form-control" placeholder="Screen Name" name="screenname" required autofocus>
+      <p class="mb-3 text-muted">Your Screen Name is displayed with all your messages.</p>
+
       <label for="inputPassword" class="sr-only">Password</label>
       <input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password" required>
       <label for="checkPassword" class="sr-only">Password</label>
       <input type="password" id="checkPassword" class="form-control" placeholder="Re-type Password" name="confirmation" required>
-      <p>Note: Passwords must have a minimum of eight characters, including at least one number and letter.</p>
+      <p class="mb-3 text-muted">Note: Passwords must have a minimum of eight characters, including at least one number and letter.</p>
+
+      <!-- Profile Icon Selection -->
+      <p>Select your profile icon:</p>
+      <label>
+        <input type="radio" name="profile" value="default_1.png" checked required>
+        <img class="profile-icon" src="/static/Images/profile/default_1.png">
+      </label>
+      <label>
+        <input type="radio" name="profile" value="default_2.png">
+        <img class="profile-icon" src="/static/Images/profile/default_2.png">
+      </label>
+      <label>
+        <input type="radio" name="profile" value="default_3.png">
+        <img class="profile-icon" src="/static/Images/profile/default_3.png">
+      </label>
+      <label>
+        <input type="radio" name="profile" value="default_4.png">
+        <img class="profile-icon" src="/static/Images/profile/default_4.png">
+      </label>
+
       <button class="btn btn-lg btn-primary btn-block" type="submit">Register and Sign In</button>
       <p class="mb-3 text-muted">Already Registered? <a href="/login">Click here to Log In!</a></p>
     </form>
