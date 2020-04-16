@@ -42,23 +42,38 @@
   </div>
 
   <!-- Channel Display Section -->
-  <div id="message-list">
-    <h5>Current Channel:</h5>
-    <h4 id="curr-channel"></h4>
-    <hr>
-    <!-- Channel Messages -->
-    <ul id="messages">
-    </ul>
-  </div>
+  <section id="chatroom-panel">
+    <div id="chatroom-header">
+      <div id="chatroom-header-text">
+        <h5>Current Channel:</h5>
+        <h4 id="curr-channel"></h4>
+      </div>
+      <hr>
+    </div>
 
-  <!-- Chat text Entry -->
-  <div id='chat-input'>
-    <hr>
-    <form id='chat-input-form'>
-      <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
-      <button id='send-chat-input'>Send!</button>
-    </form>
-  </div>
+
+    <!-- Channel Messages -->
+    <div style="height: 70px;"></div>
+
+    <div id="message-panel">
+      <ul id="messages">
+      </ul>
+    </div>
+
+    <div style="height: 60px;"></div>
+
+
+    <!-- Chat text Entry -->
+    <div id='chat-input'>
+      <hr>
+      <form id='chat-input-form'>
+        <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
+        <button id='send-chat-input'>Send!</button>
+      </form>
+    </div>
+  </section>
+
+
 
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
   <script src="/static/scripts/jquery.js"></script>

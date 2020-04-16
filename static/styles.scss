@@ -30,6 +30,10 @@ $highlight-dark: #333;
   ========================================
 */
 
+* {
+  box-sizing: border-box;
+}
+
 html {
   position: relative;
   min-height: 100%;
@@ -40,7 +44,6 @@ body {
   color: $text-on-container;
   font: 300 16px/22px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background-image: url("login_bg.jpg");
-  margin-bottom: 150px;
 }
 
 h1, h2, h3, h4, h5 {
@@ -220,34 +223,54 @@ CHAT ROOM
 ==========================
 */
 
-#chat-input {
-  position: fixed;
-  bottom: 0;
-  left: 200px;
-  width: 100%;
-  padding-bottom: 20px;
+#chatroom-panel {
+  max-height: 100vh;
+  margin-left: 200px;
   text-align: left;
-  z-index: 2;
-  background-color: $primary-container;
+  overflow-y: scroll;
 
-  hr {
-    margin-top: 0;
-    padding-left: -20px;
+  #chatroom-header {
+    position: fixed;
+    left: 200px;
+    top: 0px;
+    width: 100%;
+    z-index: 2;
+    background-color: $primary-container;
+
+    #chatroom-header-text {
+      margin-left: 20px;
+    }
+
+    hr {
+      margin-bottom: 0;
+    }
   }
 
-  #chat-input-form {
-    padding-left: 20px;
+  #chatroom-messages {
   }
 
-  #message {
-    width: 50%;
-  }
-}
+  #chat-input {
+    position: fixed;
+    left: 200px;
+    bottom: 0px;
+    width: 100%;
+    padding-bottom: 20px;
+    text-align: left;
+    z-index: 2;
+    background-color: $primary-container;
 
-#message-list {
-  text-align: left;
-  height: 100%;
-  overflow-y: auto;
+    hr {
+      margin-top: 0;
+    }
+
+    #chat-input-form {
+      padding-left: 20px;
+    }
+
+    #message {
+      width: 50%;
+    }
+  }
 }
 
 .online {
@@ -257,10 +280,6 @@ CHAT ROOM
 .profile-icon {
   height: 50px;
   margin-top: 5px;
-}
-
-#message-list {
-  margin-left: 200px;
 }
 
 

@@ -18,6 +18,10 @@ ede9cb
   Custom styles
   ========================================
 */
+* {
+  box-sizing: border-box;
+}
+
 html {
   position: relative;
   min-height: 100%;
@@ -28,7 +32,6 @@ body {
   color: #16425b;
   font: 300 16px/22px "Lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background-image: url("login_bg.jpg");
-  margin-bottom: 150px;
 }
 
 h1, h2, h3, h4, h5 {
@@ -192,31 +195,44 @@ SIDE NAV
 CHAT ROOM
 ==========================
 */
-#chat-input {
+#chatroom-panel {
+  max-height: 100vh;
+  margin-left: 200px;
+  text-align: left;
+  overflow-y: scroll;
+}
+#chatroom-panel #chatroom-header {
   position: fixed;
-  bottom: 0;
   left: 200px;
+  top: 0px;
+  width: 100%;
+  z-index: 2;
+  background-color: #f9f9f9;
+}
+#chatroom-panel #chatroom-header #chatroom-header-text {
+  margin-left: 20px;
+}
+#chatroom-panel #chatroom-header hr {
+  margin-bottom: 0;
+}
+#chatroom-panel #chat-input {
+  position: fixed;
+  left: 200px;
+  bottom: 0px;
   width: 100%;
   padding-bottom: 20px;
   text-align: left;
   z-index: 2;
   background-color: #f9f9f9;
 }
-#chat-input hr {
+#chatroom-panel #chat-input hr {
   margin-top: 0;
-  padding-left: -20px;
 }
-#chat-input #chat-input-form {
+#chatroom-panel #chat-input #chat-input-form {
   padding-left: 20px;
 }
-#chat-input #message {
+#chatroom-panel #chat-input #message {
   width: 50%;
-}
-
-#message-list {
-  text-align: left;
-  height: 100%;
-  overflow-y: auto;
 }
 
 .online {
@@ -226,10 +242,6 @@ CHAT ROOM
 .profile-icon {
   height: 50px;
   margin-top: 5px;
-}
-
-#message-list {
-  margin-left: 200px;
 }
 
 /*
