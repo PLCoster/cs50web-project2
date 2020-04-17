@@ -32,7 +32,7 @@ Session(app)
 
 # Server Message Channel Storage - Starts with Standard Welcome Channel:
 workspaces = {'Welcome!':
-                  {'channels':{'Getting Started': {'messages': {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started!', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1, 'admin.png']}, 'next_message': 2}, 'Announcements': {'messages': {}, 'next_message': 1 },
+                  {'channels':{'Getting Started': {'messages': {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started! To create a new channel to chat in, click the \'+\' symbol next to \'Channels\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1, 'admin.png']}, 'next_message': 2}, 'Announcements': {'messages': {}, 'next_message': 1 },
                   'News': {'messages': {}, 'next_message': 1 }}}}
 
 def sanitize_message(message):
@@ -313,17 +313,20 @@ def join_channel(data):
 def create_channel(data):
   """ Lets a user create a new chat channel, with a unique name """
 
-  # Check name not already in use:
-  if data['new_channel'] in workspaces.keys():
+  # Check name not already in use in current workspace:
+  if data['new_channel'] in workspaces[session['curr_ws']]['channels'].keys():
     # This should send back some kind of error message
     return False
 
   # Otherwise create a new chat channel and send channel list to all users:
-  workspaces[data['new_channel']] = {'messages': {}, 'next_message': 1 , 'subchannels':{}}
+  workspaces[session['curr_ws']]['channels'][data['new_channel']] = {'messages': {}, 'next_message': 1}
 
-  channel_list = list(workspaces.keys())
+  channel_list = list(workspaces[session['curr_ws']]['channels'].keys())
 
-  emit('channel added', {'channel_list': channel_list}, broadcast=True)
+  print('Emiting new channel list on channel creation: ', channel_list)
+
+  # Send updated channel list to all users in the workspace:
+  emit('channel_list amended', {'channel_list': channel_list}, room=session['curr_ws'])
 
 
 if __name__ == '__main__':

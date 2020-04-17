@@ -165,10 +165,14 @@ SIDE NAV
   font-size: 16px;
   text-align: center;
 }
+.sidenav #new-channel {
+  height: 30vh;
+}
 .sidenav ul {
+  height: 30vh;
   list-style-type: none;
   margin-left: -40px;
-  max-height: 200px;
+  margin-bottom: 0;
   overflow-y: auto;
 }
 .sidenav li {

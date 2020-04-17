@@ -186,10 +186,15 @@ SIDE NAV
     text-align: center;
   }
 
+  #new-channel {
+    height: 30vh;
+  }
+
   ul {
+    height: 30vh;
     list-style-type: none;
     margin-left: -40px;
-    max-height: 200px;
+    margin-bottom: 0;
     overflow-y: auto;
   }
 

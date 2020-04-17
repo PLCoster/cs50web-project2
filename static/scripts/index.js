@@ -75,10 +75,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Function to set up new channel creator form:
-      document.querySelector('#new-channel').onclick = () => {
+      document.querySelector('#new-channel>button').onclick = () => {
         event.preventDefault();
         const new_channel = document.querySelector('#channel-name').value;
         if (new_channel) {
+          console.log('trying to create new channel: ', new_channel)
           socket.emit('create channel', {'new_channel': new_channel});
         }
         document.querySelector('#channel-name').value = '';
@@ -142,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // When a new channel is added, update channel link buttons
     socket.on('channel_list amended', data => {
+      console.log('received updated channel list')
       channel_config(data.channel_list);
     });
   });
