@@ -227,7 +227,7 @@ CHAT ROOM
   max-height: 100vh;
   margin-left: 200px;
   text-align: left;
-  overflow-y: scroll;
+  overflow-y: auto;
 
   #chatroom-header {
     position: fixed;
@@ -279,8 +279,6 @@ CHAT ROOM
       font-weight:300;
       font-size: 12px;
     }
-
-
   }
 
   #chat-input {
@@ -313,10 +311,9 @@ CHAT ROOM
 
 .profile-icon {
   height: 50px;
-  width: 50px;
+  width: auto;
   margin-top: 5px;
 }
-
 
 /*
 ==========================

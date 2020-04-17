@@ -50,14 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
         button.onclick = () => {
           event.preventDefault();
           console.log("You clicked on a channel link!")
-          socket.emit("join channel", {"channel": button.dataset.channel, "previous": localStorage.getItem('channel')});
-          localStorage.setItem('channel', button.dataset.channel);
-          console.log('Channel now set to: ', localStorage.getItem('channel'));
+          socket.emit("join channel", {"channel": button.dataset.channel});
+          console.log('Channel now set to: ', button.dataset.channel);
         };
       });
     };
 
     const new_channel_config = function () {
+      // Function to set up form to create new channel in a workspace
 
       // Set up sidebar onclick display of channel creator:
       document.querySelector('#channel-options-display').onclick = function() {
@@ -86,6 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     message_config();
+
+    console.log('trying to join workspace')
 
     // Connect user to their last workspace and channel:
     socket.emit('join workspace', {'sign in': true});

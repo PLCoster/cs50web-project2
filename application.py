@@ -259,7 +259,7 @@ def send_message(data):
   ws_channel = session['curr_ws_chan']
   profile_img = session['profile_img']
 
-  print('Workspace: ', workspace, 'Channel: ', channel)
+  print('Workspace: ', workspace, 'Channel: ', channel, 'ws_channel: ', ws_channel)
 
   # Date and Timestamp the message:
   timestamp = datetime.now(pytz.utc).timestamp()
@@ -271,6 +271,7 @@ def send_message(data):
   workspaces[workspace]['channels'][channel]['messages'][next] = message
 
   print('Message received by server:', message)
+  print('Sending message to: ', ws_channel)
 
   # Store up to 100 messages, then overwrite the first message
   workspaces[workspace]['channels'][channel]['next_message'] += 1
@@ -285,23 +286,27 @@ def join_channel(data):
   """ Lets a user join a specific channel, relays last 100 messages from the channel to that specific user """
 
   # Leave the previous channel and join the new channel:
-  leave_room(data['previous'])
-  join_room(data['channel'])
+  leave_room(session['curr_ws_chan'])
+  session['curr_chan'] = data['channel']
+  session['curr_ws_chan'] = f"{session['curr_ws']}~{session['curr_chan']}"
+  join_room(session['curr_ws_chan'])
   user = request.sid
 
+  print(session['curr_ws_chan'])
+
+  current_chan = workspaces[session["curr_ws"]]["channels"][session["curr_chan"]]
+
   # Send sorted channel history back to user who has just joined:
-  message_history = sorted(list(workspaces[data['channel']]['messages'].values()), key = lambda x : x[2])
+  message_history = sorted(list(current_chan["messages"].values()), key = lambda x : x[2])
 
   print('Channel status:', workspaces)
   print('Sending message history:', message_history)
 
-  emit("channel logon", {"message_history" : message_history, "channel_name" : data['channel']}, room=user)
-  print("channel logo emitted")
-  # Send current channel list to the user
-  channel_list = list(workspaces.keys())
+  emit("workspace logon", {"workspace_name" : session["curr_ws"]}, room=user)
+  print("workspace logon emitted")
 
-  emit('channel added', {'channel_list': channel_list}, room=user)
-  print("channel list emitted")
+  emit("channel logon", {"channel_name" : session["curr_chan"], "message_history" : message_history}, room=user)
+  print("channel logon emitted")
 
 
 @socketio.on('create channel')
