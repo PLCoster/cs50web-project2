@@ -32,7 +32,7 @@ Session(app)
 
 # Server Message Channel Storage - Starts with Standard Welcome Channel:
 workspaces = {'Welcome!':
-                  {'channels':{'Getting Started': {'messages': {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started!', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1]}, 'next_message': 2}, 'Announcements': {'messages': {}, 'next_message': 1 },
+                  {'channels':{'Getting Started': {'messages': {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started!', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1, 'admin.png']}, 'next_message': 2}, 'Announcements': {'messages': {}, 'next_message': 1 },
                   'News': {'messages': {}, 'next_message': 1 }}}}
 
 def sanitize_message(message):
@@ -113,6 +113,7 @@ def login():
         session["curr_ws"] = user_query.curr_ws
         session["curr_chan"] = user_query.curr_chan
         session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
+        session["profile_img"] = user_query.profile_img
 
         #flash('Log in Successful! Welcome back to Flack Teams!')
         return redirect("/")
@@ -182,6 +183,7 @@ def register():
             session["curr_ws"] = user_info.curr_ws
             session["curr_chan"] = user_info.curr_chan
             session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
+            session["profile_img"] = user_info.profile_img
 
             # Return to main page, logged in:
             #flash('Welcome to Flack Teams! You have been succesfully registered and logged in!')
@@ -255,6 +257,7 @@ def send_message(data):
   workspace = session['curr_ws']
   channel = session['curr_chan']
   ws_channel = session['curr_ws_chan']
+  profile_img = session['profile_img']
 
   print('Workspace: ', workspace, 'Channel: ', channel)
 
@@ -264,7 +267,7 @@ def send_message(data):
 
   # Save message data to channel log:
   next = workspaces[workspace]['channels'][channel]['next_message']
-  message = [message_text, screen_name, timestamp, date, next]
+  message = [message_text, screen_name, timestamp, date, next, profile_img]
   workspaces[workspace]['channels'][channel]['messages'][next] = message
 
   print('Message received by server:', message)

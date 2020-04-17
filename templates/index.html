@@ -73,12 +73,29 @@
     </div>
   </section>
 
+  <!-- Handlebars Templates -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
+  <script id="message-template" type="text/template">
+    {% raw -%}
+    <li>
+      <img class="profile-icon" src="/static/Images/profile/{{ image }}" alt="User Profile Image">
+      <h5 class="message-username">{{ username }} <span class="message-date text-muted"> {{ date }} - <span data-livestamp="{{ timestamp }}"></span></span></h5>
+      <p class="message-text">{{ message }}</p>
+    </li>
+    {%- endraw %}
+  </script>
 
-
+  <!-- Socket IO-->
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+
+  <!-- livestamp scripts -->
   <script src="/static/scripts/jquery.js"></script>
   <script src="/static/scripts/moment.js"></script>
   <script src="/static/scripts/livestamp.js"></script>
+
+  <!-- Custom Page Script-->
   <script src="/static/scripts/index.js"></script>
+
+
 {% endblock %}
 

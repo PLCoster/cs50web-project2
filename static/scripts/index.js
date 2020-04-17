@@ -110,35 +110,31 @@ document.addEventListener('DOMContentLoaded', () => {
       for (let i = 0; i < data['message_history'].length ; i++) {
         message = data['message_history'][i]
 
-        // Create message li
-        const li = document.createElement('li');
-        li.innerHTML = `${message[1]}'s says: ${message[0]} - Posted ${message[3]} - `;
+        // Create message element using handlebars
+        const template = Handlebars.compile(document.querySelector('#message-template').innerHTML);
 
-        // Create message date span
-        const dateSpan = document.createElement('span');
-        dateSpan.setAttribute('data-livestamp', message[2]);
-        li.appendChild(dateSpan);
+        const content = template({'username' : message[1], 'date' : message[3], 'timestamp' : message[2], 'message' : message[0], 'image': message[5]})
+
+        console.log(message[0])
 
         // Add to messages element
-        document.querySelector('#messages').append(li);
+        document.querySelector('#messages').innerHTML += content;
       }
     })
 
-    // When a new vote is announced, add to the unordered list
+    // When a new message is sent to the channel, add to the chat panel:
     socket.on('emit message', data => {
       console.log('Message received, message data:', data);
 
-      // Create message li
-      const li = document.createElement('li');
-      li.innerHTML = `${data.message[1]}'s says: ${data.message[0]} - Posted ${data.message[3]} - `;
+      const message = data['message']
 
-      // Create message date span
-      const dateSpan = document.createElement('span');
-      dateSpan.setAttribute('data-livestamp', data.message[2]);
-      li.appendChild(dateSpan);
+      // Create message element using handlebars
+      const template = Handlebars.compile(document.querySelector('#message-template').innerHTML);
+
+      const content = template({'username' : message[1], 'date' : message[3], 'timestamp' : message[2], 'message' : message[0], 'image': message[5]})
 
       // Add to messages element
-      document.querySelector('#messages').append(li);
+      document.querySelector('#messages').innerHTML += content;
 
     });
 

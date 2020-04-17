@@ -246,7 +246,41 @@ CHAT ROOM
     }
   }
 
-  #chatroom-messages {
+  #messages {
+    list-style-type: none;
+    padding-left: 10px;
+
+    img {
+      float: left;
+      margin: 0 5px 8px 0;
+    }
+
+    li {
+      margin-top: 5px;
+    }
+
+    li:after, li:before {
+      content: "";
+  display: table;
+      clear: both;
+    }
+
+    h5, p {
+     font-size: 14px;
+     line-height: 16px;
+     margin-bottom: 4px;
+    }
+
+    p {
+      margin-bottom: 8px;
+    }
+
+    .message-date {
+      font-weight:300;
+      font-size: 12px;
+    }
+
+
   }
 
   #chat-input {
@@ -279,6 +313,7 @@ CHAT ROOM
 
 .profile-icon {
   height: 50px;
+  width: 50px;
   margin-top: 5px;
 }
 
