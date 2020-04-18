@@ -32,8 +32,18 @@ Session(app)
 
 # Server Message Channel Storage - Starts with Standard Welcome Channel:
 workspaces = {'Welcome!':
-                  {'channels':{'Getting Started': {'messages': {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started! To create a new channel to chat in, click the \'+\' symbol next to \'Channels\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1, 'admin.png']}, 'next_message': 2}, 'Announcements': {'messages': {}, 'next_message': 1 },
-                  'News': {'messages': {}, 'next_message': 1 }}}}
+                {'channels':
+                  {'Getting Started':
+                    {'messages':
+                      {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started! Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace. To create a new channel to chat in, click the \'+\' symbol next to \'Channels\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1, 'admin.png'],
+                      2 : ['Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 2, 'admin.png'],
+                      3 : ['To create a new channel to chat in, click the \'+\' symbol next to \'Channels\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 3, 'admin.png']},
+                    'next_message': 4},
+                  'Announcements': {'messages': {}, 'next_message': 1 },
+                  'News': {'messages': {}, 'next_message': 1 }
+                    }
+                }
+             }
 
 def sanitize_message(message):
   """ Helper function that takes a user's message string and replaces special HTML chars with their HTML entities to keep the chars and prevent adding HTML to the message board
@@ -211,11 +221,12 @@ def logout():
 
 
 @socketio.on("join workspace")
-def sign_in(data):
+def join_workspace(data):
   """ Joins a user to a workspace and a channel in that workspace """
 
   # If initial login, join last workspace and channel user was signed in to:
   if data["sign in"]:
+    print('Signing into workspace using session info:', session["curr_ws"])
     join_room(session["curr_ws"])
     join_room(session["curr_ws_chan"])
   # Otherwise user is changing workspace, sign out of current and switch to new:
@@ -234,6 +245,8 @@ def sign_in(data):
 
   emit("workspace logon", {"workspace_name" : session["curr_ws"]}, room=user)
   print("workspace logon emitted")
+
+  print("channel logon data: ", session["curr_chan"], message_history, user)
 
   emit("channel logon", {"channel_name" : session["curr_chan"], "message_history" : message_history}, room=user)
   print("channel logon emitted")
@@ -327,6 +340,34 @@ def create_channel(data):
 
   # Send updated channel list to all users in the workspace:
   emit('channel_list amended', {'channel_list': channel_list}, room=session['curr_ws'])
+
+
+@socketio.on('create workspace')
+def create_workspace(data):
+  """ Lets a user create a new workspace, with a unique name """
+
+  # Check new workspace name not already in use:
+  if data['new_workspace'] in workspaces.keys():
+    # This should send back some kind of error message
+    return False
+
+  timestamp = datetime.now(pytz.utc).timestamp()
+  date = datetime.now().strftime("%d %b %Y")
+
+  # Otherwise create a new workspace and log into it:
+  workspaces[data['new_workspace']] = {'channels': {'Announcements': {'messages': {1 : [f'Welcome to your new workspace - {data["new_workspace"]}!', 'Flack-Teams Help', timestamp, date, 1, 'admin.png']}, 'next_message': 2}}}
+
+  print(workspaces)
+
+  leave_room(session['curr_ws'])
+  leave_room(session['curr_ws_chan'])
+  session['curr_ws'] = data['new_workspace']
+  session['curr_chan'] = 'Announcements'
+  session['curr_ws_chan'] = f"{session['curr_ws']}~{session['curr_chan']}"
+
+  data = {'sign in': True}
+
+  join_workspace(data)
 
 
 if __name__ == '__main__':

@@ -180,10 +180,11 @@ SIDE NAV
     display: none;
   }
 
-  #new-channel button, #channel-name {
+  #new-channel button, #channel-name, #new-workspace button, #workspace-name {
     width: 140px;
-    font-size: 16px;
+    font-size: 14px;
     text-align: center;
+    margin-bottom: 5px;
   }
 
   #new-channel {
@@ -191,7 +192,7 @@ SIDE NAV
   }
 
   ul {
-    height: 30vh;
+    height: 25vh;
     list-style-type: none;
     margin-left: -40px;
     margin-bottom: 0;
@@ -239,15 +240,16 @@ CHAT ROOM
     left: 200px;
     top: 0px;
     width: 100%;
+    padding-top : 10px;
     z-index: 2;
     background-color: $primary-container;
 
     #chatroom-header-text {
-      margin-left: 20px;
+      margin-left: 10px;
     }
 
     hr {
-      margin-bottom: 0;
+      margin: 0 0;
     }
   }
 
@@ -274,6 +276,7 @@ CHAT ROOM
      font-size: 14px;
      line-height: 16px;
      margin-bottom: 4px;
+     margin-left: 55px;
     }
 
     p {

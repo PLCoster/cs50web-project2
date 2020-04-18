@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
           document.querySelector('#message').value = '';
             }
         };
-        new_channel_config();
       };
 
     const channel_config = function (channel_list) {
@@ -56,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
-    const new_channel_config = function () {
+    const new_channel_ws_config = function () {
       // Function to set up form to create new channel in a workspace
 
       // Set up sidebar onclick display of channel creator:
@@ -67,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         this.style.display = 'none';
         }
 
+        // Set up sidebar hiding of channel creator form:
       document.querySelector('#channel-options-hide').onclick = function () {
         document.querySelector('#new-channel').style.display = 'none';
         document.querySelector('#channel-links').style.display = 'block';
@@ -74,19 +74,32 @@ document.addEventListener('DOMContentLoaded', () => {
         this.style.display = 'none';
       }
 
-      // Function to set up new channel creator form:
+      // Set up new channel creator form:
       document.querySelector('#new-channel>button').onclick = () => {
         event.preventDefault();
         const new_channel = document.querySelector('#channel-name').value;
         if (new_channel) {
-          console.log('trying to create new channel: ', new_channel)
+          console.log('trying to create new channel: ', new_channel);
           socket.emit('create channel', {'new_channel': new_channel});
         }
         document.querySelector('#channel-name').value = '';
       };
+
+      // Set up new workspace creator form:
+      document.querySelector('#new-workspace>button').onclick = () => {
+        event.preventDefault();
+        const new_ws = document.querySelector('#workspace-name').value;
+        if (new_ws) {
+          console.log('trying to create new workspace: ', new_ws);
+          socket.emit('create workspace', {'new_workspace': new_ws});
+        }
+        document.querySelector('#workspace-name').value = '';
+      }
     };
 
+    // Configure message input form, workspace and channel creation forms:
     message_config();
+    new_channel_ws_config();
 
     console.log('trying to join workspace')
 
