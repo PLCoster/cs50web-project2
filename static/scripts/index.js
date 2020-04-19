@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('workspace logon', data => {
       // When a new workspace is joined, update workspace info:
-      document.querySelector('#curr-workspace').innerHTML = data['workspace_name']
+      document.querySelector('.curr-workspace').innerHTML = data['workspace_name']
     })
 
     // When a new channel is joined, clear messages and display message history:

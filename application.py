@@ -51,7 +51,7 @@ def sanitize_message(message):
   Returns the sanitized message string
   """
 
-  return message.replace('&', '&amp;').replace('"', '&quot;').replace('\'', '&apos;').replace('<', '&lt;').replace('>', '&gt;')
+  return message.replace('&', '\u0026').replace('"', '\u0022').replace('\'', '\u0027').replace('<', '\u003C').replace('>', '\u003E')
 
 
 def validate_pass(password):
@@ -344,7 +344,7 @@ def create_channel(data):
 
 @socketio.on('create workspace')
 def create_workspace(data):
-  """ Lets a user create a new workspace, with a unique name """
+  """ Lets a user create a new workspace, with a unique name. The user then joins the new workspace """
 
   # Check new workspace name not already in use:
   if data['new_workspace'] in workspaces.keys():
@@ -354,11 +354,12 @@ def create_workspace(data):
   timestamp = datetime.now(pytz.utc).timestamp()
   date = datetime.now().strftime("%d %b %Y")
 
-  # Otherwise create a new workspace and log into it:
+  # Otherwise create a new workspace:
   workspaces[data['new_workspace']] = {'channels': {'Announcements': {'messages': {1 : [f'Welcome to your new workspace - {data["new_workspace"]}!', 'Flack-Teams Help', timestamp, date, 1, 'admin.png']}, 'next_message': 2}}}
 
   print(workspaces)
 
+  # Leave current workspace and then join new workspace
   leave_room(session['curr_ws'])
   leave_room(session['curr_ws_chan'])
   session['curr_ws'] = data['new_workspace']

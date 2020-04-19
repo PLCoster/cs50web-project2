@@ -153,9 +153,37 @@ SIDE NAV
   margin: 0 20px 10px 0;
   background-color: #fff;
 }
-.sidenav h3, .sidenav h4, .sidenav h5 {
+.sidenav h3, .sidenav h4, .sidenav h5, .sidenav #dropdownMenuLink {
   font-weight: 600;
   color: #fff;
+}
+.sidenav .dropdown {
+  margin-bottom: 10px;
+}
+.sidenav .dropdown #dropdownMenuLink {
+  font-size: 24px;
+}
+.sidenav .dropdown .dropdown-menu {
+  width: 100% !important;
+}
+.sidenav .dropdown .dropdown-menu.show {
+  left: 40px !important;
+  width: 100% !important;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 16px;
+  margin-left: 100px;
+  border: 1px solid white;
+}
+.sidenav .dropdown .dropdown-menu.show .dropdown-header {
+  padding: 2px 4px;
+  color: #fff;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 16px;
+}
+.sidenav .dropdown .dropdown-menu.show .dropdown-item {
+  padding: 4px 4px;
 }
 .sidenav #new-channel, .sidenav #channel-options-hide {
   display: none;
@@ -170,7 +198,7 @@ SIDE NAV
   height: 30vh;
 }
 .sidenav ul {
-  height: 25vh;
+  height: 20vh;
   list-style-type: none;
   margin-left: -40px;
   margin-bottom: 0;
