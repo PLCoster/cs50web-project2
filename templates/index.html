@@ -19,45 +19,39 @@
     <hr>
 
     <!-- Workspace Panel -->
-    <h5>Current Workspace:</h5>
-
-    <div class="dropdown show">
-      <a class="curr-workspace dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
-
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-    <h6 class="dropdown-header">Your Workspaces:</h6>
-    <div class="dropdown-divider"></div>
-    <a class="dropdown-item" href="#">Test1</a>
-    <a class="dropdown-item" href="#">Test2</a>
-    <a class="dropdown-item" href="#">Test3</a>
-  </div>
-</div>
-
-    <h5 id="workspace-options-display">Workspaces <i class="fas fa-plus-square"></i></h5>
+    <h5 id="workspace-options-display" class="clickable">Workspaces <i class="fas fa-plus-square"></i></h5>
+    <h5 id="workspace-options-hide" class="clickable">Workspaces X</h5>
     <form id='new-workspace'>
       <label>Create a workspace:</label>
         <input type="text" id='workspace-name' name="workspace-name" placeholder="Workspace Name" required>
         <button class="btn btn-primary">Create Workspace</button>
     </form>
+    <div id="curr-workspace-panel">
+      <p>Current Workspace:</p>
+      <h3 id="curr-workspace-show" class="clickable"></h3>
+      <h3 id="curr-workspace-hide" class="clickable"></h3>
+      <ul id="workspace-links">
+      </ul>
+    </div>
     <hr>
 
-    <!-- Channel List -->
+    <!-- Channel Panel -->
     <div class='channel-display'>
-      <h5 id="channel-options-display">Channels <i class="fas fa-plus-square"></i></h5>
-      <h5 id="channel-options-hide">Close X</h5>
+      <h5 id="channel-options-display" class="clickable">Channels <i class="fas fa-plus-square"></i></h5>
+      <h5 id="channel-options-hide" class="clickable">Channels X</h5>
       <form id='new-channel'>
         <label>Create a channel:</label>
         <input type="text" id='channel-name' name="channel-name" placeholder="Channel Name" required>
         <button class="btn btn-primary">Create Channel</button>
       </form>
-      <ul id="channel-links">
+      <ul id="channel-links" class="visible">
       </ul>
     </div>
     <hr>
     <!-- Private Chat List -->
     <div class='channel-display'>
       <h5>Direct Messages <i class="fas fa-plus-square"></i></h5>
-      <ul id="private-links">
+      <ul id="private-links" class="visible">
       </ul>
     </div>
     <hr>

@@ -124,7 +124,8 @@ SIDE NAV
   text-align: left;
   color: #e9ede6;
   background-color: #16425b;
-  overflow-x: hidden;
+  overflow-x: hide;
+  overflow-y: auto;
   padding-top: 10px;
   padding-left: 20px;
   padding-bottom: 80px;
@@ -137,6 +138,9 @@ SIDE NAV
   font-weight: 600;
   color: #fff;
 }
+.sidenav p {
+  margin-bottom: 8px;
+}
 .sidenav .dropdown {
   margin-bottom: 10px;
 }
@@ -146,32 +150,31 @@ SIDE NAV
 .sidenav .dropdown .dropdown-menu {
   background-color: #16425b;
   color: #e9ede6;
+  max-width: 200px;
   font-weight: 700;
-  width: 140px;
-}
-.sidenav .dropdown .dropdown-menu.show {
-  left: 0 !important;
+  overflow: hidden;
   font-weight: 400;
   font-size: 16px;
   line-height: 16px;
   border: 1px solid white;
+  z-index: 2;
 }
-.sidenav .dropdown .dropdown-menu.show .dropdown-header {
+.sidenav .dropdown .dropdown-menu .dropdown-header {
   color: #e9ede6;
   font-weight: 400;
   font-size: 14px;
   line-height: 14px;
   padding: 2px 4px;
 }
-.sidenav .dropdown .dropdown-menu.show .dropdown-item {
+.sidenav .dropdown .dropdown-menu .dropdown-item {
   color: #e9ede6;
   font-weight: 700;
   padding: 4px 4px;
 }
-.sidenav .dropdown .dropdown-menu.show .dropdown-item:hover {
+.sidenav .dropdown .dropdown-menu .dropdown-item:hover {
   color: #333;
 }
-.sidenav #new-channel, .sidenav #channel-options-hide {
+.sidenav #new-channel, .sidenav #channel-options-hide, .sidenav #new-workspace, .sidenav #workspace-options-hide, .sidenav #workspace-links, .sidenav #curr-workspace-hide {
   display: none;
 }
 .sidenav #new-channel button, .sidenav #channel-name, .sidenav #new-workspace button, .sidenav #workspace-name {
@@ -181,20 +184,22 @@ SIDE NAV
   margin-bottom: 5px;
 }
 .sidenav #new-channel {
-  height: 30vh;
-}
-.sidenav ul {
   height: 20vh;
+}
+.sidenav ul.visible {
+  height: 20vh;
+  width: 200px;
   list-style-type: none;
   margin-left: -40px;
   margin-bottom: 0;
   overflow-y: auto;
+  overflow: hidden;
 }
 .sidenav li {
   font-weight: 400;
   text-align: left;
 }
-.sidenav li:hover, .sidenav #channel-options-display:hover, .sidenav #channel-options-hide:hover {
+.sidenav li:hover, .sidenav .clickable:hover {
   color: #fff;
   cursor: pointer;
 }

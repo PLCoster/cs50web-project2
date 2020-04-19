@@ -136,13 +136,11 @@ SIDE NAV
   text-align: left;
   color: $theme-light;
   background-color: $theme-dark;
-  overflow-x: hidden;
+  overflow-x: hide;
+  overflow-y: auto;
   padding-top: 10px;
   padding-left: 20px;
   padding-bottom: 80px;
-
-  .navbar-brand {
-  }
 
   hr {
     margin: 0 20px 10px 0;
@@ -152,6 +150,10 @@ SIDE NAV
   h3, h4, h5, #dropdownMenuLink{
     font-weight: 600;
     color: #fff;
+  }
+
+  p {
+    margin-bottom: 8px;
   }
 
   .dropdown {
@@ -164,16 +166,14 @@ SIDE NAV
     .dropdown-menu {
       background-color: $theme-dark;
       color: $text-on-theme-dark;
+      max-width: 200px;
       font-weight: 700;
-      width: 140px;
-    }
-
-    .dropdown-menu.show {
-      left: 0 !important;
+      overflow: hidden;
       font-weight: 400;
       font-size: 16px;
       line-height: 16px;
       border: 1px solid white;
+      z-index: 2;
 
       .dropdown-header {
         color: $text-on-theme-dark;
@@ -195,7 +195,7 @@ SIDE NAV
     }
   }
 
-  #new-channel, #channel-options-hide {
+  #new-channel, #channel-options-hide, #new-workspace, #workspace-options-hide, #workspace-links, #curr-workspace-hide {
     display: none;
   }
 
@@ -207,15 +207,17 @@ SIDE NAV
   }
 
   #new-channel {
-    height: 30vh;
+    height: 20vh;
   }
 
-  ul {
+  ul.visible {
     height: 20vh;
+    width: 200px;
     list-style-type: none;
     margin-left: -40px;
     margin-bottom: 0;
     overflow-y: auto;
+    overflow: hidden;
   }
 
   li {
@@ -223,7 +225,7 @@ SIDE NAV
     text-align: left;
   }
 
-  li:hover, #channel-options-display:hover, #channel-options-hide:hover {
+  li:hover, .clickable:hover {
     color: #fff;
     cursor: pointer;
   }

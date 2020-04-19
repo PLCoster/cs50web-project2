@@ -85,6 +85,36 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#channel-name').value = '';
       };
 
+      // Set up sidebar onclick display of workspace creator:
+      document.querySelector('#workspace-options-display').onclick = function() {
+        document.querySelector('#new-workspace').style.display = 'block';
+        document.querySelector('#workspace-options-hide').style.display = 'block';
+        document.querySelector('#curr-workspace-panel').style.display = 'none';
+        this.style.display = 'none';
+        };
+
+      // Set up sidebar onclick hiding of workspace creator form:
+      document.querySelector('#workspace-options-hide').onclick = function () {
+        document.querySelector('#new-workspace').style.display = 'none';
+        document.querySelector('#workspace-options-display').style.display = 'block';
+        document.querySelector('#curr-workspace-panel').style.display = 'block';
+        this.style.display = 'none';
+        };
+
+      // Set up clickable display of users workspaces:
+      document.querySelector('#curr-workspace-show').onclick = function () {
+        document.querySelector('#workspace-links').style.display = 'block';
+        document.querySelector('#curr-workspace-hide').style.display = 'block';
+        this.style.display = 'none';
+      }
+
+      // Set up clickable hiding of users workspaces:
+      document.querySelector('#curr-workspace-hide').onclick = function () {
+        document.querySelector('#workspace-links').style.display = 'block';
+        document.querySelector('#curr-workspace-show').style.display = 'block';
+        this.style.display = 'none';
+      }
+
       // Set up new workspace creator form:
       document.querySelector('#new-workspace>button').onclick = () => {
         event.preventDefault();
@@ -108,7 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('workspace logon', data => {
       // When a new workspace is joined, update workspace info:
-      document.querySelector('.curr-workspace').innerHTML = data['workspace_name']
+      document.querySelector('#curr-workspace-show').innerHTML = data['workspace_name'] + ' \u23F7'
+      document.querySelector('#curr-workspace-hide').innerHTML = data['workspace_name'] + ' \u23F6'
     })
 
     // When a new channel is joined, clear messages and display message history:
