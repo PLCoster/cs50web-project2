@@ -76,10 +76,24 @@ def validate_pass(password):
     else:
         return False
 
+def load_session(user):
+  """ Loads a user's information into the session """
+
+  session["user_id"] = user.id
+  session["screen_name"] = user.screen_name
+  session["curr_ws"] = user.curr_ws
+  session["curr_chan"] = user.curr_chan
+  session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
+  session["profile_img"] = user.profile_img
+
+  return session
+
 
 @app.route("/")
 def index():
   """ Main single-page app for the site """
+
+  print('Tring to load chat page')
 
   if session.get("user_id") == None:
     return redirect("/login")
@@ -108,22 +122,15 @@ def login():
             return render_template("login.html")
 
         # Query database for username:
-        user_query = User.query.filter_by(username=username).first()
-
-        print(user_query)
+        user_info = User.query.filter_by(username=username).first()
 
         # Check username exists and password is correct:
-        if not user_query or not check_password_hash(user_query.pass_hash, password):
+        if not user_info or not check_password_hash(user_info.pass_hash, password):
             flash("Invalid username and/or password! Please try again!")
             return render_template("login.html")
 
-        # Otherwise log in user and redirect to homepage:
-        session["user_id"] = user_query.id
-        session["screen_name"] = user_query.screen_name
-        session["curr_ws"] = user_query.curr_ws
-        session["curr_chan"] = user_query.curr_chan
-        session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
-        session["profile_img"] = user_query.profile_img
+        # Otherwise load user session and redirect to homepage:
+        load_session(user_info)
 
         #flash('Log in Successful! Welcome back to Flack Teams!')
         return redirect("/")
@@ -172,8 +179,6 @@ def register():
 
             user_query = User.query.filter_by(username=username).first()
 
-            print(user_query)
-
             if user_query:
                 flash('Sorry but that username is already in use, please pick a different username!')
                 return render_template("register.html")
@@ -188,16 +193,9 @@ def register():
 
             # Put unique user ID and username into session:
             user_info = User.query.filter_by(username=username).first()
-            session["user_id"] = user_info.id
-            session["screen_name"] = user_info.screen_name
-            session["curr_ws"] = user_info.curr_ws
-            session["curr_chan"] = user_info.curr_chan
-            session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
-            session["profile_img"] = user_info.profile_img
-
-            # Return to main page, logged in:
-            #flash('Welcome to Flack Teams! You have been succesfully registered and logged in!')
+            load_session(user_info)
             return redirect("/")
+
 
     # If User reaches Route via GET (e.g. clicking registration link):
     else:
