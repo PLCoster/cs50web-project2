@@ -235,19 +235,11 @@ def join_workspace(data):
 
   current_chan = workspaces[session["curr_ws"]]["channels"][session["curr_chan"]]
 
-  # Send sorted channel history back to user who has just joined:
-  message_history = sorted(list(current_chan["messages"].values()), key = lambda x : x[2])
+  data['channel'] = session["curr_chan"]
 
-  print('Channel status:', workspaces)
-  print('Sending message history:', message_history)
-
+  # Log on to workspace and channel:
   emit("workspace logon", {"workspace_name" : session["curr_ws"]}, room=user)
-  print("workspace logon emitted")
-
-  print("channel logon data: ", session["curr_chan"], message_history, user)
-
-  emit("channel logon", {"channel_name" : session["curr_chan"], "message_history" : message_history}, room=user)
-  print("channel logon emitted")
+  join_channel(data)
 
   # Send current channel list to the user
   channel_list = list(workspaces[session["curr_ws"]]["channels"].keys())
