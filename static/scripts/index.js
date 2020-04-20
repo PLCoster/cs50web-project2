@@ -55,6 +55,38 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
+
+    const workspace_config = function (ws_list) {
+      // Function to set up links to change workspaces:
+
+      // Remove current workspace list:
+      document.querySelector('#workspace-links').innerHTML = '';
+
+      // Add all WS Links:
+      for (let i=0; i < ws_list.length; i++) {
+        let ws_name = ws_list[i];
+
+        const li = document.createElement('li');
+        li.innerHTML = ws_name;
+        li.className = 'ws-link';
+        li.setAttribute('data-workspace', ws_name);
+        li.setAttribute('href', '');
+
+        document.querySelector('#workspace-links').append(li);
+      }
+
+      // Add onclick events to all Channel Links:
+      document.querySelectorAll('.ws-link').forEach(button => {
+        button.onclick = () => {
+          event.preventDefault();
+          console.log("You clicked on a workspace link!")
+          socket.emit("join workspace", {"sign in": false, "workspace": button.dataset.workspace});
+          console.log('Workspace now set to: ', button.dataset.workspace);
+        };
+      });
+    };
+
+
     const new_channel_ws_config = function () {
       // Function to set up form to create new channel in a workspace
 
@@ -110,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Set up clickable hiding of users workspaces:
       document.querySelector('#curr-workspace-hide').onclick = function () {
-        document.querySelector('#workspace-links').style.display = 'block';
+        document.querySelector('#workspace-links').style.display = 'none';
         document.querySelector('#curr-workspace-show').style.display = 'block';
         this.style.display = 'none';
       }
@@ -189,6 +221,12 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('channel_list amended', data => {
       console.log('received updated channel list')
       channel_config(data.channel_list);
+    });
+
+    // When a new workspace is added, update workspace link buttons
+    socket.on('workspace_list ammended', data => {
+      console.log('received updated workspace list');
+      workspace_config(data.workspace_list);
     });
   });
 });

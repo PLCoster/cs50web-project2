@@ -227,23 +227,29 @@ def join_workspace(data):
     print('Signing into workspace using session info:', session["curr_ws"])
     join_room(session["curr_ws"])
     join_room(session["curr_ws_chan"])
+
   # Otherwise user is changing workspace, sign out of current and switch to new:
   else:
-    pass
+    leave_room(session["curr_ws"])
+    leave_room(session["curr_ws_chan"])
+    session["curr_ws"] = data["workspace"]
+    session["curr_chan"] = 'Announcements'
+    session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
+    join_room(session["curr_ws"])
+    join_room(session["curr_ws_chan"])
 
   user = request.sid
 
-  current_chan = workspaces[session["curr_ws"]]["channels"][session["curr_chan"]]
-
   data['channel'] = session["curr_chan"]
 
-  # Log on to workspace and channel:
-  emit("workspace logon", {"workspace_name" : session["curr_ws"]}, room=user)
+  # Log on to workspace and send user list of all workspaces:
+  emit('workspace logon', {'workspace_name' : session['curr_ws']}, room=user)
+  workspace_list = list(workspaces.keys())
+  emit('workspace_list ammended', {'workspace_list': workspace_list}, room=user)
+
+  # Log user into channel and send user list of all channels in the workspace:
   join_channel(data)
-
-  # Send current channel list to the user
-  channel_list = list(workspaces[session["curr_ws"]]["channels"].keys())
-
+  channel_list = list(workspaces[session['curr_ws']]['channels'].keys())
   emit('channel_list amended', {'channel_list': channel_list}, room=user)
   print("channel_list amended emitted")
 
@@ -347,17 +353,12 @@ def create_workspace(data):
   # Otherwise create a new workspace:
   workspaces[data['new_workspace']] = {'channels': {'Announcements': {'messages': {1 : [f'Welcome to your new workspace - {data["new_workspace"]}!', 'Flack-Teams Help', timestamp, date, 1, 'admin.png']}, 'next_message': 2}}}
 
-  print(workspaces)
+  # Broadcast new workspace creation:
+  workspace_list = list(workspaces.keys())
+  emit('workspace_list ammended', {'workspace_list': workspace_list}, broadcast=True)
 
-  # Leave current workspace and then join new workspace
-  leave_room(session['curr_ws'])
-  leave_room(session['curr_ws_chan'])
-  session['curr_ws'] = data['new_workspace']
-  session['curr_chan'] = 'Announcements'
-  session['curr_ws_chan'] = f"{session['curr_ws']}~{session['curr_chan']}"
-
-  data = {'sign in': True}
-
+  # Join new workspace in Announcments channel:
+  data = {'sign in': False, 'workspace': data['new_workspace']}
   join_workspace(data)
 
 

@@ -186,14 +186,16 @@ SIDE NAV
 .sidenav #new-channel {
   height: 20vh;
 }
+.sidenav ul {
+  list-style-type: none;
+  margin-left: -40px;
+  margin-bottom: 10px;
+  overflow-y: auto;
+  overflow: hidden;
+}
 .sidenav ul.visible {
   height: 20vh;
   width: 200px;
-  list-style-type: none;
-  margin-left: -40px;
-  margin-bottom: 0;
-  overflow-y: auto;
-  overflow: hidden;
 }
 .sidenav li {
   font-weight: 400;
