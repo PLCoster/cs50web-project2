@@ -41,7 +41,8 @@ workspaces = {'Welcome!':
                     'next_message': 4},
                   'Announcements': {'messages': {}, 'next_message': 1 },
                   'News': {'messages': {}, 'next_message': 1 }
-                    }
+                  },
+                'users_online': set()
                 }
              }
 
@@ -210,7 +211,11 @@ def logout():
     if session.get("user_id") == None:
         return redirect("/login")
 
-    # Forget any user_id
+    # Remove user from current workspace:
+    workspaces[session["curr_ws"]]["users_online"].remove(session["user_id"])
+    emit('ws_users amended', {'users' : len(workspaces[session["curr_ws"]]["users_online"])}, room=session["curr_ws"], namespace='/')
+
+    # Forget any user session info
     session.clear()
 
     # Redirect user to home page
@@ -230,8 +235,15 @@ def join_workspace(data):
 
   # Otherwise user is changing workspace, sign out of current and switch to new:
   else:
+    print('SWITCHING WORKSPACE')
     leave_room(session["curr_ws"])
     leave_room(session["curr_ws_chan"])
+
+    # Update online users in workspace
+    workspaces[session["curr_ws"]]["users_online"].remove(session["user_id"])
+    emit('ws_users amended', {'users' : len(workspaces[session["curr_ws"]]["users_online"])}, room=session["curr_ws"])
+
+    # Join new workspace and channel
     session["curr_ws"] = data["workspace"]
     session["curr_chan"] = 'Announcements'
     session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
@@ -245,7 +257,7 @@ def join_workspace(data):
   # Log on to workspace and send user list of all workspaces:
   emit('workspace logon', {'workspace_name' : session['curr_ws']}, room=user)
   workspace_list = list(workspaces.keys())
-  emit('workspace_list ammended', {'workspace_list': workspace_list}, room=user)
+  emit('workspace_list amended', {'workspace_list': workspace_list}, room=user)
 
   # Log user into channel and send user list of all channels in the workspace:
   join_channel(data)
@@ -253,6 +265,9 @@ def join_workspace(data):
   emit('channel_list amended', {'channel_list': channel_list}, room=user)
   print("channel_list amended emitted")
 
+  # Update number of users in workspace:
+  workspaces[session["curr_ws"]]["users_online"].add(session['user_id'])
+  emit('ws_users amended', {'users' : len(workspaces[session["curr_ws"]]["users_online"])}, room=session["curr_ws"])
 
 @socketio.on("send message")
 def send_message(data):
@@ -351,11 +366,11 @@ def create_workspace(data):
   date = datetime.now().strftime("%d %b %Y")
 
   # Otherwise create a new workspace:
-  workspaces[data['new_workspace']] = {'channels': {'Announcements': {'messages': {1 : [f'Welcome to your new workspace - {data["new_workspace"]}!', 'Flack-Teams Help', timestamp, date, 1, 'admin.png']}, 'next_message': 2}}}
+  workspaces[data['new_workspace']] = {'channels': {'Announcements': {'messages': {1 : [f'Welcome to your new workspace - {data["new_workspace"]}!', 'Flack-Teams Help', timestamp, date, 1, 'admin.png']}, 'next_message': 2}}, 'users_online': set()}
 
   # Broadcast new workspace creation:
   workspace_list = list(workspaces.keys())
-  emit('workspace_list ammended', {'workspace_list': workspace_list}, broadcast=True)
+  emit('workspace_list amended', {'workspace_list': workspace_list}, broadcast=True)
 
   # Join new workspace in Announcments channel:
   data = {'sign in': False, 'workspace': data['new_workspace']}

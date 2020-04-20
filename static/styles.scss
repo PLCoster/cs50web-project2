@@ -266,7 +266,7 @@ CHAT ROOM
     left: 200px;
     top: 0px;
     width: 100%;
-    padding-top : 10px;
+    margin-top : 10px;
     z-index: 2;
     background-color: $primary-container;
 
@@ -276,6 +276,12 @@ CHAT ROOM
 
     hr {
       margin: 0 0;
+    }
+
+    #workspace-info {
+      position: fixed;
+      right: 20px;
+      top: 0px;
     }
   }
 

@@ -224,9 +224,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // When a new workspace is added, update workspace link buttons
-    socket.on('workspace_list ammended', data => {
+    socket.on('workspace_list amended', data => {
       console.log('received updated workspace list');
       workspace_config(data.workspace_list);
     });
+
+    // When a user joins or leaves a ws, update number of live users in ws:
+    socket.on('ws_users amended', data => {
+      console.log('updated user number received: ', data.users);
+      document.querySelector('#workspace-users').innerHTML = data.users;
+    })
+
   });
 });
