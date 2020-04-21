@@ -159,9 +159,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
+
+    const logout_config = function () {
+      // Function to configure log out button on chat screen
+
+      document.querySelector('#logout').onclick = () => {
+        event.preventDefault();
+        socket.emit('log out');
+        window.location.href = "/logout";
+      };
+    };
+
     // Configure message input form, workspace and channel creation forms:
     message_config();
     new_channel_ws_config();
+    logout_config();
 
     console.log('trying to join workspace')
 

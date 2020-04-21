@@ -211,10 +211,6 @@ def logout():
     if session.get("user_id") == None:
         return redirect("/login")
 
-    # Remove user from current workspace:
-    workspaces[session["curr_ws"]]["users_online"].remove(session["user_id"])
-    emit('ws_users amended', {'users' : len(workspaces[session["curr_ws"]]["users_online"])}, room=session["curr_ws"], namespace='/')
-
     # Forget any user session info
     session.clear()
 
@@ -227,14 +223,8 @@ def logout():
 def join_workspace(data):
   """ Joins a user to a workspace and a channel in that workspace """
 
-  # If initial login, join last workspace and channel user was signed in to:
-  if data["sign in"]:
-    print('Signing into workspace using session info:', session["curr_ws"])
-    join_room(session["curr_ws"])
-    join_room(session["curr_ws_chan"])
-
-  # Otherwise user is changing workspace, sign out of current and switch to new:
-  else:
+  # If switching channels, sign out of current workspace and update current ws/chan:
+  if not data["sign in"]:
     print('SWITCHING WORKSPACE')
     leave_room(session["curr_ws"])
     leave_room(session["curr_ws_chan"])
@@ -243,12 +233,23 @@ def join_workspace(data):
     workspaces[session["curr_ws"]]["users_online"].remove(session["user_id"])
     emit('ws_users amended', {'users' : len(workspaces[session["curr_ws"]]["users_online"])}, room=session["curr_ws"])
 
-    # Join new workspace and channel
+    # Join new workspace on default announcements channel
     session["curr_ws"] = data["workspace"]
     session["curr_chan"] = 'Announcements'
     session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
-    join_room(session["curr_ws"])
-    join_room(session["curr_ws_chan"])
+
+    print('Now in workspace: ', session["curr_ws"])
+    print(workspaces)
+
+  # If workspace no longer exists (e.g. deleted), revert to default ws and channel:
+  if not workspaces.get(session["curr_ws"]):
+      session["curr_ws"] = 'Welcome!'
+      session["curr_chan"] = 'Getting Started'
+      session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
+
+  # Join chat for specified workspace and channel
+  join_room(session["curr_ws"])
+  join_room(session["curr_ws_chan"])
 
   user = request.sid
 
@@ -268,6 +269,52 @@ def join_workspace(data):
   # Update number of users in workspace:
   workspaces[session["curr_ws"]]["users_online"].add(session['user_id'])
   emit('ws_users amended', {'users' : len(workspaces[session["curr_ws"]]["users_online"])}, room=session["curr_ws"])
+
+  # Update user's workspace history in DB:
+  user_info = User.query.get(session["user_id"])
+  user_info.curr_ws = session["curr_ws"]
+  user_info.curr_chan = session["curr_chan"]
+  db.session.commit()
+
+
+@socketio.on("join channel")
+def join_channel(data):
+  """ Lets a user join a specific channel, relays last 100 messages from the channel to that specific user """
+
+  # Leave the previous channel and join the new channel:
+  leave_room(session['curr_ws_chan'])
+
+  # Check that channel exists in ws, if not then go to default Announcements channel:
+  if not workspaces[session["curr_ws"]]['channels'].get(data['channel']):
+    session["curr_chan"] = 'Announcements'
+  else:
+    session['curr_chan'] = data['channel']
+
+  session['curr_ws_chan'] = f"{session['curr_ws']}~{session['curr_chan']}"
+  join_room(session['curr_ws_chan'])
+  user = request.sid
+
+  print(session['curr_ws_chan'])
+
+  current_chan = workspaces[session["curr_ws"]]["channels"][session["curr_chan"]]
+
+  # Send sorted channel history back to user who has just joined:
+  message_history = sorted(list(current_chan["messages"].values()), key = lambda x : x[2])
+
+  print('Channel status:', workspaces)
+  print('Sending message history:', message_history)
+
+  emit("workspace logon", {"workspace_name" : session["curr_ws"]}, room=user)
+  print("workspace logon emitted")
+
+  emit("channel logon", {"channel_name" : session["curr_chan"], "message_history" : message_history}, room=user)
+  print("channel logon emitted")
+
+  # Update user's workspace history in DB:
+  user_info = User.query.get(session["user_id"])
+  user_info.curr_chan = session["curr_chan"]
+  db.session.commit()
+
 
 @socketio.on("send message")
 def send_message(data):
@@ -303,34 +350,6 @@ def send_message(data):
     workspaces[workspace]['channels'][channel]['next_message'] = 1
 
   emit("emit message", {"message": message}, room=ws_channel)
-
-
-@socketio.on("join channel")
-def join_channel(data):
-  """ Lets a user join a specific channel, relays last 100 messages from the channel to that specific user """
-
-  # Leave the previous channel and join the new channel:
-  leave_room(session['curr_ws_chan'])
-  session['curr_chan'] = data['channel']
-  session['curr_ws_chan'] = f"{session['curr_ws']}~{session['curr_chan']}"
-  join_room(session['curr_ws_chan'])
-  user = request.sid
-
-  print(session['curr_ws_chan'])
-
-  current_chan = workspaces[session["curr_ws"]]["channels"][session["curr_chan"]]
-
-  # Send sorted channel history back to user who has just joined:
-  message_history = sorted(list(current_chan["messages"].values()), key = lambda x : x[2])
-
-  print('Channel status:', workspaces)
-  print('Sending message history:', message_history)
-
-  emit("workspace logon", {"workspace_name" : session["curr_ws"]}, room=user)
-  print("workspace logon emitted")
-
-  emit("channel logon", {"channel_name" : session["curr_chan"], "message_history" : message_history}, room=user)
-  print("channel logon emitted")
 
 
 @socketio.on('create channel')
@@ -375,6 +394,23 @@ def create_workspace(data):
   # Join new workspace in Announcments channel:
   data = {'sign in': False, 'workspace': data['new_workspace']}
   join_workspace(data)
+
+
+@socketio.on("log out")
+def socket_logout():
+
+  print('USER LOGOUT RECEIVED')
+  # Remove user from current workspace:
+  workspaces[session["curr_ws"]]["users_online"].remove(session["user_id"])
+  emit('ws_users amended', {'users' : len(workspaces[session["curr_ws"]]["users_online"])}, room=session["curr_ws"])
+
+  leave_room(session["curr_ws"])
+  leave_room(session["curr_ws_chan"])
+
+  # Forget any user session info
+  session.clear()
+
+  return redirect("/login")
 
 
 if __name__ == '__main__':
