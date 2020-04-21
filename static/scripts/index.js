@@ -113,8 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (new_channel) {
           console.log('trying to create new channel: ', new_channel);
           socket.emit('create channel', {'new_channel': new_channel});
+          document.querySelector('#channel-options-hide').click();
+          document.querySelector('#channel-name').value = '';
         }
-        document.querySelector('#channel-name').value = '';
       };
 
       // Set up sidebar onclick display of workspace creator:
@@ -154,8 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (new_ws) {
           console.log('trying to create new workspace: ', new_ws);
           socket.emit('create workspace', {'new_workspace': new_ws});
+          document.querySelector('#workspace-options-hide').click();
+          document.querySelector('#workspace-name').value = '';
         }
-        document.querySelector('#workspace-name').value = '';
       }
     };
 

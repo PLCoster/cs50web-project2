@@ -55,6 +55,16 @@ def sanitize_message(message):
   return message.replace('&', '\u0026').replace('"', '\u0022').replace('\'', '\u0027').replace('<', '\u003C').replace('>', '\u003E')
 
 
+def sanitize_name(name):
+  """ Helper function to remove non-permitted characters from a channel or workspace name
+  Non-permitted characters are HTML special chars &, ", ', <, > and (, ), ~.
+
+  Returns the sanitize channel/ws name
+  """
+
+  return name.replace('&', '').replace('"', '').replace('\'', '').replace('<', '').replace('>', '').replace('(', '').replace(')', '').replace('~', '')
+
+
 def validate_pass(password):
     """Checks password string for minimum length and a least one number and one letter"""
 
@@ -356,13 +366,15 @@ def send_message(data):
 def create_channel(data):
   """ Lets a user create a new chat channel, with a unique name """
 
+  chan_name = sanitize_name(data['new_channel'])
+
   # Check name not already in use in current workspace:
-  if data['new_channel'] in workspaces[session['curr_ws']]['channels'].keys():
+  if chan_name in workspaces[session['curr_ws']]['channels'].keys():
     # This should send back some kind of error message
     return False
 
   # Otherwise create a new chat channel and send channel list to all users:
-  workspaces[session['curr_ws']]['channels'][data['new_channel']] = {'messages': {}, 'next_message': 1}
+  workspaces[session['curr_ws']]['channels'][chan_name] = {'messages': {}, 'next_message': 1}
 
   channel_list = list(workspaces[session['curr_ws']]['channels'].keys())
 
@@ -376,8 +388,10 @@ def create_channel(data):
 def create_workspace(data):
   """ Lets a user create a new workspace, with a unique name. The user then joins the new workspace """
 
+  ws_name = sanitize_name(data['new_workspace'])
+
   # Check new workspace name not already in use:
-  if data['new_workspace'] in workspaces.keys():
+  if ws_name in workspaces.keys():
     # This should send back some kind of error message
     return False
 
@@ -385,14 +399,14 @@ def create_workspace(data):
   date = datetime.now().strftime("%d %b %Y")
 
   # Otherwise create a new workspace:
-  workspaces[data['new_workspace']] = {'channels': {'Announcements': {'messages': {1 : [f'Welcome to your new workspace - {data["new_workspace"]}!', 'Flack-Teams Help', timestamp, date, 1, 'admin.png']}, 'next_message': 2}}, 'users_online': set()}
+  workspaces[ws_name] = {'channels': {'Announcements': {'messages': {1 : [f'Welcome to your new workspace - {ws_name}!', 'Flack-Teams Help', timestamp, date, 1, 'admin.png']}, 'next_message': 2}}, 'users_online': set()}
 
   # Broadcast new workspace creation:
   workspace_list = list(workspaces.keys())
   emit('workspace_list amended', {'workspace_list': workspace_list}, broadcast=True)
 
   # Join new workspace in Announcments channel:
-  data = {'sign in': False, 'workspace': data['new_workspace']}
+  data = {'sign in': False, 'workspace': ws_name}
   join_workspace(data)
 
 
