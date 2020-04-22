@@ -4,6 +4,7 @@
 
 
 {% block main %}
+
   <!-- Side Nav Bar -->
   <div class="sidenav">
 
@@ -100,16 +101,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
   <script id="message-template" type="text/template">
     {% raw -%}
-    <li class="user-message">
+    <li class="user-message" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}">
       <img class="profile-icon" src="/static/Images/profile/{{ image }}" alt="User Profile Image">
       <h5 class="message-username">{{ username }} <span class="message-date text-muted"> {{ date }} - <span data-livestamp="{{ timestamp }}"></span></span></h5>
       <p class="message-text">{{ message }}</p>
       <p class="message-options">
         {{# if client_message}}
-        <a href=''><i class="fas fa-pencil-alt"> </i> Edit Message</a>
-        <a href=''><i class="fas fa-trash-alt"> </i> Delete Message</a>
+        <a href='#'><i class="fas fa-pencil-alt"> </i> Edit Message</a>
+        <a href='#' onclick="delete_message()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
         {{else}}
-        <a href='' class="private-message" data-user_id="{{ user_id }}"><i class="fas fa-user"></i> <span id="workspace-users"> Private Message</a>
+        <a href='#' class="private-message" data-user_id="{{ user_id }}"> <i class="fas fa-user"></i> <span id="workspace-users"> Private Message</a>
         {{/if}}
       </p>
     </li>

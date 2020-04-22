@@ -370,9 +370,28 @@ def send_message(data):
   emit("emit message", {"message": message}, room=ws_channel)
 
 
+@socketio.on('delete message')
+def delete_message(data):
+  """ Deletes a message in a specific channel. Removes that message for all users. """
+
+  print('TRYING TO DELETE MESSAGE')
+
+  timestamp = float(data['timestamp'])
+  message_id = int(data['message_id'])
+
+  # Check if message exists and user is allowed to delete it
+  messages = workspaces[session['curr_ws']]['channels'][session['curr_chan']]['messages']
+
+  if messages.get(message_id) and (messages[message_id][2] == timestamp) and (session['user_id'] == messages[message_id][6]):
+
+    messages[message_id][0] = f'This message was deleted - {datetime.now().strftime("%d %b %Y")}'
+
+  emit("emit deleted message", {"message_id": message_id, "timestamp": timestamp, "deleted_text": messages[message_id][0]}, room=session['curr_ws_chan'])
+
+
 @socketio.on('create channel')
 def create_channel(data):
-  """ Lets a user create a new chat channel, with a unique name """
+  """ Lets a user create a new chat channel in a ws, with a unique name in that ws."""
 
   chan_name = sanitize_name(data['new_channel'])
 

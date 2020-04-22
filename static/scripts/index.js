@@ -1,9 +1,11 @@
+var socket;
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
   // Connect to websocket if not already connected:
   if (!io.connect().connected) {
-    var socket = io();
+    socket = io();
   }
 
   // SOCKET.IO Connection:
@@ -64,6 +66,21 @@ document.addEventListener('DOMContentLoaded', () => {
     post_message(data['message'])
   });
 
+  // When a message is deleted in the current channel, remove message text:
+  socket.on('emit deleted message', data => {
+    console.log('Message deletion request received:', data);
+
+    // Select the correct message
+    messages = document.querySelectorAll('.user-message');
+
+    for (let i = 0; i < messages.length; i++) {
+      if (messages[i].dataset.message_id == data.message_id && messages[i].dataset.timestamp == data.timestamp) {
+        messages[i].querySelector('.message-text').innerHTML = data.deleted_text;
+        break;
+      }
+    }
+  });
+
   // When a new channel is added, update channel link buttons
   socket.on('channel_list amended', data => {
     console.log('received updated channel list')
@@ -81,36 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('updated user number received: ', data.users);
     document.querySelector('#workspace-users').innerHTML = data.users;
   });
-
-
-  /*
-  =============================================
-  HELPER FUNCTIONS:
-  =============================================
-  */
-
-  const post_message = function (message) {
-  // Helper function to post received messages to the chat panel
-
-    let client_message;
-
-    // Check if message is by the client or a different user:
-    if (message[6] === parseInt(localStorage.getItem('user_id'))) {
-      client_message = true;
-    } else {
-      client_message = false;
-    }
-
-    // Create message element using handlebars
-    const template = Handlebars.compile(document.querySelector('#message-template').innerHTML);
-
-    const content = template({'username' : message[1], 'date' : message[3], 'timestamp' : message[2], 'message' : message[0], 'image': message[5], 'user_id' : message[6], 'client_message' : client_message});
-
-    // Add to messages element
-    document.querySelector('#messages').innerHTML += content;
-
-    return true
-  }
 
 
   /*
@@ -278,7 +265,53 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#logout').onclick = () => {
       event.preventDefault();
       socket.emit('log out');
+      localStorage.clear();
       window.location.href = '/logout';
     };
   };
 });
+
+
+/*
+  =============================================
+  HELPER FUNCTIONS:
+  =============================================
+  */
+
+const post_message = function (message) {
+  // Helper function to post received messages to the chat panel
+
+  let client_message;
+
+  // Check if message is by the client or a different user:
+  if (message[6] === parseInt(localStorage.getItem('user_id'))) {
+    client_message = true;
+  } else {
+    client_message = false;
+  }
+
+  // Create message element using handlebars
+  const template = Handlebars.compile(document.querySelector('#message-template').innerHTML);
+
+  const content = template({'username' : message[1], 'date' : message[3], 'timestamp' : message[2], 'message' : message[0], 'image': message[5], 'user_id' : message[6], 'client_message' : client_message, 'message_id' : message[4]});
+
+  // Add to messages element
+  document.querySelector('#messages').innerHTML += content;
+};
+
+
+delete_message = function () {
+  // Helper function to delete a clients own message from a chat page
+
+  event.preventDefault();
+
+  let message = event.target;
+  let message_id = message.dataset.message_id;
+  let timestamp = message.dataset.timestamp;
+
+  console.log('Deleting message: ', message_id, timestamp);
+
+  socket.emit('delete message', {'message_id': message_id, 'timestamp': timestamp});
+};
+
+
