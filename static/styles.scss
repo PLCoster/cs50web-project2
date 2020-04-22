@@ -319,6 +319,18 @@ CHAT ROOM
       font-weight:300;
       font-size: 12px;
     }
+
+    .message-options {
+      display: none;
+
+      a {
+        padding-right: 5px;
+      }
+    }
+
+    .user-message:hover .message-options {
+      display: block;
+    }
   }
 
   #chat-input {

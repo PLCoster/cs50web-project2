@@ -35,9 +35,9 @@ workspaces = {'Welcome!':
                 {'channels':
                   {'Getting Started':
                     {'messages':
-                      {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started! Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace. To create a new channel to chat in, click the \'+\' symbol next to \'Channels\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1, 'admin.png'],
-                      2 : ['Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 2, 'admin.png'],
-                      3 : ['To create a new channel to chat in, click the \'+\' symbol next to \'Channels\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 3, 'admin.png']},
+                      {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started! Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace. To create a new channel to chat in, click the \'+\' symbol next to \'Channels\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1, 'admin.png', -1],
+                      2 : ['Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 2, 'admin.png', -1],
+                      3 : ['To create a new channel to chat in, click the \'+\' symbol next to \'Channels\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 3, 'admin.png', -1]},
                     'next_message': 4},
                   'Announcements': {'messages': {}, 'next_message': 1 },
                   'News': {'messages': {}, 'next_message': 1 }
@@ -229,33 +229,41 @@ def logout():
     return redirect("/login")
 
 
-@socketio.on("join workspace")
+@socketio.on("initial logon")
+def init_logon():
+  """ Initial set up of user local storage for app functionality """
+
+  user = request.sid
+  emit('local storage setup', {'user_id' : session['user_id']}, room=user)
+
+
+@socketio.on('join workspace')
 def join_workspace(data):
   """ Joins a user to a workspace and a channel in that workspace """
 
   # If switching channels, sign out of current workspace and update current ws/chan:
-  if not data["sign in"]:
+  if not data['sign in']:
     print('SWITCHING WORKSPACE')
-    leave_room(session["curr_ws"])
-    leave_room(session["curr_ws_chan"])
+    leave_room(session['curr_ws'])
+    leave_room(session['curr_ws_chan'])
 
     # Update online users in workspace
-    workspaces[session["curr_ws"]]["users_online"].remove(session["user_id"])
-    emit('ws_users amended', {'users' : len(workspaces[session["curr_ws"]]["users_online"])}, room=session["curr_ws"])
+    workspaces[session['curr_ws']]['users_online'].remove(session['user_id'])
+    emit('ws_users amended', {'users' : len(workspaces[session['curr_ws']]['users_online'])}, room=session['curr_ws'])
 
     # Join new workspace on default announcements channel
-    session["curr_ws"] = data["workspace"]
-    session["curr_chan"] = 'Announcements'
-    session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
+    session['curr_ws'] = data['workspace']
+    session['curr_chan'] = 'Announcements'
+    session['curr_ws_chan'] = f'{session["curr_ws"]}~{session["curr_chan"]}'
 
-    print('Now in workspace: ', session["curr_ws"])
+    print('Now in workspace: ', session['curr_ws'])
     print(workspaces)
 
   # If workspace no longer exists (e.g. deleted), revert to default ws and channel:
   if not workspaces.get(session["curr_ws"]):
       session["curr_ws"] = 'Welcome!'
       session["curr_chan"] = 'Getting Started'
-      session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
+      session["curr_ws_chan"] = f'{session["curr_ws"]}~{session["curr_chan"]}'
 
   # Join chat for specified workspace and channel
   join_room(session["curr_ws"])
@@ -348,7 +356,7 @@ def send_message(data):
 
   # Save message data to channel log:
   next = workspaces[workspace]['channels'][channel]['next_message']
-  message = [message_text, screen_name, timestamp, date, next, profile_img]
+  message = [message_text, screen_name, timestamp, date, next, profile_img, session["user_id"]]
   workspaces[workspace]['channels'][channel]['messages'][next] = message
 
   print('Message received by server:', message)

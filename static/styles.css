@@ -276,6 +276,15 @@ CHAT ROOM
   font-weight: 300;
   font-size: 12px;
 }
+#chatroom-panel #messages .message-options {
+  display: none;
+}
+#chatroom-panel #messages .message-options a {
+  padding-right: 5px;
+}
+#chatroom-panel #messages .user-message:hover .message-options {
+  display: block;
+}
 #chatroom-panel #chat-input {
   position: fixed;
   left: 200px;
