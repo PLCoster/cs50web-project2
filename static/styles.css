@@ -270,6 +270,11 @@ CHAT ROOM
   margin-bottom: 4px;
   margin-left: 55px;
 }
+#chatroom-panel #messages textarea {
+  font-size: 14px;
+  line-height: 16px;
+  width: 75%;
+}
 #chatroom-panel #messages p {
   margin-bottom: 8px;
 }
@@ -277,8 +282,16 @@ CHAT ROOM
   font-weight: 300;
   font-size: 12px;
 }
+#chatroom-panel #messages .user-message a {
+  display: inline-block;
+  margin-right: 10px;
+}
 #chatroom-panel #messages .user-message:hover .message-options {
   display: block;
+  height: 0;
+  animation: hover-reveal 1s ease-out;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
 }
 #chatroom-panel #chat-input {
   position: fixed;
@@ -581,6 +594,24 @@ LOGIN, REGISTER, ACCOUNT
   display: none;
 }
 
+/*
+=============================
+ANIMATIONS
+=============================
+*/
+@keyframes hover-reveal {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    height: 16.5px;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    height: 16.5px;
+  }
+}
 /*
 =============================
 RESPONSIVE

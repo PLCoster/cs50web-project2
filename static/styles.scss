@@ -311,6 +311,12 @@ CHAT ROOM
      margin-left: 55px;
     }
 
+    textarea {
+      font-size: 14px;
+      line-height: 16px;
+      width: 75%;
+    }
+
     p {
       margin-bottom: 8px;
     }
@@ -320,8 +326,17 @@ CHAT ROOM
       font-size: 12px;
     }
 
+    .user-message a {
+      display: inline-block;
+      margin-right: 10px;
+    }
+
     .user-message:hover .message-options {
       display: block;
+      height: 0;
+      animation: hover-reveal 1s ease-out;
+      animation-fill-mode: forwards;
+      animation-play-state: running;
     }
   }
 
@@ -659,6 +674,32 @@ LOGIN, REGISTER, ACCOUNT
     display: none;
   }
 }
+
+/*
+=============================
+ANIMATIONS
+=============================
+*/
+
+@keyframes hover-reveal {
+
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    height: 16.5px;
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+    height: 16.5px;
+  }
+}
+
+
+
 
 
 /*
