@@ -22,10 +22,10 @@
     <!-- Workspace Panel -->
     <h5 id="workspace-options-display" class="clickable">Workspaces <i class="fas fa-plus-square"></i></h5>
     <h5 id="workspace-options-hide" class="clickable hidden">Workspaces X</h5>
-    <form id='new-workspace' class="hidden">
+    <form id="new-workspace" class="hidden">
       <label>Create a workspace:</label>
-        <input type="text" id='workspace-name' name="workspace-name" placeholder="Workspace Name" required>
-        <button class="btn btn-primary">Create Workspace</button>
+        <input type="text" id="workspace-name" name="workspace-name" placeholder="Workspace Name" autocomplete="off" required>
+        <button class="btn btn-primary btn-sm">Create Workspace</button>
     </form>
     <div id="curr-workspace-panel">
       <p>Current Workspace:</p>
@@ -42,15 +42,15 @@
       <h5 id="channel-options-hide" class="clickable hidden">Channels X</h5>
       <form id="new-channel" class="hidden">
         <label>Create a channel:</label>
-        <input type="text" id='channel-name' name="channel-name" placeholder="Channel Name" required>
-        <button class="btn btn-primary">Create Channel</button>
+        <input type="text" id="channel-name" name="channel-name" placeholder="Channel Name" autocomplete="off" required>
+        <button class="btn btn-primary btn-sm">Create Channel</button>
       </form>
       <ul id="channel-links" class="visible">
       </ul>
     </div>
     <hr>
     <!-- Private Chat List -->
-    <div class='channel-display'>
+    <div class="channel-display">
       <h5>Direct Messages <i class="fas fa-plus-square"></i></h5>
       <ul id="private-links" class="visible">
       </ul>
@@ -88,11 +88,11 @@
 
 
     <!-- Chat text Entry -->
-    <div id='chat-input'>
+    <div id="chat-input">
       <hr>
-      <form id='chat-input-form'>
-        <input type="text" id='message' name="message" placeholder="Enter Your Message" required>
-        <button id='send-chat-input'>Send!</button>
+      <form id="chat-input-form">
+        <input type="text" id="message" name="message" placeholder="Enter Your Message" autocomplete="off" required>
+        <button id="send-chat-input">Send!</button>
       </form>
     </div>
   </section>
@@ -104,25 +104,25 @@
     <li class="user-message" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}">
       <img class="profile-icon" src="/static/Images/profile/{{ image }}" alt="User Profile Image">
       <h5 class="message-username">{{ username }} <span class="message-date text-muted"> {{ date }} - <span data-livestamp="{{ timestamp }}"></span></span></h5>
-      <p class="message-text">{{ message }}</p>
+      <p class="message-text">{{{ message }}}</p>
 
       <!-- Message Editor Form -->
       <form class="message-edit-form hidden">
         <label for="message-edit" class="sr-only">Message Editor</label>
-        <textarea class="message-edit" rows="3" required></textarea>
+        <textarea class="message-edit" rows="2" autocomplete="off" required></textarea>
         <p class="edit-options">
-            <a href='#' onclick="edit_message()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-check"> </i> Update Message</a>
-            <a href='#' class="cancel-edit"><i class="fas fa-times"> </i> Cancel</a>
+            <a href="#" class="edit-message" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-check"> </i> Update Message</a>
+            <a href="#" class="cancel-edit"><i class="fas fa-times"> </i> Cancel</a>
         </p>
       </form>
 
       <!-- Message Options -->
       <p class="message-options hidden">
         {{# if client_message}}
-        <a href='#' onclick="message_editor()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-pencil-alt"> </i> Edit Message</a>
-        <a href='#' onclick="delete_message()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
+        <a href="#" onclick="message_editor()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-pencil-alt"> </i> Edit Message</a>
+        <a href="#" onclick="delete_message()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
         {{else}}
-        <a href='#' class="private-message" data-user_id="{{ user_id }}"> <i class="fas fa-user"></i> <span id="workspace-users"> Private Message</a>
+        <a href="#" class="private-message" data-user_id="{{ user_id }}"> <i class="fas fa-user"></i> <span id="workspace-users"> Private Message</a>
         {{/if}}
       </p>
     </li>

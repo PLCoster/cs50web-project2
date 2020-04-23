@@ -266,7 +266,7 @@ CHAT ROOM
     left: 200px;
     top: 0px;
     width: 100%;
-    margin-top : 10px;
+    padding-top : 10px;
     z-index: 2;
     background-color: $primary-container;
 
@@ -286,6 +286,7 @@ CHAT ROOM
   }
 
   #messages {
+    word-wrap: break-word;
     list-style-type: none;
     padding-left: 10px;
 
@@ -332,8 +333,8 @@ CHAT ROOM
     }
 
     .user-message:hover .message-options {
-      display: block;
       height: 0;
+      display: block;
       animation: hover-reveal 1s ease-out;
       animation-fill-mode: forwards;
       animation-play-state: running;

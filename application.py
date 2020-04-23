@@ -43,7 +43,9 @@ workspaces = {'Welcome!':
                   'News': {'messages': {}, 'next_message': 1 }
                   },
                 'users_online': set()
-                }
+                },
+              '(Private)':
+                {'channels': {}}
              }
 
 def sanitize_message(message):
@@ -52,7 +54,7 @@ def sanitize_message(message):
   Returns the sanitized message string
   """
 
-  return message.replace('&', '\u0026').replace('"', '\u0022').replace('\'', '\u0027').replace('<', '\u003C').replace('>', '\u003E').replace('`', '\u0060').replace('=', '\u003D')
+  return message.replace('&', '&#38;').replace('"', '&#34;').replace('\'', '&#92;').replace('<', '&#60;').replace('>', '&#62;').replace('`', '&#96;').replace('=', '&#61;')
 
 
 def sanitize_name(name):
@@ -87,17 +89,19 @@ def validate_pass(password):
     else:
         return False
 
-def load_session(user):
-  """ Loads a user's information into the session """
+def load_user(user):
+  """ Loads a user's personal information from DB into the session """
 
   session["user_id"] = user.id
   session["screen_name"] = user.screen_name
-  session["curr_ws"] = user.curr_ws
-  session["curr_chan"] = user.curr_chan
-  session["curr_ws_chan"] = f"{session['curr_ws']}~{session['curr_chan']}"
   session["profile_img"] = user.profile_img
 
-  return session
+
+def load_hist(user):
+  """ Loads a user's ws and channel hist from DB into the session """
+  session['curr_ws'] = user.curr_ws
+  session['curr_chan'] = user.curr_chan
+  session['curr_ws_chan'] = f'{session["curr_ws"]}~{session["curr_chan"]}'
 
 
 @app.route("/")
@@ -141,7 +145,7 @@ def login():
             return render_template("login.html")
 
         # Otherwise load user session and redirect to homepage:
-        load_session(user_info)
+        load_user(user_info)
 
         #flash('Log in Successful! Welcome back to Flack Teams!')
         return redirect("/")
@@ -204,9 +208,8 @@ def register():
 
             # Put unique user ID and username into session:
             user_info = User.query.filter_by(username=username).first()
-            load_session(user_info)
+            load_user(user_info)
             return redirect("/")
-
 
     # If User reaches Route via GET (e.g. clicking registration link):
     else:
@@ -231,8 +234,13 @@ def logout():
 
 @socketio.on("initial logon")
 def init_logon():
-  """ Initial set up of user local storage for app functionality """
+  """ Initial set up of client history and local storage for app functionality """
 
+  # Load user ws and channel history
+  user_info = User.query.get(session["user_id"])
+  load_hist(user_info)
+
+  # Set up local storage for client
   user = request.sid
   emit('local storage setup', {'user_id' : session['user_id']}, room=user)
 
@@ -241,9 +249,10 @@ def init_logon():
 def join_workspace(data):
   """ Joins a user to a workspace and a channel in that workspace """
 
+  print('JOINING WORKSPACE')
+
   # If switching channels, sign out of current workspace and update current ws/chan:
   if not data['sign in']:
-    print('SWITCHING WORKSPACE')
     leave_room(session['curr_ws'])
     leave_room(session['curr_ws_chan'])
 
@@ -256,14 +265,14 @@ def join_workspace(data):
     session['curr_chan'] = 'Announcements'
     session['curr_ws_chan'] = f'{session["curr_ws"]}~{session["curr_chan"]}'
 
-    print('Now in workspace: ', session['curr_ws'])
-    print(workspaces)
-
   # If workspace no longer exists (e.g. deleted), revert to default ws and channel:
   if not workspaces.get(session["curr_ws"]):
+      print('WORKSPACE NO LONGER EXISTS, GOING TO DEFAULT WS')
       session["curr_ws"] = 'Welcome!'
       session["curr_chan"] = 'Getting Started'
       session["curr_ws_chan"] = f'{session["curr_ws"]}~{session["curr_chan"]}'
+
+  print('JOINING: ', session["curr_ws"], session["curr_ws_chan"])
 
   # Join chat for specified workspace and channel
   join_room(session["curr_ws"])
@@ -302,6 +311,8 @@ def join_channel(data):
   # Leave the previous channel and join the new channel:
   leave_room(session['curr_ws_chan'])
 
+  print('JOINING CHANNEL')
+
   # Check that channel exists in ws, if not then go to default Announcements channel:
   if not workspaces[session["curr_ws"]]['channels'].get(data['channel']):
     session["curr_chan"] = 'Announcements'
@@ -312,15 +323,10 @@ def join_channel(data):
   join_room(session['curr_ws_chan'])
   user = request.sid
 
-  print(session['curr_ws_chan'])
-
   current_chan = workspaces[session["curr_ws"]]["channels"][session["curr_chan"]]
 
   # Send sorted channel history back to user who has just joined:
   message_history = sorted(list(current_chan["messages"].values()), key = lambda x : x[2])
-
-  print('Channel status:', workspaces)
-  print('Sending message history:', message_history)
 
   emit("workspace logon", {"workspace_name" : session["curr_ws"]}, room=user)
   print("workspace logon emitted")
@@ -328,7 +334,7 @@ def join_channel(data):
   emit("channel logon", {"channel_name" : session["curr_chan"], "message_history" : message_history}, room=user)
   print("channel logon emitted")
 
-  # Update user's workspace history in DB:
+  # Update user's channel history in DB:
   user_info = User.query.get(session["user_id"])
   user_info.curr_chan = session["curr_chan"]
   db.session.commit()
@@ -348,8 +354,6 @@ def send_message(data):
   ws_channel = session['curr_ws_chan']
   profile_img = session['profile_img']
 
-  print('Workspace: ', workspace, 'Channel: ', channel, 'ws_channel: ', ws_channel)
-
   # Date and Timestamp the message:
   timestamp = datetime.now(pytz.utc).timestamp()
   date = datetime.now().strftime("%d %b %Y")
@@ -358,9 +362,6 @@ def send_message(data):
   next = workspaces[workspace]['channels'][channel]['next_message']
   message = [message_text, screen_name, timestamp, date, next, profile_img, session["user_id"]]
   workspaces[workspace]['channels'][channel]['messages'][next] = message
-
-  print('Message received by server:', message)
-  print('Sending message to: ', ws_channel)
 
   # Store up to 100 messages, then overwrite the first message
   workspaces[workspace]['channels'][channel]['next_message'] += 1
@@ -386,7 +387,27 @@ def delete_message(data):
 
     messages[message_id][0] = f'This message was deleted - {datetime.now().strftime("%d %b %Y")}'
 
-  emit("emit deleted message", {"message_id": message_id, "timestamp": timestamp, "deleted_text": messages[message_id][0]}, room=session['curr_ws_chan'])
+  emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id][0]}, room=session['curr_ws_chan'])
+
+
+@socketio.on('edit message')
+def edit_message(data):
+  """ Edit the text of a message in a specific channel. Updates the message for all users """
+
+  print('TRYING TO EDIT MESSAGE')
+
+  timestamp = float(data['timestamp'])
+  message_id = int(data['message_id'])
+  text = sanitize_message(data["message_text"])
+
+  # Check if message exists and user is allowed to delete it
+  messages = workspaces[session['curr_ws']]['channels'][session['curr_chan']]['messages']
+
+  if messages.get(message_id) and (messages[message_id][2] == timestamp) and (session['user_id'] == messages[message_id][6]):
+
+    messages[message_id][0] = f'{text} - Edited {datetime.now().strftime("%d %b %Y")}'
+
+  emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id][0]}, room=session['curr_ws_chan'])
 
 
 @socketio.on('create channel')
@@ -404,8 +425,6 @@ def create_channel(data):
   workspaces[session['curr_ws']]['channels'][chan_name] = {'messages': {}, 'next_message': 1}
 
   channel_list = list(workspaces[session['curr_ws']]['channels'].keys())
-
-  print('Emiting new channel list on channel creation: ', channel_list)
 
   # Send updated channel list to all users in the workspace:
   emit('channel_list amended', {'channel_list': channel_list}, room=session['curr_ws'])
@@ -436,6 +455,25 @@ def create_workspace(data):
   data = {'sign in': False, 'workspace': ws_name}
   join_workspace(data)
 
+
+@socketio.on("create private channel")
+def create_private_channel(data):
+  """ Creates and joins a user to a private message channel between two users """
+
+  # Determine the private channel name:
+  user_1 = int(data['user_id'])
+  client = int(data['client_id'])
+
+  private_chan = str(tuple([user_1, client].sort()))
+
+  # Check if private channel exists, if not then create it:
+  if not workspaces['(Private)']['channels'].get(private_chan):
+    workspaces['(Private)']['channels'][private_chan] = {'messages': {}, 'next_message': 1}
+
+  user = request.sid
+
+  # Send updated private message channels to both users:
+  emit('private_list amended', {''})
 
 @socketio.on("log out")
 def socket_logout():

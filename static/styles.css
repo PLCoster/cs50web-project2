@@ -233,7 +233,7 @@ CHAT ROOM
   left: 200px;
   top: 0px;
   width: 100%;
-  margin-top: 10px;
+  padding-top: 10px;
   z-index: 2;
   background-color: #f9f9f9;
 }
@@ -249,6 +249,7 @@ CHAT ROOM
   top: 0px;
 }
 #chatroom-panel #messages {
+  word-wrap: break-word;
   list-style-type: none;
   padding-left: 10px;
 }
@@ -287,8 +288,8 @@ CHAT ROOM
   margin-right: 10px;
 }
 #chatroom-panel #messages .user-message:hover .message-options {
-  display: block;
   height: 0;
+  display: block;
   animation: hover-reveal 1s ease-out;
   animation-fill-mode: forwards;
   animation-play-state: running;

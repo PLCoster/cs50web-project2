@@ -65,16 +65,16 @@ document.addEventListener('DOMContentLoaded', () => {
     post_message(data['message'])
   });
 
-  // When a message is deleted in the current channel, remove message text:
-  socket.on('emit deleted message', data => {
-    console.log('Message deletion request received:', data);
+  // When a message is edited or deleted in the current channel, update message text:
+  socket.on('emit edited message', data => {
+    console.log('Message edit request received:', data);
 
     // Select the correct message
     messages = document.querySelectorAll('.user-message');
 
     for (let i = 0; i < messages.length; i++) {
       if (messages[i].dataset.message_id == data.message_id && messages[i].dataset.timestamp == data.timestamp) {
-        messages[i].querySelector('.message-text').innerHTML = data.deleted_text;
+        messages[i].querySelector('.message-text').innerHTML = data.edited_text;
         break;
       }
     }
@@ -110,6 +110,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to set up button to submit messages to the server:
     document.querySelector('#send-chat-input').onclick = () => {
       event.preventDefault();
+
+      // Hide any open message editor:
+      document.querySelectorAll('.user-message').forEach( el => {
+        el.querySelector('.message-edit-form').style.display = 'none';
+        el.querySelector('.message-options').removeAttribute('style');
+        el.querySelector('.message-text').style.display = 'block';
+      })
+
       const message = document.querySelector('#message').value;
       console.log('Trying to send message to server:', message);
       if (message) {
@@ -275,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
   =============================================
   HELPER FUNCTIONS:
   =============================================
-  */
+*/
 
 const post_message = function (message) {
   // Helper function to post received messages to the chat panel
@@ -296,6 +304,16 @@ const post_message = function (message) {
 
   // Add to messages element
   document.querySelector('#messages').innerHTML += content;
+};
+
+const private_message = function() {
+  // Helper function to create and join private chat with a specific user
+
+  event.preventDefault();
+
+  let user_id = event.target.dataset.user_id;
+
+  socket.emit('join private channel', {'user_id': user_id, 'client_id': client_id})
 };
 
 
@@ -333,13 +351,29 @@ const message_editor = function () {
       message.querySelector('.message-text').style.display = 'none';
       message.querySelector('.message-edit-form').style.display = 'block';
 
+      // Set edit message button functionality:
+      message.querySelector('.edit-message').addEventListener("click", function () {
+        event.preventDefault();
+
+        let edited = message.querySelector('.message-edit').value;
+
+        // If there is edited message text, send message and hide the form:
+        if (edited && edited !== message_text) {
+          console.log('Editing message:', edited)
+          socket.emit('edit message', {'message_id': message_id, 'timestamp': timestamp, 'message_text': edited});
+          message.querySelector('.cancel-edit').click();
+        }
+      });
+
       // Set cancel editing button functionality:
-      message.querySelector('.cancel-edit').onclick = function () {
+      message.querySelector('.cancel-edit').addEventListener("click", function () {
         event.preventDefault();
         message.querySelector('.message-options').removeAttribute('style');
         message.querySelector('.message-text').style.display = 'block';
         message.querySelector('.message-edit-form').style.display = 'none';
-      }
+      });
+
+      break;
     }
   }
 };
