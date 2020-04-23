@@ -21,8 +21,8 @@
 
     <!-- Workspace Panel -->
     <h5 id="workspace-options-display" class="clickable">Workspaces <i class="fas fa-plus-square"></i></h5>
-    <h5 id="workspace-options-hide" class="clickable">Workspaces X</h5>
-    <form id='new-workspace'>
+    <h5 id="workspace-options-hide" class="clickable hidden">Workspaces X</h5>
+    <form id='new-workspace' class="hidden">
       <label>Create a workspace:</label>
         <input type="text" id='workspace-name' name="workspace-name" placeholder="Workspace Name" required>
         <button class="btn btn-primary">Create Workspace</button>
@@ -30,17 +30,17 @@
     <div id="curr-workspace-panel">
       <p>Current Workspace:</p>
       <h3 id="curr-workspace-show" class="clickable"></h3>
-      <h3 id="curr-workspace-hide" class="clickable"></h3>
-      <ul id="workspace-links">
+      <h3 id="curr-workspace-hide" class="clickable hidden"></h3>
+      <ul id="workspace-links" class="hidden">
       </ul>
     </div>
     <hr>
 
     <!-- Channel Panel -->
-    <div class='channel-display'>
+    <div class="channel-display">
       <h5 id="channel-options-display" class="clickable">Channels <i class="fas fa-plus-square"></i></h5>
-      <h5 id="channel-options-hide" class="clickable">Channels X</h5>
-      <form id='new-channel'>
+      <h5 id="channel-options-hide" class="clickable hidden">Channels X</h5>
+      <form id="new-channel" class="hidden">
         <label>Create a channel:</label>
         <input type="text" id='channel-name' name="channel-name" placeholder="Channel Name" required>
         <button class="btn btn-primary">Create Channel</button>
@@ -105,9 +105,21 @@
       <img class="profile-icon" src="/static/Images/profile/{{ image }}" alt="User Profile Image">
       <h5 class="message-username">{{ username }} <span class="message-date text-muted"> {{ date }} - <span data-livestamp="{{ timestamp }}"></span></span></h5>
       <p class="message-text">{{ message }}</p>
-      <p class="message-options">
+
+      <!-- Message Editor Form -->
+      <form class="message-edit-form hidden">
+        <label for="message-edit" class="sr-only">Message Editor</label>
+        <textarea class="message-edit" rows="3" required></textarea>
+        <p class="edit-options">
+            <a href='#' onclick="edit_message()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-check"> </i> Update Message</a>
+            <a href='#' class="cancel-edit"><i class="fas fa-times"> </i> Cancel</a>
+        </p>
+      </form>
+
+      <!-- Message Options -->
+      <p class="message-options hidden">
         {{# if client_message}}
-        <a href='#'><i class="fas fa-pencil-alt"> </i> Edit Message</a>
+        <a href='#' onclick="message_editor()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-pencil-alt"> </i> Edit Message</a>
         <a href='#' onclick="delete_message()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
         {{else}}
         <a href='#' class="private-message" data-user_id="{{ user_id }}"> <i class="fas fa-user"></i> <span id="workspace-users"> Private Message</a>

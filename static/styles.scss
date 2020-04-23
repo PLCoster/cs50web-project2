@@ -88,6 +88,10 @@ cite, em {
   color: $text-on-container;
 }
 
+.hidden {
+  display: none;
+}
+
 /*
 ==========================
 NAVBAR
@@ -193,10 +197,6 @@ SIDE NAV
         color: $highlight-dark;
       }
     }
-  }
-
-  #new-channel, #channel-options-hide, #new-workspace, #workspace-options-hide, #workspace-links, #curr-workspace-hide {
-    display: none;
   }
 
   #new-channel button, #channel-name, #new-workspace button, #workspace-name {
@@ -318,14 +318,6 @@ CHAT ROOM
     .message-date {
       font-weight:300;
       font-size: 12px;
-    }
-
-    .message-options {
-      display: none;
-
-      a {
-        padding-right: 5px;
-      }
     }
 
     .user-message:hover .message-options {

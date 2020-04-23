@@ -76,6 +76,10 @@ cite, em {
   color: #16425b;
 }
 
+.hidden {
+  display: none;
+}
+
 /*
 ==========================
 NAVBAR
@@ -173,9 +177,6 @@ SIDE NAV
 }
 .sidenav .dropdown .dropdown-menu .dropdown-item:hover {
   color: #333;
-}
-.sidenav #new-channel, .sidenav #channel-options-hide, .sidenav #new-workspace, .sidenav #workspace-options-hide, .sidenav #workspace-links, .sidenav #curr-workspace-hide {
-  display: none;
 }
 .sidenav #new-channel button, .sidenav #channel-name, .sidenav #new-workspace button, .sidenav #workspace-name {
   width: 140px;
@@ -275,12 +276,6 @@ CHAT ROOM
 #chatroom-panel #messages .message-date {
   font-weight: 300;
   font-size: 12px;
-}
-#chatroom-panel #messages .message-options {
-  display: none;
-}
-#chatroom-panel #messages .message-options a {
-  padding-right: 5px;
 }
 #chatroom-panel #messages .user-message:hover .message-options {
   display: block;

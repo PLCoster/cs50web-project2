@@ -1,6 +1,5 @@
 var socket;
 
-
 document.addEventListener('DOMContentLoaded', () => {
 
   // Connect to websocket if not already connected:
@@ -300,7 +299,7 @@ const post_message = function (message) {
 };
 
 
-delete_message = function () {
+const delete_message = function () {
   // Helper function to delete a clients own message from a chat page
 
   event.preventDefault();
@@ -312,6 +311,37 @@ delete_message = function () {
   console.log('Deleting message: ', message_id, timestamp);
 
   socket.emit('delete message', {'message_id': message_id, 'timestamp': timestamp});
+};
+
+const message_editor = function () {
+  // Helper function to open message editing form when edit button clicked
+
+  event.preventDefault();
+
+  let message_id = event.target.dataset.message_id;
+  let timestamp = event.target.dataset.timestamp;
+
+  // Select the correct message and display the message editor form:
+  messages = document.querySelectorAll('.user-message');
+
+  for (let i = 0; i < messages.length; i++) {
+    if (messages[i].dataset.message_id == message_id && messages[i].dataset.timestamp == timestamp) {
+      let message = messages[i]
+      message_text = message.querySelector('.message-text').innerHTML;
+      message.querySelector('.message-edit').innerHTML = message_text;
+      message.querySelector('.message-options').style.display = 'none';
+      message.querySelector('.message-text').style.display = 'none';
+      message.querySelector('.message-edit-form').style.display = 'block';
+
+      // Set cancel editing button functionality:
+      message.querySelector('.cancel-edit').onclick = function () {
+        event.preventDefault();
+        message.querySelector('.message-options').removeAttribute('style');
+        message.querySelector('.message-text').style.display = 'block';
+        message.querySelector('.message-edit-form').style.display = 'none';
+      }
+    }
+  }
 };
 
 

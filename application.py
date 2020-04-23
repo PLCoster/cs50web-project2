@@ -52,17 +52,17 @@ def sanitize_message(message):
   Returns the sanitized message string
   """
 
-  return message.replace('&', '\u0026').replace('"', '\u0022').replace('\'', '\u0027').replace('<', '\u003C').replace('>', '\u003E')
+  return message.replace('&', '\u0026').replace('"', '\u0022').replace('\'', '\u0027').replace('<', '\u003C').replace('>', '\u003E').replace('`', '\u0060').replace('=', '\u003D')
 
 
 def sanitize_name(name):
   """ Helper function to remove non-permitted characters from a channel or workspace name
-  Non-permitted characters are HTML special chars &, ", ', <, > and (, ), ~.
+  Non-permitted characters are HTML special chars &, ", ', <, >, `, = and (, ), ~.
 
   Returns the sanitize channel/ws name
   """
 
-  return name.replace('&', '').replace('"', '').replace('\'', '').replace('<', '').replace('>', '').replace('(', '').replace(')', '').replace('~', '')
+  return name.replace('&', '').replace('"', '').replace('\'', '').replace('<', '').replace('>', '').replace('(', '').replace(')', '').replace('~', '').replace('`', '').replace('=', '')
 
 
 def validate_pass(password):
