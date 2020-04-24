@@ -30,7 +30,7 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Server Message Channel Storage - Starts with Standard Welcome Channel:
+# Server WS/Channel Storage - Starts with Standard Welcome Channel:
 workspaces = {'Welcome!':
                 {'channels':
                   {'Getting Started':
@@ -43,10 +43,13 @@ workspaces = {'Welcome!':
                   'News': {'messages': {}, 'next_message': 1 }
                   },
                 'users_online': set()
-                },
-              '(Private)':
-                {'channels': {}}
+                }
              }
+
+# Server Private Channel Storage - Each User gets a personal 'Memo' Private Chat:
+private_channels = {'user_private_list': {}, 'channels': {}}
+
+# Server individual user rooms
 
 def sanitize_message(message):
   """ Helper function that takes a user's message string and replaces special HTML chars with their HTML entities to keep the chars and prevent adding HTML to the message board
@@ -240,9 +243,13 @@ def init_logon():
   user_info = User.query.get(session["user_id"])
   load_hist(user_info)
 
+  # Join a private room for the user:
+  join_room(f'{(session["user_id"],)}')
+
   # Set up local storage for client
-  user = request.sid
-  emit('local storage setup', {'user_id' : session['user_id']}, room=user)
+  user_sid = request.sid
+  print("USER SID: ", user_sid)
+  emit('local storage setup', {'user_id' : session['user_id']}, room=user_sid)
 
 
 @socketio.on('join workspace')
@@ -278,19 +285,19 @@ def join_workspace(data):
   join_room(session["curr_ws"])
   join_room(session["curr_ws_chan"])
 
-  user = request.sid
+  user_sid = request.sid
 
   data['channel'] = session["curr_chan"]
 
   # Log on to workspace and send user list of all workspaces:
-  emit('workspace logon', {'workspace_name' : session['curr_ws']}, room=user)
+  emit('workspace logon', {'workspace_name' : session['curr_ws']}, room=user_sid)
   workspace_list = list(workspaces.keys())
-  emit('workspace_list amended', {'workspace_list': workspace_list}, room=user)
+  emit('workspace_list amended', {'workspace_list': workspace_list}, room=user_sid)
 
   # Log user into channel and send user list of all channels in the workspace:
   join_channel(data)
   channel_list = list(workspaces[session['curr_ws']]['channels'].keys())
-  emit('channel_list amended', {'channel_list': channel_list}, room=user)
+  emit('channel_list amended', {'channel_list': channel_list}, room=user_sid)
   print("channel_list amended emitted")
 
   # Update number of users in workspace:
@@ -321,17 +328,14 @@ def join_channel(data):
 
   session['curr_ws_chan'] = f"{session['curr_ws']}~{session['curr_chan']}"
   join_room(session['curr_ws_chan'])
-  user = request.sid
+  user_sid = request.sid
 
   current_chan = workspaces[session["curr_ws"]]["channels"][session["curr_chan"]]
 
   # Send sorted channel history back to user who has just joined:
   message_history = sorted(list(current_chan["messages"].values()), key = lambda x : x[2])
 
-  emit("workspace logon", {"workspace_name" : session["curr_ws"]}, room=user)
-  print("workspace logon emitted")
-
-  emit("channel logon", {"channel_name" : session["curr_chan"], "message_history" : message_history}, room=user)
+  emit("channel logon", {"channel_name" : session["curr_chan"], "message_history" : message_history}, room=user_sid)
   print("channel logon emitted")
 
   # Update user's channel history in DB:
@@ -455,26 +459,63 @@ def create_workspace(data):
   data = {'sign in': False, 'workspace': ws_name}
   join_workspace(data)
 
-"""
+
 @socketio.on("create private channel")
 def create_private_channel(data):
-  """""" Creates and joins a user to a private message channel between two users """"""
+  """ Creates and joins a user to a private message channel between two users """
+
+  # private_channels = {'user_private_list': {}, 'channels': {}}
+
+  print('TYRING TO CREATE PRIVATE CHANNEL ', data)
 
   # Determine the private channel name:
-  user_1 = int(data['user_id'])
-  client = int(data['client_id'])
+  target_id = int(data['target_id'])
+  user_id = int(data['user_id'])
 
-  private_chan = str(tuple([user_1, client].sort()))
+  print(target_id, user_id)
+
+  private_chan = tuple(sorted([user_id, target_id]))
+
+  print('Private Channel Name: ', private_chan)
+
+  # Check that client is the current session user:
+  if session['user_id'] != user_id:
+    # Return some sort of error message:
+    return False
 
   # Check if private channel exists, if not then create it:
-  if not workspaces['(Private)']['channels'].get(private_chan):
-    workspaces['(Private)']['channels'][private_chan] = {'messages': {}, 'next_message': 1}
+  if not private_channels['channels'].get(private_chan):
+    private_channels['channels'][private_chan] = {'messages': {}, 'next_message': 1}
 
-  user = request.sid
+    # Create private channel list for target user if none:
+    if not private_channels['user_private_list'].get(target_id):
+      private_channels['user_private_list'][target_id] = {}
+
+    private_channels['user_private_list'][target_id][private_chan] = {'name': session['screen_name']}
+
+    # Create private channel list for user if none:
+    if not private_channels['user_private_list'].get(user_id):
+      private_channels['user_private_list'][user_id] = {}
+
+    # Get screenname of target user:
+    target_screen_name = User.query.get(target_id).screen_name
+    print('Target User Screen Name: ', target_screen_name)
+    private_channels['user_private_list'][user_id][private_chan] = {'name': target_screen_name}
+
+  user_sid = request.sid
+
+  print(private_channels)
+
+  user_private_channels = private_channels['user_private_list'][user_id]
+  user_private_chan_list = [[x, user_private_channels[x]['name']] for x in user_private_channels]
+
+  target_private_channels = private_channels['user_private_list'][target_id]
+  target_private_chan_list = [[x, target_private_channels[x]['name']] for x in target_private_channels]
 
   # Send updated private message channels to both users:
-  emit('private_list amended', {''})
-"""
+  emit('private_list amended', {'priv_chan_list': user_private_chan_list}, room=user_sid)
+  emit('private_list amended', {'priv_chan_list': target_private_chan_list}, room=f'{(target_id,)}')
+
 
 @socketio.on("log out")
 def socket_logout():
@@ -486,6 +527,7 @@ def socket_logout():
 
   leave_room(session["curr_ws"])
   leave_room(session["curr_ws_chan"])
+  leave_room(f'{(session["user_id"],)}')
 
   # Forget any user session info
   session.clear()

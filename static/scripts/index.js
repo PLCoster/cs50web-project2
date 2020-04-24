@@ -80,16 +80,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // When a new channel is added, update channel link buttons
+  // When a new workspace is added, update workspace links
+  socket.on('workspace_list amended', data => {
+    console.log('received updated workspace list');
+    workspace_config(data.workspace_list);
+  });
+
+  // When a new channel is added, update channel links
   socket.on('channel_list amended', data => {
     console.log('received updated channel list')
     channel_config(data.channel_list);
   });
 
-  // When a new workspace is added, update workspace link buttons
-  socket.on('workspace_list amended', data => {
-    console.log('received updated workspace list');
-    workspace_config(data.workspace_list);
+  // When a new private channel is added, private channel links
+  socket.on('private_list amended', data => {
+    console.log('received updated private list')
+    private_config(data.priv_chan_list);
   });
 
   // When a user joins or leaves a ws, update number of live users in ws:
@@ -129,6 +135,36 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
 
+  const workspace_config = function (ws_list) {
+    // Function to set up links to change workspaces:
+
+    // Remove current workspace list:
+    document.querySelector('#workspace-links').innerHTML = '';
+
+    // Add all WS Links:
+    for (let i=0; i < ws_list.length; i++) {
+      let ws_name = ws_list[i];
+
+      const li = document.createElement('li');
+      li.innerHTML = ws_name;
+      li.className = 'ws-link';
+      li.setAttribute('data-workspace', ws_name);
+      li.setAttribute('href', '');
+
+      document.querySelector('#workspace-links').append(li);
+    }
+
+    // Add onclick events to all Channel Links:
+    document.querySelectorAll('.ws-link').forEach(button => {
+      button.onclick = () => {
+        event.preventDefault();
+        console.log('You clicked on a workspace link!')
+        socket.emit('join workspace', {'sign in': false, 'workspace': button.dataset.workspace});
+        console.log('Workspace now set to: ', button.dataset.workspace);
+      };
+    });
+  };
+
   const channel_config = function (channel_list) {
     // Function to set up links to change channels:
 
@@ -160,35 +196,36 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
 
-  const workspace_config = function (ws_list) {
-    // Function to set up links to change workspaces:
+  const private_config = function (private_list) {
+    // Function to set up links for private channels:
 
-    // Remove current workspace list:
-    document.querySelector('#workspace-links').innerHTML = '';
+    // Remove current channel list:
+    document.querySelector('#private-links').innerHTML = '';
 
-    // Add all WS Links:
-    for (let i=0; i < ws_list.length; i++) {
-      let ws_name = ws_list[i];
+    // Add all Channel Links:
+    for (let i=0; i < private_list.length; i++) {
+      let private_link = private_list[i][0];
+      let private_name = private_list[i][1];
 
       const li = document.createElement('li');
-      li.innerHTML = ws_name;
-      li.className = 'ws-link';
-      li.setAttribute('data-workspace', ws_name);
+      li.innerHTML = private_name;
+      li.className = 'private-link';
+      li.setAttribute('data-private', private_link);
       li.setAttribute('href', '');
 
-      document.querySelector('#workspace-links').append(li);
+      document.querySelector('#private-links').append(li);
     }
 
     // Add onclick events to all Channel Links:
-    document.querySelectorAll('.ws-link').forEach(button => {
+    document.querySelectorAll('.private-link').forEach(button => {
       button.onclick = () => {
         event.preventDefault();
-        console.log('You clicked on a workspace link!')
-        socket.emit('join workspace', {'sign in': false, 'workspace': button.dataset.workspace});
-        console.log('Workspace now set to: ', button.dataset.workspace);
+        console.log('You clicked on a private link!')
+        socket.emit('join private', {'private': button.dataset.private});
+        console.log('Private now set to: ', button.dataset.private);
       };
     });
-  };
+  }
 
 
   const new_channel_ws_config = function () {
@@ -311,9 +348,14 @@ const private_message = function() {
 
   event.preventDefault();
 
-  let user_id = event.target.dataset.user_id;
+  let target_id = event.target.dataset.target_id;
 
-  socket.emit('join private channel', {'user_id': user_id, 'client_id': client_id})
+  let user_id = localStorage.getItem('user_id');
+
+  console.log('trying to start private chat');
+  console.log('between users: ', user_id, target_id);
+
+  socket.emit('create private channel', {'target_id': target_id, 'user_id': user_id})
 };
 
 
@@ -380,9 +422,11 @@ const message_editor = function () {
 
 const show_private_chat = function () {
   document.querySelector('#private-panel').style.display = 'block';
+  document.querySelector('#chatroom-panel').style.opacity = '0';
 };
 
 const hide_private_chat = function () {
   document.querySelector('#private-panel').style.display = 'none';
+  document.querySelector('#chatroom-panel').style.opacity = '1';
 };
 

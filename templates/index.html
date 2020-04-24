@@ -156,7 +156,7 @@
         <a href="#" onclick="message_editor()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-pencil-alt"> </i> Edit Message</a>
         <a href="#" onclick="delete_message()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
         {{else}}
-        <a href="#" class="private-message" data-user_id="{{ user_id }}"> <i class="fas fa-user"></i> <span id="workspace-users"> Private Message</a>
+        <a href="#" onclick="private_message()" data-target_id="{{ user_id }}"> <i class="fas fa-user"></i> Private Message</a>
         {{/if}}
       </p>
     </li>

@@ -227,7 +227,7 @@ CHATROOM/PRIVATE CHANNELS
 ==========================
 */
 #private-panel {
-  width: 0px;
+  display: none;
 }
 
 #private-panel {
