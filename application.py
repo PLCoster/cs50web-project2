@@ -455,10 +455,10 @@ def create_workspace(data):
   data = {'sign in': False, 'workspace': ws_name}
   join_workspace(data)
 
-
+"""
 @socketio.on("create private channel")
 def create_private_channel(data):
-  """ Creates and joins a user to a private message channel between two users """
+  """""" Creates and joins a user to a private message channel between two users """"""
 
   # Determine the private channel name:
   user_1 = int(data['user_id'])
@@ -474,6 +474,7 @@ def create_private_channel(data):
 
   # Send updated private message channels to both users:
   emit('private_list amended', {''})
+"""
 
 @socketio.on("log out")
 def socket_logout():

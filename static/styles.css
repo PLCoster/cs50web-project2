@@ -132,7 +132,7 @@ SIDE NAV
   overflow-y: auto;
   padding-top: 10px;
   padding-left: 20px;
-  padding-bottom: 80px;
+  padding-bottom: 0;
 }
 .sidenav hr {
   margin: 0 20px 10px 0;
@@ -217,18 +217,30 @@ SIDE NAV
   color: #e9ede6;
 }
 
+.online {
+  color: #96E072;
+}
+
 /*
 ==========================
-CHAT ROOM
+CHATROOM/PRIVATE CHANNELS
 ==========================
 */
-#chatroom-panel {
+#private-panel {
+  width: 0px;
+}
+
+#private-panel {
+  z-index: 3;
+}
+
+#chatroom-panel, #private-panel {
   max-height: 100vh;
   margin-left: 200px;
   text-align: left;
   overflow-y: auto;
 }
-#chatroom-panel #chatroom-header {
+#chatroom-panel #chatroom-header, #private-panel #chatroom-header {
   position: fixed;
   left: 200px;
   top: 0px;
@@ -237,64 +249,64 @@ CHAT ROOM
   z-index: 2;
   background-color: #f9f9f9;
 }
-#chatroom-panel #chatroom-header #chatroom-header-text {
+#chatroom-panel #chatroom-header #chatroom-header-text, #private-panel #chatroom-header #chatroom-header-text {
   margin-left: 10px;
 }
-#chatroom-panel #chatroom-header hr {
+#chatroom-panel #chatroom-header hr, #private-panel #chatroom-header hr {
   margin: 0 0;
 }
-#chatroom-panel #chatroom-header #workspace-info {
+#chatroom-panel #chatroom-header #workspace-info, #private-panel #chatroom-header #workspace-info {
   position: fixed;
   right: 20px;
-  top: 0px;
+  top: 10px;
 }
-#chatroom-panel #messages {
+#chatroom-panel #messages, #chatroom-panel #private-messages, #private-panel #messages, #private-panel #private-messages {
   word-wrap: break-word;
   list-style-type: none;
   padding-left: 10px;
 }
-#chatroom-panel #messages img {
+#chatroom-panel #messages img, #chatroom-panel #private-messages img, #private-panel #messages img, #private-panel #private-messages img {
   float: left;
   margin: 0 5px 8px 0;
 }
-#chatroom-panel #messages li {
+#chatroom-panel #messages li, #chatroom-panel #private-messages li, #private-panel #messages li, #private-panel #private-messages li {
   margin-top: 5px;
 }
-#chatroom-panel #messages li:after, #chatroom-panel #messages li:before {
+#chatroom-panel #messages li:after, #chatroom-panel #messages li:before, #chatroom-panel #private-messages li:after, #chatroom-panel #private-messages li:before, #private-panel #messages li:after, #private-panel #messages li:before, #private-panel #private-messages li:after, #private-panel #private-messages li:before {
   content: "";
   display: table;
   clear: both;
 }
-#chatroom-panel #messages h5, #chatroom-panel #messages p {
+#chatroom-panel #messages h5, #chatroom-panel #messages p, #chatroom-panel #private-messages h5, #chatroom-panel #private-messages p, #private-panel #messages h5, #private-panel #messages p, #private-panel #private-messages h5, #private-panel #private-messages p {
   font-size: 14px;
   line-height: 16px;
   margin-bottom: 4px;
   margin-left: 55px;
 }
-#chatroom-panel #messages textarea {
+#chatroom-panel #messages textarea, #chatroom-panel #private-messages textarea, #private-panel #messages textarea, #private-panel #private-messages textarea {
   font-size: 14px;
   line-height: 16px;
   width: 75%;
 }
-#chatroom-panel #messages p {
+#chatroom-panel #messages p, #chatroom-panel #private-messages p, #private-panel #messages p, #private-panel #private-messages p {
   margin-bottom: 8px;
 }
-#chatroom-panel #messages .message-date {
+#chatroom-panel #messages .message-date, #chatroom-panel #private-messages .message-date, #private-panel #messages .message-date, #private-panel #private-messages .message-date {
   font-weight: 300;
   font-size: 12px;
 }
-#chatroom-panel #messages .user-message a {
+#chatroom-panel #messages .user-message a, #chatroom-panel #private-messages .user-message a, #private-panel #messages .user-message a, #private-panel #private-messages .user-message a {
   display: inline-block;
   margin-right: 10px;
 }
-#chatroom-panel #messages .user-message:hover .message-options {
+#chatroom-panel #messages .user-message:hover .message-options, #chatroom-panel #private-messages .user-message:hover .message-options, #private-panel #messages .user-message:hover .message-options, #private-panel #private-messages .user-message:hover .message-options {
   height: 0;
   display: block;
   animation: hover-reveal 1s ease-out;
   animation-fill-mode: forwards;
   animation-play-state: running;
 }
-#chatroom-panel #chat-input {
+#chatroom-panel #chat-input, #private-panel #chat-input {
   position: fixed;
   left: 200px;
   bottom: 0px;
@@ -304,18 +316,14 @@ CHAT ROOM
   z-index: 2;
   background-color: #f9f9f9;
 }
-#chatroom-panel #chat-input hr {
+#chatroom-panel #chat-input hr, #private-panel #chat-input hr {
   margin-top: 0;
 }
-#chatroom-panel #chat-input #chat-input-form {
+#chatroom-panel #chat-input #chat-input-form, #private-panel #chat-input #chat-input-form {
   padding-left: 20px;
 }
-#chatroom-panel #chat-input #message {
+#chatroom-panel #chat-input #message, #private-panel #chat-input #message {
   width: 50%;
-}
-
-.online {
-  color: #96E072;
 }
 
 .profile-icon {

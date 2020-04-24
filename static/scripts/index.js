@@ -378,4 +378,11 @@ const message_editor = function () {
   }
 };
 
+const show_private_chat = function () {
+  document.querySelector('#private-panel').style.display = 'block';
+};
+
+const hide_private_chat = function () {
+  document.querySelector('#private-panel').style.display = 'none';
+};
 

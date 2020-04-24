@@ -52,6 +52,8 @@
     <!-- Private Chat List -->
     <div class="channel-display">
       <h5>Direct Messages <i class="fas fa-plus-square"></i></h5>
+      <p onclick="show_private_chat()">Open</p>
+      <p onclick="hide_private_chat()">Close X</p>
       <ul id="private-links" class="visible">
       </ul>
     </div>
@@ -75,7 +77,6 @@
       <hr>
     </div>
 
-
     <!-- Channel Messages -->
     <div style="height: 70px;"></div>
 
@@ -86,8 +87,41 @@
 
     <div style="height: 60px;"></div>
 
-
     <!-- Chat text Entry -->
+    <div id="chat-input">
+      <hr>
+      <form id="chat-input-form">
+        <input type="text" id="message" name="message" placeholder="Enter Your Message" autocomplete="off" required>
+        <button id="send-chat-input">Send!</button>
+      </form>
+    </div>
+  </section>
+
+
+  <!-- Private Channel Display Section -->
+  <section id="private-panel">
+    <div id="chatroom-header">
+      <div id="chatroom-header-text">
+        <h5>Private Chat with:</h5>
+        <h4 id="private-channel">Placeholder</h4>
+      </div>
+      <div id="workspace-info">
+        <h5 id="private-chat-close">Close Private Chat X</h5>
+      </div>
+      <hr>
+    </div>
+
+    <!-- Private Channel Messages -->
+    <div style="height: 70px;"></div>
+
+    <div id="message-panel">
+      <ul id="private-messages">
+      </ul>
+    </div>
+
+    <div style="height: 60px;"></div>
+
+    <!-- Private Chat text Entry -->
     <div id="chat-input">
       <hr>
       <form id="chat-input-form">

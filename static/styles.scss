@@ -144,7 +144,7 @@ SIDE NAV
   overflow-y: auto;
   padding-top: 10px;
   padding-left: 20px;
-  padding-bottom: 80px;
+  padding-bottom: 0;
 
   hr {
     margin: 0 20px 10px 0;
@@ -247,15 +247,26 @@ SIDE NAV
   }
 }
 
+.online {
+  color: #96E072;
+}
 
 
 /*
 ==========================
-CHAT ROOM
+CHATROOM/PRIVATE CHANNELS
 ==========================
 */
 
-#chatroom-panel {
+#private-panel {
+  width: 0px;
+}
+
+#private-panel {
+  z-index: 3;
+}
+
+#chatroom-panel, #private-panel {
   max-height: 100vh;
   margin-left: 200px;
   text-align: left;
@@ -281,11 +292,11 @@ CHAT ROOM
     #workspace-info {
       position: fixed;
       right: 20px;
-      top: 0px;
+      top: 10px;
     }
   }
 
-  #messages {
+  #messages, #private-messages {
     word-wrap: break-word;
     list-style-type: none;
     padding-left: 10px;
@@ -363,10 +374,6 @@ CHAT ROOM
       width: 50%;
     }
   }
-}
-
-.online {
-  color: #96E072;
 }
 
 .profile-icon {
