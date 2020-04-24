@@ -49,7 +49,6 @@ workspaces = {'Welcome!':
 # Server Private Channel Storage - Each User gets a personal 'Memo' Private Chat:
 private_channels = {'user_private_list': {}, 'channels': {}}
 
-# Server individual user rooms
 
 def sanitize_message(message):
   """ Helper function that takes a user's message string and replaces special HTML chars with their HTML entities to keep the chars and prevent adding HTML to the message board
@@ -105,6 +104,7 @@ def load_hist(user):
   session['curr_ws'] = user.curr_ws
   session['curr_chan'] = user.curr_chan
   session['curr_ws_chan'] = f'{session["curr_ws"]}~{session["curr_chan"]}'
+  session['curr_private'] = (session['user_id'], session['user_id'])
 
 
 @app.route("/")
@@ -344,6 +344,44 @@ def join_channel(data):
   db.session.commit()
 
 
+@socketio.on("join private")
+def join_private(data):
+  """ Lets a user joing a specific private chat room with one other user, relays last
+  100 messages from that private chat """
+
+  private_id = (int(data['user_1']), int(data['user_2']))
+
+  # Check that user can join the private chat:
+  if session['user_id'] not in private_id:
+    # Send some kind of error message
+    return False
+
+  # Leave the previous private channel and join new one:
+  leave_room(session['curr_private'])
+
+  print('JOINING PRIVATE CHAT')
+
+  # Check that private exists in private_channels, if not then go to default memo:
+  if not private_channels['channels'].get(private_id):
+    session['curr_private'] = (session['user_id'], session['user_id'])
+  else:
+    session['curr_private'] = private_id
+
+  join_room(session['curr_private'])
+  user_sid = request.sid
+
+  private_chan = private_channels['channels'][session['curr_private']]
+  private_name = private_channels['user_private_list'][session['user_id']][private_id]['name']
+
+  # Send private message history to user joining:
+  message_history = sorted(list(private_chan["messages"].values()), key = lambda x : x[2])
+
+  emit("private logon", {"channel_name" : private_name, "message_history" : message_history}, room=user_sid)
+  print("private logon emitted")
+
+  # NEED TO SAVE TO DB HERE
+
+
 @socketio.on("send message")
 def send_message(data):
   """ Sends a message to all users in the same room, and stores the message on the server """
@@ -356,23 +394,40 @@ def send_message(data):
   workspace = session['curr_ws']
   channel = session['curr_chan']
   ws_channel = session['curr_ws_chan']
+  private = session['curr_private']
   profile_img = session['profile_img']
 
   # Date and Timestamp the message:
   timestamp = datetime.now(pytz.utc).timestamp()
   date = datetime.now().strftime("%d %b %Y")
 
-  # Save message data to channel log:
-  next = workspaces[workspace]['channels'][channel]['next_message']
-  message = [message_text, screen_name, timestamp, date, next, profile_img, session["user_id"]]
-  workspaces[workspace]['channels'][channel]['messages'][next] = message
+  # If public channel message, save to workspaces
+  if not data['private']:
+    # Save message data to channel log:
+    next = workspaces[workspace]['channels'][channel]['next_message']
+    message = [message_text, screen_name, timestamp, date, next, profile_img, session["user_id"]]
+    workspaces[workspace]['channels'][channel]['messages'][next] = message
 
-  # Store up to 100 messages, then overwrite the first message
-  workspaces[workspace]['channels'][channel]['next_message'] += 1
-  if workspaces[workspace]['channels'][channel]['next_message'] > 100:
-    workspaces[workspace]['channels'][channel]['next_message'] = 1
+    # Store up to 100 messages, then overwrite the first message
+    workspaces[workspace]['channels'][channel]['next_message'] += 1
+    if workspaces[workspace]['channels'][channel]['next_message'] > 100:
+      workspaces[workspace]['channels'][channel]['next_message'] = 1
 
-  emit("emit message", {"message": message}, room=ws_channel)
+    emit("emit message", {"message": message, "private": False}, room=ws_channel)
+
+  # If private channel message, save to private_channels
+  else:
+    # Save message to private channel log:
+    next = private_channels['channels'][private]['next_message']
+    message = [message_text, screen_name, timestamp, date, next, profile_img, session["user_id"]]
+    private_channels['channels'][private]['messages'][next] = message
+
+    # Store up to 100 messages, the overwrite the first message
+    private_channels['channels'][private]['next_message'] += 1
+    if private_channels['channels'][private]['next_message'] > 100:
+      private_channels['channels'][private]['next_message'] = 1
+
+    emit("emit message", {"message": message, "private": True}, room=private)
 
 
 @socketio.on('delete message')
@@ -392,6 +447,8 @@ def delete_message(data):
     messages[message_id][0] = f'This message was deleted - {datetime.now().strftime("%d %b %Y")}'
 
   emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id][0]}, room=session['curr_ws_chan'])
+
+
 
 
 @socketio.on('edit message')
@@ -504,17 +561,22 @@ def create_private_channel(data):
 
   user_sid = request.sid
 
-  print(private_channels)
-
   user_private_channels = private_channels['user_private_list'][user_id]
-  user_private_chan_list = [[x, user_private_channels[x]['name']] for x in user_private_channels]
+  user_private_chan_list = [[x[0], x[1], user_private_channels[x]['name']] for x in user_private_channels]
 
   target_private_channels = private_channels['user_private_list'][target_id]
-  target_private_chan_list = [[x, target_private_channels[x]['name']] for x in target_private_channels]
+  target_private_chan_list = [[x[0], x[1], target_private_channels[x]['name']] for x in target_private_channels]
+
+  print(private_channels)
+  print(user_private_chan_list)
+  print(target_private_chan_list)
 
   # Send updated private message channels to both users:
   emit('private_list amended', {'priv_chan_list': user_private_chan_list}, room=user_sid)
   emit('private_list amended', {'priv_chan_list': target_private_chan_list}, room=f'{(target_id,)}')
+
+  # Join the private message channel for requesting user:
+  join_private({'user_1': private_chan[0], 'user_2': private_chan[1]})
 
 
 @socketio.on("log out")

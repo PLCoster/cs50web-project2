@@ -52,17 +52,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update current channel title
     document.querySelector('#curr-channel').innerHTML= data['channel_name'];
 
-    // Add all new messages:
+    // Add all message history:
     for (let i = 0; i < data['message_history'].length ; i++) {
       message = data['message_history'][i]
-      post_message(message)
+      post_message(message, false)
     }
+
+    // Hide private chat:
+    hide_private_chat();
+  });
+
+
+  // When a new private chat is joined, clear the private channel and display message history:
+  socket.on('private logon', data => {
+
+    // Clear current private messages
+    document.querySelector('#private-messages').innerHTML = '';
+
+    // Update current private chat name
+    document.querySelector('#private-channel').innerHTML = data['channel_name'];
+
+    // Add all message history:
+    for (let i = 0; i < data['message_history'].length ; i++) {
+      message = data['message_history'][i]
+      post_message(message, true)
+    }
+
+    // Hide channel and show private messages:
+    show_private_chat();
   });
 
   // When a new message is sent to the channel, add to the chat panel:
   socket.on('emit message', data => {
     console.log('Message received, message data:', data);
-    post_message(data['message'])
+    if (data.private) {
+      post_message(data['message'], true);
+    } else {
+      post_message(data['message'], false);
+    }
   });
 
   // When a message is edited or deleted in the current channel, update message text:
@@ -113,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const message_config = function () {
     console.log('Message Config running')
-    // Function to set up button to submit messages to the server:
+    // Function to set up buttons to submit public messages to the server:
     document.querySelector('#send-chat-input').onclick = () => {
       event.preventDefault();
 
@@ -128,8 +155,28 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Trying to send message to server:', message);
       if (message) {
         console.log('Sending Message: ', {'message': message});
-        socket.emit('send message', {'message': message});
+        socket.emit('send message', {'message': message, 'private': false});
         document.querySelector('#message').value = '';
+      }
+    };
+
+    // Function to set up buttons to submit private messages to the server:
+    document.querySelector('#send-private-input').onclick = () => {
+      event.preventDefault();
+
+      // Hide any open message editors:
+      document.querySelectorAll('.user-message').forEach( el => {
+        el.querySelector('.message-edit-form').style.display = 'none';
+        el.querySelector('.message-options').removeAttribute('style');
+        el.querySelector('.message-text').style.display = 'block';
+      })
+
+      const message = document.querySelector('#private-message').value;
+      console.log('Trying to send private message to server:', message);
+      if (message) {
+        console.log('Sending Private Message: ', {'message': message});
+        socket.emit('send message', {'message': message, 'private': true});
+        document.querySelector('#private-message').value = '';
       }
     };
   };
@@ -204,13 +251,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add all Channel Links:
     for (let i=0; i < private_list.length; i++) {
-      let private_link = private_list[i][0];
-      let private_name = private_list[i][1];
+      let user_id_1 = private_list[i][0];
+      let user_id_2 = private_list[i][1];
+      let private_name = private_list[i][2];
 
       const li = document.createElement('li');
       li.innerHTML = private_name;
       li.className = 'private-link';
-      li.setAttribute('data-private', private_link);
+      li.setAttribute('data-user_id_1', user_id_1);
+      li.setAttribute('data-user_id_2', user_id_2);
       li.setAttribute('href', '');
 
       document.querySelector('#private-links').append(li);
@@ -221,8 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
       button.onclick = () => {
         event.preventDefault();
         console.log('You clicked on a private link!')
-        socket.emit('join private', {'private': button.dataset.private});
-        console.log('Private now set to: ', button.dataset.private);
+        socket.emit('join private', {'user_1': button.dataset.user_id_1, 'user_2': button.dataset.user_id_2});
       };
     });
   }
@@ -322,10 +370,17 @@ document.addEventListener('DOMContentLoaded', () => {
   =============================================
 */
 
-const post_message = function (message) {
+const post_message = function (message, private) {
   // Helper function to post received messages to the chat panel
 
-  let client_message;
+  let client_message, panel;
+
+  // Check which panel to add messages to:
+  if (private) {
+    panel = '#private-messages'
+  } else {
+    panel = '#messages'
+  }
 
   // Check if message is by the client or a different user:
   if (message[6] === parseInt(localStorage.getItem('user_id'))) {
@@ -340,7 +395,7 @@ const post_message = function (message) {
   const content = template({'username' : message[1], 'date' : message[3], 'timestamp' : message[2], 'message' : message[0], 'image': message[5], 'user_id' : message[6], 'client_message' : client_message, 'message_id' : message[4]});
 
   // Add to messages element
-  document.querySelector('#messages').innerHTML += content;
+  document.querySelector(panel).innerHTML += content;
 };
 
 const private_message = function() {
@@ -422,11 +477,11 @@ const message_editor = function () {
 
 const show_private_chat = function () {
   document.querySelector('#private-panel').style.display = 'block';
-  document.querySelector('#chatroom-panel').style.opacity = '0';
+  document.querySelector('#chatroom-panel').style.display = 'none';
 };
 
 const hide_private_chat = function () {
   document.querySelector('#private-panel').style.display = 'none';
-  document.querySelector('#chatroom-panel').style.opacity = '1';
+  document.querySelector('#chatroom-panel').style.display = 'block';
 };
 
