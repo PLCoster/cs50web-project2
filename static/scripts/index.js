@@ -442,8 +442,13 @@ const message_editor = function () {
   for (let i = 0; i < messages.length; i++) {
     if (messages[i].dataset.message_id == message_id && messages[i].dataset.timestamp == timestamp) {
       let message = messages[i]
+
+      console.log('Trying to Edit Message')
+
       message_text = message.querySelector('.message-text').innerHTML;
-      message.querySelector('.message-edit').innerHTML = message_text;
+
+      console.log('Message Text to Edit:', message_text);
+      message.querySelector('.message-edit').value = message_text;
       message.querySelector('.message-options').style.display = 'none';
       message.querySelector('.message-text').style.display = 'none';
       message.querySelector('.message-edit-form').style.display = 'block';

@@ -466,7 +466,7 @@ def edit_message(data):
 
   if messages.get(message_id) and (messages[message_id][2] == timestamp) and (session['user_id'] == messages[message_id][6]):
 
-    messages[message_id][0] = f'{text} - Edited {datetime.now().strftime("%d %b %Y")}'
+    messages[message_id][0] = f'{text} \u007E Edited {datetime.now().strftime("%d %b %Y")}'
 
   emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id][0]}, room=session['curr_ws_chan'])
 
