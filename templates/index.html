@@ -54,6 +54,7 @@
       <h5>Direct Messages <i class="fas fa-plus-square"></i></h5>
       <p onclick="show_private_chat()">Open</p>
       <p onclick="hide_private_chat()">Close X</p>
+      <p onclick="sliding_panel()">Open Sliding</p>
       <ul id="private-links" class="visible">
       </ul>
     </div>
@@ -71,7 +72,7 @@
         <h5>Current Channel:</h5>
         <h4 id="curr-channel"></h4>
       </div>
-      <div id="workspace-info">
+      <div id="workspace-info" onclick="show_ws_users()">
         <h5></h5><i class="fas fa-users"></i> <span id="workspace-users"></span></h5>
       </div>
       <hr>
@@ -82,6 +83,7 @@
 
     <div id="message-panel">
       <ul id="messages">
+      <!-- Channel messages added here-->
       </ul>
     </div>
 
@@ -116,6 +118,7 @@
 
     <div id="message-panel">
       <ul id="private-messages">
+      <!-- Private messages added here -->
       </ul>
     </div>
 
@@ -131,10 +134,20 @@
     </div>
   </section>
 
+  <!-- Workspace Users Sidepanel -->
+  <section id="workspace-user-panel">
+    <h4>Users Online in Workspace: </h4>
+    <p onclick="hide_ws_users()">Close X</p>
+    <ul id="workspace-users-list">
+
+    </ul>
+  </section>
+
   <!-- Handlebars Templates -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
   <script id="message-template" type="text/template">
     {% raw -%}
+    <!-- Message Template -->
     <li class="user-message" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}">
       <img class="profile-icon" src="/static/Images/profile/{{ image }}" alt="User Profile Image">
       <h5 class="message-username">{{ username }} <span class="message-date text-muted"> {{ date }} - <span data-livestamp="{{ timestamp }}"></span></span></h5>
@@ -160,6 +173,19 @@
         {{/if}}
       </p>
     </li>
+    {%- endraw %}
+  </script>
+
+  <script id="user-ws-template" type="text/template">
+    {% raw -%}
+    <!-- User in WS Template -->
+    {{#each user_details}}
+    <li>
+      <img class="profile-icon" src="/static/Images/profile/{{ this.icon }}" alt="User Profile Image">
+      <h5>{{ this.name }}</h5>
+      <a href="#" onclick="private_message()" data-target_id="{{ this.id }}"> <i class="fas fa-user"></i> Private Message</a>
+    </li>
+    {{/each}}
     {%- endraw %}
   </script>
 

@@ -224,12 +224,16 @@ SIDE NAV
 CHATROOM/PRIVATE CHANNELS
 ==========================
 */
-#private-panel {
-  display: none;
+#chatroom-panel #chatroom-header, #chatroom-panel #chat-input {
+  z-index: 2;
 }
 
 #private-panel {
-  z-index: 3;
+  z-index: 4;
+  display: none;
+}
+#private-panel #chatroom-header, #private-panel #chat-input {
+  z-index: 5;
 }
 
 #chatroom-panel, #private-panel {
@@ -244,7 +248,6 @@ CHATROOM/PRIVATE CHANNELS
   top: 0px;
   width: 100%;
   padding-top: 10px;
-  z-index: 2;
   background-color: #f9f9f9;
 }
 #chatroom-panel #chatroom-header #chatroom-header-text, #private-panel #chatroom-header #chatroom-header-text {
@@ -311,7 +314,6 @@ CHATROOM/PRIVATE CHANNELS
   width: 100%;
   padding-bottom: 20px;
   text-align: left;
-  z-index: 2;
   background-color: #f9f9f9;
 }
 #chatroom-panel #chat-input hr, #private-panel #chat-input hr {
@@ -328,6 +330,64 @@ CHATROOM/PRIVATE CHANNELS
   height: 50px;
   width: auto;
   margin-top: 5px;
+}
+
+/*
+=========================
+WS-USER PANEL
+=========================
+*/
+#workspace-user-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  text-align: left;
+  width: 0px;
+  height: 100%;
+  z-index: 3;
+  overflow-x: hidden;
+  margin-bottom: 65px;
+  background-color: #f9f9f9;
+  opacity: 0;
+  border-left: 1px solid #7f97a5;
+  transition: 0.5s;
+  overflow-x: hidden;
+}
+#workspace-user-panel * {
+  margin-left: 20px;
+}
+#workspace-user-panel h4 {
+  margin-top: 20px;
+}
+#workspace-user-panel ul {
+  list-style-type: none;
+  margin-left: -40px;
+  margin-bottom: 10px;
+  overflow-y: auto;
+  overflow: hidden;
+}
+#workspace-user-panel img {
+  float: left;
+  margin: 0 5px 8px 0;
+}
+#workspace-user-panel li {
+  margin-top: 5px;
+}
+#workspace-user-panel li:after, #workspace-user-panel li:before {
+  content: "";
+  display: table;
+  clear: both;
+}
+#workspace-user-panel h5 {
+  font-size: 14px;
+  line-height: 16px;
+  margin-bottom: 4px;
+  margin-left: 55px;
+}
+#workspace-user-panel a {
+  font-size: 12px;
+  line-height: 12px;
+  margin-left: -20px;
 }
 
 /*

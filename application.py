@@ -109,7 +109,7 @@ def load_hist(user):
 
 
 def load_private(user_id):
-  """ Initiates and loads all private chat channels for a user, sends the
+  """ Initialises and loads all private chat channels for a user, sends the
   channel list to the user """
 
   # If the user does not have a private channel list in on the server, create it and a default memo channel:
@@ -132,6 +132,30 @@ def load_private(user_id):
   print('Sending private channel list: ', user_private_chan_list, private_channels['user_private_list'][user_id])
 
   emit('private_list amended', {'priv_chan_list': user_private_chan_list}, room=user_room)
+
+
+def update_ws_users(ws_name):
+  """ Sends out an updated list and count of all users in a workspace, when someone signs in or out of ws """
+
+  # Get count of current ws users:
+  num_users = len(workspaces[ws_name]['users_online'])
+
+  user_details = []
+
+  print('UPDATING WORKSPACE USERS: ', workspaces[ws_name]['users_online'])
+
+  # Get names, user_ids and icons for all users online:
+  for user_id in workspaces[ws_name]['users_online']:
+    user_info = User.query.get(user_id)
+
+    user = {}
+    user['name'] = user_info.screen_name
+    user['id'] = user_id
+    user['icon'] = user_info.profile_img
+
+    user_details.append(user)
+
+  emit('ws_users amended', {'users' : num_users, 'user_details' : user_details}, room=ws_name)
 
 
 @app.route("/")
@@ -293,7 +317,7 @@ def join_workspace(data):
 
     # Update online users in workspace
     workspaces[session['curr_ws']]['users_online'].remove(session['user_id'])
-    emit('ws_users amended', {'users' : len(workspaces[session['curr_ws']]['users_online'])}, room=session['curr_ws'])
+    update_ws_users(session['curr_ws'])
 
     # Join new workspace on default announcements channel
     session['curr_ws'] = data['workspace']
@@ -330,7 +354,7 @@ def join_workspace(data):
 
   # Update number of users in workspace:
   workspaces[session["curr_ws"]]["users_online"].add(session['user_id'])
-  emit('ws_users amended', {'users' : len(workspaces[session["curr_ws"]]["users_online"])}, room=session["curr_ws"])
+  update_ws_users(session['curr_ws'])
 
   # Update user's workspace history in DB:
   user_info = User.query.get(session["user_id"])
@@ -553,11 +577,7 @@ def create_private_channel(data):
   target_id = int(data['target_id'])
   user_id = int(data['user_id'])
 
-  print(target_id, user_id)
-
   private_chan = tuple(sorted([user_id, target_id]))
-
-  print('Private Channel Name: ', private_chan)
 
   # Check that client is the current session user:
   if session['user_id'] != user_id:
@@ -574,30 +594,14 @@ def create_private_channel(data):
 
     private_channels['user_private_list'][target_id][private_chan] = {'name': session['screen_name']}
 
-    # Create private channel list for user if none:
-    if not private_channels['user_private_list'].get(user_id):
-      private_channels['user_private_list'][user_id] = {}
-
     # Get screenname of target user:
     target_screen_name = User.query.get(target_id).screen_name
     print('Target User Screen Name: ', target_screen_name)
     private_channels['user_private_list'][user_id][private_chan] = {'name': target_screen_name}
 
-  user_sid = request.sid
-
-  user_private_channels = private_channels['user_private_list'][user_id]
-  user_private_chan_list = [[x[0], x[1], user_private_channels[x]['name']] for x in user_private_channels]
-
-  target_private_channels = private_channels['user_private_list'][target_id]
-  target_private_chan_list = [[x[0], x[1], target_private_channels[x]['name']] for x in target_private_channels]
-
-  print(private_channels)
-  print(user_private_chan_list)
-  print(target_private_chan_list)
-
-  # Send updated private message channels to both users:
-  emit('private_list amended', {'priv_chan_list': user_private_chan_list}, room=user_sid)
-  emit('private_list amended', {'priv_chan_list': target_private_chan_list}, room=f'{(target_id,)}')
+  # Send updated channel lists to both users:
+  load_private(user_id)
+  load_private(target_id)
 
   # Join the private message channel for requesting user:
   join_private({'user_1': private_chan[0], 'user_2': private_chan[1]})
@@ -609,7 +613,7 @@ def socket_logout():
   print('USER LOGOUT RECEIVED')
   # Remove user from current workspace:
   workspaces[session["curr_ws"]]["users_online"].remove(session["user_id"])
-  emit('ws_users amended', {'users' : len(workspaces[session["curr_ws"]]["users_online"])}, room=session["curr_ws"])
+  update_ws_users(session['curr_ws'])
 
   leave_room(session["curr_ws"])
   leave_room(session["curr_ws_chan"])

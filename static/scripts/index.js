@@ -129,6 +129,15 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('ws_users amended', data => {
     console.log('updated user number received: ', data.users);
     document.querySelector('#workspace-users').innerHTML = data.users;
+    console.log(data.user_details)
+
+    // Create message element using handlebars
+    const template = Handlebars.compile(document.querySelector('#user-ws-template').innerHTML);
+
+    const content = template({'user_details' : data.user_details});
+
+    // Add to messages element
+    document.querySelector('#workspace-users-list').innerHTML = content;
   });
 
 
@@ -482,11 +491,22 @@ const message_editor = function () {
 
 const show_private_chat = function () {
   document.querySelector('#private-panel').style.display = 'block';
+  document.querySelector('#private-panel').style.opacity = '1';
   document.querySelector('#chatroom-panel').style.display = 'none';
 };
 
 const hide_private_chat = function () {
   document.querySelector('#private-panel').style.display = 'none';
+  document.querySelector('#private-panel').style.opacity = '0';
   document.querySelector('#chatroom-panel').style.display = 'block';
 };
 
+const show_ws_users = function () {
+  document.querySelector('#workspace-user-panel').style.width = '200px';
+  document.querySelector('#workspace-user-panel').style.opacity = '1';
+};
+
+const hide_ws_users = function () {
+  document.querySelector('#workspace-user-panel').removeAttribute('style');
+  document.querySelector('#workspace-user-panel').style.opacity = '0';
+};

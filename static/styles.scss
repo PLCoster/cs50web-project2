@@ -257,12 +257,20 @@ CHATROOM/PRIVATE CHANNELS
 ==========================
 */
 
-#private-panel {
-  display: none;
+#chatroom-panel {
+
+  #chatroom-header, #chat-input {
+    z-index: 2;
+  }
 }
 
 #private-panel {
-  z-index: 3;
+  z-index: 4;
+  display: none;
+
+  #chatroom-header, #chat-input {
+    z-index: 5;
+  }
 }
 
 #chatroom-panel, #private-panel {
@@ -277,7 +285,6 @@ CHATROOM/PRIVATE CHANNELS
     top: 0px;
     width: 100%;
     padding-top : 10px;
-    z-index: 2;
     background-color: $primary-container;
 
     #chatroom-header-text {
@@ -358,7 +365,6 @@ CHATROOM/PRIVATE CHANNELS
     width: 100%;
     padding-bottom: 20px;
     text-align: left;
-    z-index: 2;
     background-color: $primary-container;
 
     hr {
@@ -379,6 +385,73 @@ CHATROOM/PRIVATE CHANNELS
   height: 50px;
   width: auto;
   margin-top: 5px;
+}
+
+
+/*
+=========================
+WS-USER PANEL
+=========================
+*/
+#workspace-user-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  text-align: left;
+  width: 0px;
+  height: 100%;
+  z-index: 3;
+  overflow-x: hidden;
+  margin-bottom: 65px;
+  background-color: $primary-container;
+  opacity: 0;
+  border-left: 1px solid $theme-med;
+  transition: 0.5s;
+  overflow-x: hidden;
+
+  * {
+    margin-left: 20px;
+  }
+
+  h4 {
+    margin-top: 20px;
+  }
+
+  ul {
+    list-style-type: none;
+    margin-left: -40px;
+    margin-bottom: 10px;
+    overflow-y: auto;
+    overflow: hidden;
+  }
+
+  img {
+    float: left;
+    margin: 0 5px 8px 0;
+  }
+
+  li {
+    margin-top: 5px;
+  }
+
+  li:after, li:before {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  h5 {
+   font-size: 14px;
+   line-height: 16px;
+   margin-bottom: 4px;
+   margin-left: 55px;
+  }
+
+  a {
+    font-size: 12px;
+    line-height: 12px;
+    margin-left: -20px;
+  }
 }
 
 
