@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.querySelector('.message-edit-form').style.display = 'none';
         el.querySelector('.message-options').removeAttribute('style');
         el.querySelector('.message-text').style.display = 'block';
-      })
+      });
 
       const message = document.querySelector('#private-message').value;
       console.log('Trying to send private message to server:', message);

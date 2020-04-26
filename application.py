@@ -101,10 +101,37 @@ def load_user(user):
 
 def load_hist(user):
   """ Loads a user's ws and channel hist from DB into the session """
+
   session['curr_ws'] = user.curr_ws
   session['curr_chan'] = user.curr_chan
   session['curr_ws_chan'] = f'{session["curr_ws"]}~{session["curr_chan"]}'
   session['curr_private'] = (session['user_id'], session['user_id'])
+
+
+def load_private(user_id):
+  """ Initiates and loads all private chat channels for a user, sends the
+  channel list to the user """
+
+  # If the user does not have a private channel list in on the server, create it and a default memo channel:
+  if not private_channels['user_private_list'].get(user_id):
+
+    private_channels['user_private_list'][user_id] = {}
+
+    memo_id = (user_id, user_id)
+
+    print('MEMO ID: ', memo_id)
+
+    private_channels['user_private_list'][user_id][memo_id] = {'name': 'Private Memo'}
+    private_channels['channels'][memo_id] = {'messages': {1 : ['This is your private memo space that can only be viewed by you! Use it to leave yourself reminders, to-do lists or anything else you would like!', 'Flack-Teams Help', datetime.now(pytz.utc).timestamp(), datetime.now().strftime("%d %b %Y"), 1, 'admin.png', -1]}, 'next_message': 2}
+
+  # Send user list of all their current private channels:
+  user_room = f'{(user_id,)}'
+  user_private_channels = private_channels['user_private_list'][user_id]
+  user_private_chan_list = [[x[0], x[1], user_private_channels[x]['name']] for x in user_private_channels]
+
+  print('Sending private channel list: ', user_private_chan_list, private_channels['user_private_list'][user_id])
+
+  emit('private_list amended', {'priv_chan_list': user_private_chan_list}, room=user_room)
 
 
 @app.route("/")
@@ -239,12 +266,13 @@ def logout():
 def init_logon():
   """ Initial set up of client history and local storage for app functionality """
 
-  # Load user ws and channel history
-  user_info = User.query.get(session["user_id"])
-  load_hist(user_info)
-
   # Join a private room for the user:
   join_room(f'{(session["user_id"],)}')
+
+  # Load user ws, channel and private history
+  user_info = User.query.get(session["user_id"])
+  load_hist(user_info)
+  load_private(session["user_id"])
 
   # Set up local storage for client
   user_sid = request.sid
@@ -449,8 +477,6 @@ def delete_message(data):
   emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id][0]}, room=session['curr_ws_chan'])
 
 
-
-
 @socketio.on('edit message')
 def edit_message(data):
   """ Edit the text of a message in a specific channel. Updates the message for all users """
@@ -520,8 +546,6 @@ def create_workspace(data):
 @socketio.on("create private channel")
 def create_private_channel(data):
   """ Creates and joins a user to a private message channel between two users """
-
-  # private_channels = {'user_private_list': {}, 'channels': {}}
 
   print('TYRING TO CREATE PRIVATE CHANNEL ', data)
 
