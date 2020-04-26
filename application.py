@@ -35,9 +35,9 @@ workspaces = {'Welcome!':
                 {'channels':
                   {'Getting Started':
                     {'messages':
-                      {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started! Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace. To create a new channel to chat in, click the \'+\' symbol next to \'Channels\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1, 'admin.png', -1],
-                      2 : ['Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 2, 'admin.png', -1],
-                      3 : ['To create a new channel to chat in, click the \'+\' symbol next to \'Channels\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 3, 'admin.png', -1]},
+                      {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started! Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace. To create a new workspace with its own channels to chat in, click the <i class="fas fa-plus-square"></i> symbol next to \'Workspaces\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1, 'admin.png', -1],
+                      2 : ['Flack teams uses workspaces and channels to separate different chats. To create a new channel in a workspace, click the <i class="fas fa-plus-square"></i> symbol next to \'Channels\' in the side bar to the left. Each channel in a workspace must have a unique name, and cannot be viewed when you are logged into a different workspace!', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 2, 'admin.png', -1],
+                      3 : ['Private chats can be started with any other user. Hover over the message posted by the user you wish to chat with and click the \'<i class="fas fa-user"></i> Private Message\' link that appears to start a private chatroom with that user. Private chats are not specific to a workspace; they can be accessed at any time.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 3, 'admin.png', -1]},
                     'next_message': 4},
                   'Announcements': {'messages': {}, 'next_message': 1 },
                   'News': {'messages': {}, 'next_message': 1 }

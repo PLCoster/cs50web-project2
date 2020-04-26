@@ -369,7 +369,7 @@ CHATROOM/PRIVATE CHANNELS
       padding-left: 20px;
     }
 
-    #message {
+    #message, #private-message {
       width: 50%;
     }
   }
@@ -379,41 +379,6 @@ CHATROOM/PRIVATE CHANNELS
   height: 50px;
   width: auto;
   margin-top: 5px;
-}
-
-/*
-==========================
-SEARCH BAR
-==========================
-*/
-#searchbar {
-  min-width: 366px;
-}
-
-.custom-select {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border: 1px solid $theme-light;
-  margin-right: -1px;
-  color: $theme-dark;
-  background-color: $theme-light;
-}
-
-.custom-select:hover, .custom-select:focus {
-  color: $text-on-theme-dark;
-  background-color: $theme-light;
-}
-
-.search-text {
-  border-radius: 0;
-  border: 1px solid $theme-light;
-  width: 220px;
-}
-
-.search {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  margin-left: -10px;
 }
 
 
@@ -478,120 +443,6 @@ BUTTONS
   color: $theme-dark;
   background-color: $theme-med;
   border-color: $theme-light;
-}
-
-/*
-==========================
-CARDS
-==========================
-*/
-
-.card {
-  background-color: none;
-
-  .num-ratings {
-    margin-left: 84px;
-    padding-bottom: none;
-    line-height: 20px;
-    font-size: 14px;
-    font-weight: 400;
-  }
-}
-
-.card:hover {
-  background-color:  rgba(50, 50, 50, 0.03);
-}
-
-.card-body {
-  padding-bottom: 0px;
-}
-
-a .card-subtitle {
-  font-size: 12px;
-  color:  $text-on-container;
-  text-decoration: none;
-}
-
-.card img.book-cover-S, .details-book-cover-S {
-  float: left;
-  max-height: 70px;
-  margin-right: 10px;
-}
-
-/*
-==========================
-STAR RATING IMGS
-==========================
-*/
-
-.card .star-rating {
-  float: left;
-  width: 80px;
-}
-
-.bdstar-rating {
-  max-width: 80px;
-}
-
-/*
-==========================
-BOOK DETAILS PAGE
-==========================
-*/
-
-.details-book-cover-L {
-  margin-bottom: 20px;
-}
-
-.review {
-
-  .bdstar-rating {
-    max-width: 80px;
-  }
-
-  h4 {
-    padding-top: 10px;
-  }
-
-  h5 {
-    line-height: 20px;
-    margin-bottom: 0;
-  }
-
-  p.date {
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  select {
-    max-width: 180px;
-    border-radius: 3px;
-  }
-
-  .btn {
-    float: right;
-    clear: both;
-  }
-
-  form {
-    clear: both;
-  }
-
-  .edit {
-    margin-bottom: 10px;
-  }
-
-  .btn-danger {
-    margin: 5px 0 10px 0;
-  }
-}
-
-.cancel {
-  display: none;
-}
-
-.edit_review {
-  display: none;
 }
 
 /*
@@ -702,55 +553,5 @@ ANIMATIONS
   100% {
     opacity: 1;
     height: 16.5px;
-  }
-}
-
-
-/*
-=============================
-RESPONSIVE
-=============================
-*/
-/* Hide large book images on small screens:*/
-@media screen and (max-width: 576px) {
-  .book-cover-L {
-    display: none;
-  }
-  .card.mb-4.shadow-sm {
-    margin-bottom: 5px !important;
-  }
-}
-
-@media screen and (min-width: 576px) {
-  img.book-cover-S {
-    display: none;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .details-book-cover-L {
-    display: none;
-  }
-}
-
-@media screen and (min-width: 768px) {
-  .details-book-cover-S {
-    display: none;
-  }
-}
-
-@media screen and (max-width: 767px)
-{
-  #searchbar {
-    display: inline-block;
-  }
-
-  #searchbar select {
-    max-width: 80px;
-    margin-right: -5px;
-  }
-
-  #searchbar button {
-    margin-left: -15px;
   }
 }

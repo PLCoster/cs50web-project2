@@ -320,7 +320,7 @@ CHATROOM/PRIVATE CHANNELS
 #chatroom-panel #chat-input #chat-input-form, #private-panel #chat-input #chat-input-form {
   padding-left: 20px;
 }
-#chatroom-panel #chat-input #message, #private-panel #chat-input #message {
+#chatroom-panel #chat-input #message, #chatroom-panel #chat-input #private-message, #private-panel #chat-input #message, #private-panel #chat-input #private-message {
   width: 50%;
 }
 
@@ -328,41 +328,6 @@ CHATROOM/PRIVATE CHANNELS
   height: 50px;
   width: auto;
   margin-top: 5px;
-}
-
-/*
-==========================
-SEARCH BAR
-==========================
-*/
-#searchbar {
-  min-width: 366px;
-}
-
-.custom-select {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border: 1px solid #e9ede6;
-  margin-right: -1px;
-  color: #16425b;
-  background-color: #e9ede6;
-}
-
-.custom-select:hover, .custom-select:focus {
-  color: #e9ede6;
-  background-color: #e9ede6;
-}
-
-.search-text {
-  border-radius: 0;
-  border: 1px solid #e9ede6;
-  width: 220px;
-}
-
-.search {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  margin-left: -10px;
 }
 
 /*
@@ -421,105 +386,6 @@ BUTTONS
   color: #16425b;
   background-color: #7f97a5;
   border-color: #e9ede6;
-}
-
-/*
-==========================
-CARDS
-==========================
-*/
-.card {
-  background-color: none;
-}
-.card .num-ratings {
-  margin-left: 84px;
-  padding-bottom: none;
-  line-height: 20px;
-  font-size: 14px;
-  font-weight: 400;
-}
-
-.card:hover {
-  background-color: rgba(50, 50, 50, 0.03);
-}
-
-.card-body {
-  padding-bottom: 0px;
-}
-
-a .card-subtitle {
-  font-size: 12px;
-  color: #16425b;
-  text-decoration: none;
-}
-
-.card img.book-cover-S, .details-book-cover-S {
-  float: left;
-  max-height: 70px;
-  margin-right: 10px;
-}
-
-/*
-==========================
-STAR RATING IMGS
-==========================
-*/
-.card .star-rating {
-  float: left;
-  width: 80px;
-}
-
-.bdstar-rating {
-  max-width: 80px;
-}
-
-/*
-==========================
-BOOK DETAILS PAGE
-==========================
-*/
-.details-book-cover-L {
-  margin-bottom: 20px;
-}
-
-.review .bdstar-rating {
-  max-width: 80px;
-}
-.review h4 {
-  padding-top: 10px;
-}
-.review h5 {
-  line-height: 20px;
-  margin-bottom: 0;
-}
-.review p.date {
-  font-size: 12px;
-  font-weight: 700;
-}
-.review select {
-  max-width: 180px;
-  border-radius: 3px;
-}
-.review .btn {
-  float: right;
-  clear: both;
-}
-.review form {
-  clear: both;
-}
-.review .edit {
-  margin-bottom: 10px;
-}
-.review .btn-danger {
-  margin: 5px 0 10px 0;
-}
-
-.cancel {
-  display: none;
-}
-
-.edit_review {
-  display: none;
 }
 
 /*
@@ -617,50 +483,6 @@ ANIMATIONS
   100% {
     opacity: 1;
     height: 16.5px;
-  }
-}
-/*
-=============================
-RESPONSIVE
-=============================
-*/
-/* Hide large book images on small screens:*/
-@media screen and (max-width: 576px) {
-  .book-cover-L {
-    display: none;
-  }
-
-  .card.mb-4.shadow-sm {
-    margin-bottom: 5px !important;
-  }
-}
-@media screen and (min-width: 576px) {
-  img.book-cover-S {
-    display: none;
-  }
-}
-@media screen and (max-width: 768px) {
-  .details-book-cover-L {
-    display: none;
-  }
-}
-@media screen and (min-width: 768px) {
-  .details-book-cover-S {
-    display: none;
-  }
-}
-@media screen and (max-width: 767px) {
-  #searchbar {
-    display: inline-block;
-  }
-
-  #searchbar select {
-    max-width: 80px;
-    margin-right: -5px;
-  }
-
-  #searchbar button {
-    margin-left: -15px;
   }
 }
 
