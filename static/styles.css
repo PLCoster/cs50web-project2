@@ -78,6 +78,10 @@ cite, em {
   display: none;
 }
 
+.clickable:hover {
+  cursor: pointer;
+}
+
 /*
 ==========================
 NAVBAR
@@ -224,16 +228,19 @@ SIDE NAV
 CHATROOM/PRIVATE CHANNELS
 ==========================
 */
-#chatroom-panel #chatroom-header, #chatroom-panel #chat-input {
+#chatroom-panel #chatroom-header {
   z-index: 2;
+}
+#chatroom-panel #chat-input {
+  z-index: 4;
 }
 
 #private-panel {
-  z-index: 4;
+  z-index: 5;
   display: none;
 }
 #private-panel #chatroom-header, #private-panel #chat-input {
-  z-index: 5;
+  z-index: 6;
 }
 
 #chatroom-panel, #private-panel {
@@ -346,18 +353,12 @@ WS-USER PANEL
   height: 100%;
   z-index: 3;
   overflow-x: hidden;
-  margin-bottom: 65px;
+  padding: 20px 20px 65px 20px;
   background-color: #f9f9f9;
   opacity: 0;
   border-left: 1px solid #7f97a5;
   transition: 0.5s;
   overflow-x: hidden;
-}
-#workspace-user-panel * {
-  margin-left: 20px;
-}
-#workspace-user-panel h4 {
-  margin-top: 20px;
 }
 #workspace-user-panel ul {
   list-style-type: none;
@@ -387,7 +388,7 @@ WS-USER PANEL
 #workspace-user-panel a {
   font-size: 12px;
   line-height: 12px;
-  margin-left: -20px;
+  margin-left: 0px;
 }
 
 /*

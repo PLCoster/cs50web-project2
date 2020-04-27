@@ -39,8 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   socket.on('workspace logon', data => {
     // When a new workspace is joined, update workspace info:
-    document.querySelector('#curr-workspace-show').innerHTML = data['workspace_name'] + ' \u23F7'
-    document.querySelector('#curr-workspace-hide').innerHTML = data['workspace_name'] + ' \u23F6'
+    document.querySelector('#curr-workspace-show').innerHTML = data['workspace_name'] + ' \u23F7';
+    document.querySelector('#curr-workspace-hide').innerHTML = data['workspace_name'] + ' \u23F6';
+    document.querySelector('#curr-workspace').innerHTML = data['workspace_name'];
   });
 
   // When a new channel is joined, clear messages and display message history:
@@ -490,23 +491,30 @@ const message_editor = function () {
 };
 
 const show_private_chat = function () {
+  // Opens private chat window, header and input
   document.querySelector('#private-panel').style.display = 'block';
   document.querySelector('#private-panel').style.opacity = '1';
   document.querySelector('#chatroom-panel').style.display = 'none';
 };
 
 const hide_private_chat = function () {
+  // Closes private chat window, header and input
   document.querySelector('#private-panel').style.display = 'none';
   document.querySelector('#private-panel').style.opacity = '0';
   document.querySelector('#chatroom-panel').style.display = 'block';
 };
 
 const show_ws_users = function () {
-  document.querySelector('#workspace-user-panel').style.width = '200px';
-  document.querySelector('#workspace-user-panel').style.opacity = '1';
+  // Slides out workspace users panel
+  let panel = document.querySelector('#workspace-user-panel');
+  panel.style.width = '250px';
+  panel.style.opacity = '1';
+  panel.style.paddingLeft = '20px';
 };
 
 const hide_ws_users = function () {
-  document.querySelector('#workspace-user-panel').removeAttribute('style');
-  document.querySelector('#workspace-user-panel').style.opacity = '0';
+  // Hides workspace users panel
+  let panel = document.querySelector('#workspace-user-panel')
+  panel.removeAttribute('style');
+  panel.style.paddingLeft = '0';
 };

@@ -91,6 +91,10 @@ cite, em {
   display: none;
 }
 
+.clickable:hover {
+  cursor: pointer;
+}
+
 /*
 ==========================
 NAVBAR
@@ -259,17 +263,21 @@ CHATROOM/PRIVATE CHANNELS
 
 #chatroom-panel {
 
-  #chatroom-header, #chat-input {
+  #chatroom-header {
     z-index: 2;
+  }
+
+  #chat-input {
+    z-index:4;
   }
 }
 
 #private-panel {
-  z-index: 4;
+  z-index: 5;
   display: none;
 
   #chatroom-header, #chat-input {
-    z-index: 5;
+    z-index: 6;
   }
 }
 
@@ -402,20 +410,12 @@ WS-USER PANEL
   height: 100%;
   z-index: 3;
   overflow-x: hidden;
-  margin-bottom: 65px;
+  padding: 20px 20px 65px 20px;
   background-color: $primary-container;
   opacity: 0;
   border-left: 1px solid $theme-med;
   transition: 0.5s;
   overflow-x: hidden;
-
-  * {
-    margin-left: 20px;
-  }
-
-  h4 {
-    margin-top: 20px;
-  }
 
   ul {
     list-style-type: none;
@@ -450,7 +450,7 @@ WS-USER PANEL
   a {
     font-size: 12px;
     line-height: 12px;
-    margin-left: -20px;
+    margin-left: 0px;
   }
 }
 
