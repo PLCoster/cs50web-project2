@@ -176,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
   */
 
   const message_config = function () {
-    console.log('Message Config running')
     // Function to set up buttons to submit public messages to the server:
     document.querySelector('#send-chat-input').onclick = () => {
       event.preventDefault();
@@ -477,8 +476,6 @@ const message_editor = function () {
   let message_id = message.dataset.message_id;
   let timestamp = message.dataset.timestamp;
   let private = (message.dataset.private === 'true');
-
-  console.log('PRIVATE is : ', private, typeof private);
 
   // Select the correct message and display the message editor form:
   messages = document.querySelectorAll('.user-message');
