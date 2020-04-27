@@ -103,6 +103,22 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < messages.length; i++) {
       if (messages[i].dataset.message_id == data.message_id && messages[i].dataset.timestamp == data.timestamp) {
         messages[i].querySelector('.message-text').innerHTML = data.edited_text;
+
+        // If already edited, edit the text, else add edit text:
+        if (messages[i].querySelector('.message-edited')) {
+          messages[i].querySelector('.message-edited').innerHTML = data.edit_type + ' - ' + data.edit_date;
+        } else {
+          let edit = document.createElement('p');
+          edit.classList.add('message-edited', 'text-muted');
+          edit.innerHTML = data.edit_type + ' - ' + data.edit_date;
+          messages[i].querySelector('.message-text').after(edit);
+        }
+
+        console.log(data.deleted)
+        // If message is deleted, and own user message remove further editing options:
+        if (data.deleted && messages[i].dataset.user_id === localStorage.getItem('user_id')) {
+          messages[i].querySelector('.message-options').remove();
+        }
         break;
       }
     }
@@ -177,7 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Hide any open message editors:
       document.querySelectorAll('.user-message').forEach( el => {
         el.querySelector('.message-edit-form').style.display = 'none';
-        el.querySelector('.message-options').removeAttribute('style');
+        if (el.querySelector('.message-options')) {
+          el.querySelector('.message-options').removeAttribute('style');
+        }
         el.querySelector('.message-text').style.display = 'block';
       });
 

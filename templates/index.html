@@ -145,7 +145,7 @@
   <script id="message-template" type="text/template">
     {% raw -%}
     <!-- Message Template -->
-    <li class="user-message" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}">
+    <li class="user-message" data-user_id= "{{ message.user_id}}" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}">
       <img class="profile-icon" src="/static/Images/profile/{{ message.profile_img }}" alt="User Profile Image">
       <h5 class="message-username">{{ message.screen_name }} <span class="message-date text-muted"> {{ message.message_date }} - <span data-livestamp="{{ message.message_timestamp }}"></span></span></h5>
       <p class="message-text">{{{ message.message_text }}}</p>
@@ -167,8 +167,8 @@
       <p class="message-options hidden">
         {{# if client_message}}
         {{# unless message.deleted}}
-        <a href="#" onclick="message_editor()" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}"><i class="fas fa-pencil-alt"> </i> Edit Message</a>
-        <a href="#" onclick="delete_message()" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
+          <a href="#" onclick="message_editor()" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}"><i class="fas fa-pencil-alt"> </i> Edit Message</a>
+          <a href="#" onclick="delete_message()" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
         {{/unless}}
         {{else}}
         <a href="#" onclick="private_message()" data-target_id="{{ message.user_id }}"> <i class="fas fa-user"></i> Private Message</a>

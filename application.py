@@ -533,13 +533,13 @@ def delete_message(data):
 
   if messages.get(message_id) and (messages[message_id]['message_timestamp'] == timestamp) and (session['user_id'] == messages[message_id]['user_id']):
 
-    messages[message_id]['message_text'] = f'This message was deleted - {datetime.now().strftime("%d %b %Y")}'
+    messages[message_id]['message_text'] = 'This message was deleted'
     messages[message_id]['edited'] = True
     messages[message_id]['edit_text'] = 'Message Deleted'
     messages[message_id]['edit_date'] = datetime.now().strftime("%d %b %Y")
     messages[message_id]['deleted'] = True
 
-    emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id]['message_text']}, room=session['curr_ws_chan'])
+    emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id]['message_text'], "edit_type": messages[message_id]['edit_text'], "edit_date": messages[message_id]['edit_date'], 'deleted': True}, room=session['curr_ws_chan'])
 
 
 @socketio.on('edit message')
@@ -557,12 +557,12 @@ def edit_message(data):
 
   if messages.get(message_id) and (messages[message_id]['message_timestamp'] == timestamp) and (session['user_id'] == messages[message_id]['user_id']):
 
-    messages[message_id]['message_text'] = f'{text} \u007E Edited {datetime.now().strftime("%d %b %Y")}'
+    messages[message_id]['message_text'] = text
     messages[message_id]['edited'] = True
     messages[message_id]['edit_text'] = 'Message Edited'
     messages[message_id]['edit_date'] = datetime.now().strftime("%d %b %Y")
 
-    emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id]['message_text']}, room=session['curr_ws_chan'])
+    emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id]['message_text'], "edit_type": messages[message_id]['edit_text'], "edit_date": messages[message_id]['edit_date'], "deleted": False}, room=session['curr_ws_chan'])
 
 
 @socketio.on('create channel')
