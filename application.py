@@ -158,6 +158,12 @@ def update_ws_users(ws_name):
   emit('ws_users amended', {'users' : num_users, 'user_details' : user_details}, room=ws_name)
 
 
+"""
+==================================================================================
+FLASK APP ROUTES
+==================================================================================
+"""
+
 @app.route("/")
 def index():
   """ Main single-page app for the site """
@@ -285,6 +291,22 @@ def logout():
     flash('You have been logged out from Flack Teams. See you again soon!')
     return redirect("/login")
 
+# Error Handler
+def errorhandler(e):
+    """Handles access to non-supported routes, redirects to index"""
+    if not isinstance(e, HTTPException):
+        e = InternalServerError()
+    return redirect("/")
+
+# Listen for errors
+for code in default_exceptions:
+    app.errorhandler(code)(errorhandler)
+
+"""
+==================================================================================
+SOCKET IO FUNCTIONS
+==================================================================================
+"""
 
 @socketio.on("initial logon")
 def init_logon():
