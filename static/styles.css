@@ -299,7 +299,7 @@ CHATROOM/PRIVATE CHANNELS
 #chatroom-panel #messages p, #chatroom-panel #private-messages p, #private-panel #messages p, #private-panel #private-messages p {
   margin-bottom: 8px;
 }
-#chatroom-panel #messages .message-date, #chatroom-panel #private-messages .message-date, #private-panel #messages .message-date, #private-panel #private-messages .message-date {
+#chatroom-panel #messages .message-date, #chatroom-panel #messages .message-edited, #chatroom-panel #private-messages .message-date, #chatroom-panel #private-messages .message-edited, #private-panel #messages .message-date, #private-panel #messages .message-edited, #private-panel #private-messages .message-date, #private-panel #private-messages .message-edited {
   font-weight: 300;
   font-size: 12px;
 }

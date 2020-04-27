@@ -35,9 +35,9 @@ workspaces = {'Welcome!':
                 {'channels':
                   {'Getting Started':
                     {'messages':
-                      {1 : ['Welcome to Flack-Teams. Here you can find some info to help you get started! Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace. To create a new workspace with its own channels to chat in, click the <i class="fas fa-plus-square"></i> symbol next to \'Workspaces\' in the side bar to the left.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 1, 'admin.png', -1],
-                      2 : ['Flack teams uses workspaces and channels to separate different chats. To create a new channel in a workspace, click the <i class="fas fa-plus-square"></i> symbol next to \'Channels\' in the side bar to the left. Each channel in a workspace must have a unique name, and cannot be viewed when you are logged into a different workspace!', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 2, 'admin.png', -1],
-                      3 : ['Private chats can be started with any other user. Hover over the message posted by the user you wish to chat with and click the \'<i class="fas fa-user"></i> Private Message\' link that appears to start a private chatroom with that user. Private chats are not specific to a workspace; they can be accessed at any time.', 'Flack-Teams Help', 1586888725, '14 Apr 2020', 3, 'admin.png', -1]},
+                      {1 : {'message_text': 'Welcome to Flack-Teams. Here you can find some info to help you get started! Flack teams uses workspaces and channels to separate different chats. A workspace can contain several different chat channels, specific to the workspace. To create a new workspace with its own channels to chat in, click the <i class="fas fa-plus-square"></i> symbol next to \'Workspaces\' in the side bar to the left.', 'screen_name': 'Flack-Teams Help', 'message_timestamp' : 1586888725, 'message_date': '14 Apr 2020', 'message_id': 1, 'profile_img': 'admin.png', 'user_id': -1, 'edited': False, 'edit_text': None, 'edit_date': None, 'deleted': False, 'private': False},
+                      2 : {'message_text': 'Flack teams uses workspaces and channels to separate different chats. To create a new channel in a workspace, click the <i class="fas fa-plus-square"></i> symbol next to \'Channels\' in the side bar to the left. Each channel in a workspace must have a unique name, and cannot be viewed when you are logged into a different workspace!', 'screen_name': 'Flack-Teams Help', 'message_timestamp' : 1586888726, 'message_date': '14 Apr 2020', 'message_id': 2, 'profile_img': 'admin.png', 'user_id': -1, 'edited': False, 'edit_text': None, 'edit_date': None, 'deleted': False, 'private': False},
+                      3 : {'message_text': 'Private chats can be started with any other user. Hover over the message posted by the user you wish to chat with and click the \'<i class="fas fa-user"></i> Private Message\' link that appears to start a private chatroom with that user. Private chats are not specific to a workspace; they can be accessed at any time.', 'screen_name': 'Flack-Teams Help', 'message_timestamp' : 1586888727, 'message_date': '14 Apr 2020', 'message_id': 3, 'profile_img': 'admin.png', 'user_id': -1, 'edited': False, 'edit_text': None, 'edit_date': None, 'deleted': False, 'private': False}},
                     'next_message': 4},
                   'Announcements': {'messages': {}, 'next_message': 1 },
                   'News': {'messages': {}, 'next_message': 1 }
@@ -122,7 +122,7 @@ def load_private(user_id):
     print('MEMO ID: ', memo_id)
 
     private_channels['user_private_list'][user_id][memo_id] = {'name': 'Private Memo'}
-    private_channels['channels'][memo_id] = {'messages': {1 : ['This is your private memo space that can only be viewed by you! Use it to leave yourself reminders, to-do lists or anything else you would like!', 'Flack-Teams Help', datetime.now(pytz.utc).timestamp(), datetime.now().strftime("%d %b %Y"), 1, 'admin.png', -1]}, 'next_message': 2}
+    private_channels['channels'][memo_id] = {'messages': {1 : {'message_text': 'This is your private memo space that can only be viewed by you! Use it to leave yourself reminders, to-do lists or anything else you would like!', 'screen_name': 'Flack-Teams Help', 'message_timestamp': datetime.now(pytz.utc).timestamp(), 'message_date': datetime.now().strftime("%d %b %Y"), 'message_id': 1, 'profile_img': 'admin.png','user_id': -1, 'edited': False, 'edit_text': None, 'edit_date': None, 'deleted' : False, 'private': True}}, 'next_message': 2}
 
   # Send user list of all their current private channels:
   user_room = f'{(user_id,)}'
@@ -302,6 +302,7 @@ def errorhandler(e):
 for code in default_exceptions:
     app.errorhandler(code)(errorhandler)
 
+
 """
 ==================================================================================
 SOCKET IO FUNCTIONS
@@ -407,7 +408,7 @@ def join_channel(data):
   current_chan = workspaces[session["curr_ws"]]["channels"][session["curr_chan"]]
 
   # Send sorted channel history back to user who has just joined:
-  message_history = sorted(list(current_chan["messages"].values()), key = lambda x : x[2])
+  message_history = sorted(list(current_chan["messages"].values()), key = lambda x : x['message_timestamp'])
 
   emit("channel logon", {"channel_name" : session["curr_chan"], "message_history" : message_history}, room=user_sid)
   print("channel logon emitted")
@@ -448,7 +449,7 @@ def join_private(data):
   private_name = private_channels['user_private_list'][session['user_id']][private_id]['name']
 
   # Send private message history to user joining:
-  message_history = sorted(list(private_chan["messages"].values()), key = lambda x : x[2])
+  message_history = sorted(list(private_chan["messages"].values()), key = lambda x : x['message_timestamp'])
 
   emit("private logon", {"channel_name" : private_name, "message_history" : message_history}, room=user_sid)
   print("private logon emitted")
@@ -471,15 +472,26 @@ def send_message(data):
   private = session['curr_private']
   profile_img = session['profile_img']
 
-  # Date and Timestamp the message:
-  timestamp = datetime.now(pytz.utc).timestamp()
-  date = datetime.now().strftime("%d %b %Y")
+  # Create message object:
+
+  message = {'user_id': session['user_id'],
+             'message_text': message_text,
+             'screen_name': screen_name,
+             'message_date': datetime.now().strftime("%d %b %Y"),
+             'message_timestamp': datetime.now(pytz.utc).timestamp(),
+             'profile_img': profile_img,
+             'edited': False,
+             'edit_text': None,
+             'edit_date': None,
+             'deleted' : False
+            }
 
   # If public channel message, save to workspaces
   if not data['private']:
     # Save message data to channel log:
     next = workspaces[workspace]['channels'][channel]['next_message']
-    message = [message_text, screen_name, timestamp, date, next, profile_img, session["user_id"]]
+    message['message_id'] = next
+    message['private'] = False
     workspaces[workspace]['channels'][channel]['messages'][next] = message
 
     # Store up to 100 messages, then overwrite the first message
@@ -493,7 +505,8 @@ def send_message(data):
   else:
     # Save message to private channel log:
     next = private_channels['channels'][private]['next_message']
-    message = [message_text, screen_name, timestamp, date, next, profile_img, session["user_id"]]
+    message['message_id'] = next
+    message['private'] = True
     private_channels['channels'][private]['messages'][next] = message
 
     # Store up to 100 messages, the overwrite the first message
@@ -510,17 +523,23 @@ def delete_message(data):
 
   print('TRYING TO DELETE MESSAGE')
 
+  print('timestamp:', data['timestamp'])
+
   timestamp = float(data['timestamp'])
   message_id = int(data['message_id'])
 
   # Check if message exists and user is allowed to delete it
   messages = workspaces[session['curr_ws']]['channels'][session['curr_chan']]['messages']
 
-  if messages.get(message_id) and (messages[message_id][2] == timestamp) and (session['user_id'] == messages[message_id][6]):
+  if messages.get(message_id) and (messages[message_id]['message_timestamp'] == timestamp) and (session['user_id'] == messages[message_id]['user_id']):
 
-    messages[message_id][0] = f'This message was deleted - {datetime.now().strftime("%d %b %Y")}'
+    messages[message_id]['message_text'] = f'This message was deleted - {datetime.now().strftime("%d %b %Y")}'
+    messages[message_id]['edited'] = True
+    messages[message_id]['edit_text'] = 'Message Deleted'
+    messages[message_id]['edit_date'] = datetime.now().strftime("%d %b %Y")
+    messages[message_id]['deleted'] = True
 
-  emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id][0]}, room=session['curr_ws_chan'])
+    emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id]['message_text']}, room=session['curr_ws_chan'])
 
 
 @socketio.on('edit message')
@@ -536,11 +555,14 @@ def edit_message(data):
   # Check if message exists and user is allowed to delete it
   messages = workspaces[session['curr_ws']]['channels'][session['curr_chan']]['messages']
 
-  if messages.get(message_id) and (messages[message_id][2] == timestamp) and (session['user_id'] == messages[message_id][6]):
+  if messages.get(message_id) and (messages[message_id]['message_timestamp'] == timestamp) and (session['user_id'] == messages[message_id]['user_id']):
 
-    messages[message_id][0] = f'{text} \u007E Edited {datetime.now().strftime("%d %b %Y")}'
+    messages[message_id]['message_text'] = f'{text} \u007E Edited {datetime.now().strftime("%d %b %Y")}'
+    messages[message_id]['edited'] = True
+    messages[message_id]['edit_text'] = 'Message Edited'
+    messages[message_id]['edit_date'] = datetime.now().strftime("%d %b %Y")
 
-  emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id][0]}, room=session['curr_ws_chan'])
+    emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id]['message_text']}, room=session['curr_ws_chan'])
 
 
 @socketio.on('create channel')
@@ -578,7 +600,7 @@ def create_workspace(data):
   date = datetime.now().strftime("%d %b %Y")
 
   # Otherwise create a new workspace:
-  workspaces[ws_name] = {'channels': {'Announcements': {'messages': {1 : [f'Welcome to your new workspace - {ws_name}!', 'Flack-Teams Help', timestamp, date, 1, 'admin.png']}, 'next_message': 2}}, 'users_online': set()}
+  workspaces[ws_name] = {'channels': {'Announcements': {'messages': {1 : {'message_text': f'Welcome to your new workspace - {ws_name}!', 'screen_name': 'Flack-Teams Help', 'message_timestamp': timestamp, 'message_date': date, 'message_id': 1, 'profile_img': 'admin.png', 'user_id': -1, 'edited': False, 'edit_text': None, 'edit_date': None, 'deleted' : False, 'private': False }}, 'next_message': 2}}, 'users_online': set()}
 
   # Broadcast new workspace creation:
   workspace_list = list(workspaces.keys())

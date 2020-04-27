@@ -383,6 +383,20 @@ document.addEventListener('DOMContentLoaded', () => {
 const post_message = function (message, private) {
   // Helper function to post received messages to the chat panel
 
+  /*
+  {'user_id': session['user_id'],
+             'message_text': message_text,
+             'screen_name': screen_name,
+             'message_date': datetime.now().strftime("%d %b %Y"),
+             'message_timestamp': datetime.now(pytz.utc).timestamp(),
+             'profile_img': profile_img,
+             'edited': False,
+             'edit_text': None,
+             'edit_date': None,
+             'deleted' : False
+             'private' : False
+            }*/
+
   let client_message, panel;
 
   // Check which panel to add messages to:
@@ -393,7 +407,7 @@ const post_message = function (message, private) {
   }
 
   // Check if message is by the client or a different user:
-  if (message[6] === parseInt(localStorage.getItem('user_id'))) {
+  if (message.user_id === parseInt(localStorage.getItem('user_id'))) {
     client_message = true;
   } else {
     client_message = false;
@@ -402,7 +416,7 @@ const post_message = function (message, private) {
   // Create message element using handlebars
   const template = Handlebars.compile(document.querySelector('#message-template').innerHTML);
 
-  const content = template({'username' : message[1], 'date' : message[3], 'timestamp' : message[2], 'message' : message[0], 'image': message[5], 'user_id' : message[6], 'client_message' : client_message, 'message_id' : message[4]});
+  const content = template({'message' : message, 'client_message' : client_message});
 
   // Add to messages element
   document.querySelector(panel).innerHTML += content;

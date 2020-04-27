@@ -51,7 +51,7 @@
     <hr>
     <!-- Private Chat List -->
     <div class="channel-display">
-      <h5>Direct Messages <i class="fas fa-plus-square"></i></h5>
+      <h5>Direct Messages</h5>
       <ul id="private-links" class="visible">
       </ul>
     </div>
@@ -145,17 +145,20 @@
   <script id="message-template" type="text/template">
     {% raw -%}
     <!-- Message Template -->
-    <li class="user-message" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}">
-      <img class="profile-icon" src="/static/Images/profile/{{ image }}" alt="User Profile Image">
-      <h5 class="message-username">{{ username }} <span class="message-date text-muted"> {{ date }} - <span data-livestamp="{{ timestamp }}"></span></span></h5>
-      <p class="message-text">{{{ message }}}</p>
+    <li class="user-message" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}">
+      <img class="profile-icon" src="/static/Images/profile/{{ message.profile_img }}" alt="User Profile Image">
+      <h5 class="message-username">{{ message.screen_name }} <span class="message-date text-muted"> {{ message.message_date }} - <span data-livestamp="{{ message.message_timestamp }}"></span></span></h5>
+      <p class="message-text">{{{ message.message_text }}}</p>
+      {{# if message.edited }}
+      <p class="message-edited text-muted">{{ message.edit_text }} - {{ message.edit_date }}</p>
+      {{/if}}
 
       <!-- Message Editor Form -->
       <form class="message-edit-form hidden">
         <label for="message-edit" class="sr-only">Message Editor</label>
         <textarea class="message-edit" rows="2" autocomplete="off" autocomplete="off" required></textarea>
         <p class="edit-options">
-            <a href="#" class="edit-message" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-check"> </i> Update Message</a>
+            <a href="#" class="edit-message" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}"><i class="fas fa-check"> </i> Update Message</a>
             <a href="#" class="cancel-edit"><i class="fas fa-times"> </i> Cancel</a>
         </p>
       </form>
@@ -163,10 +166,12 @@
       <!-- Message Options -->
       <p class="message-options hidden">
         {{# if client_message}}
-        <a href="#" onclick="message_editor()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-pencil-alt"> </i> Edit Message</a>
-        <a href="#" onclick="delete_message()" data-message_id="{{ message_id }}" data-timestamp="{{ timestamp }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
+        {{# unless message.deleted}}
+        <a href="#" onclick="message_editor()" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}"><i class="fas fa-pencil-alt"> </i> Edit Message</a>
+        <a href="#" onclick="delete_message()" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
+        {{/unless}}
         {{else}}
-        <a href="#" onclick="private_message()" data-target_id="{{ user_id }}"> <i class="fas fa-user"></i> Private Message</a>
+        <a href="#" onclick="private_message()" data-target_id="{{ message.user_id }}"> <i class="fas fa-user"></i> Private Message</a>
         {{/if}}
       </p>
     </li>
