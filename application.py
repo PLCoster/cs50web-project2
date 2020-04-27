@@ -527,10 +527,18 @@ def delete_message(data):
 
   timestamp = float(data['timestamp'])
   message_id = int(data['message_id'])
+  private = data['private']
 
-  # Check if message exists and user is allowed to delete it
-  messages = workspaces[session['curr_ws']]['channels'][session['curr_chan']]['messages']
+  if not private:
+    # Check if message exists in workspaces
+    messages = workspaces[session['curr_ws']]['channels'][session['curr_chan']]['messages']
+    room = session['curr_ws_chan']
+  else :
+    # Check if message exists in private_channels
+    messages = private_channels['channels'][session['curr_private']]['messages']
+    room = session['curr_private']
 
+  # Check if message exists and user is allowed to delete it:
   if messages.get(message_id) and (messages[message_id]['message_timestamp'] == timestamp) and (session['user_id'] == messages[message_id]['user_id']):
 
     messages[message_id]['message_text'] = 'This message was deleted'
@@ -539,7 +547,7 @@ def delete_message(data):
     messages[message_id]['edit_date'] = datetime.now().strftime("%d %b %Y")
     messages[message_id]['deleted'] = True
 
-    emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id]['message_text'], "edit_type": messages[message_id]['edit_text'], "edit_date": messages[message_id]['edit_date'], 'deleted': True}, room=session['curr_ws_chan'])
+    emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id]['message_text'], "edit_type": messages[message_id]['edit_text'], "edit_date": messages[message_id]['edit_date'], 'deleted': True, 'private': private}, room=session['curr_ws_chan'])
 
 
 @socketio.on('edit message')
@@ -551,10 +559,20 @@ def edit_message(data):
   timestamp = float(data['timestamp'])
   message_id = int(data['message_id'])
   text = sanitize_message(data["message_text"])
+  private = data['private']
 
-  # Check if message exists and user is allowed to delete it
-  messages = workspaces[session['curr_ws']]['channels'][session['curr_chan']]['messages']
+  print('PRIVATE IS: ', private, type(private))
 
+  if not private:
+    # Check if message exists in workspaces
+    messages = workspaces[session['curr_ws']]['channels'][session['curr_chan']]['messages']
+    room = session['curr_ws_chan']
+  else :
+    # Check if message exists in private_channels
+    messages = private_channels['channels'][session['curr_private']]['messages']
+    room = session['curr_private']
+
+  # Check if message exists and user is allowed to edit it:
   if messages.get(message_id) and (messages[message_id]['message_timestamp'] == timestamp) and (session['user_id'] == messages[message_id]['user_id']):
 
     messages[message_id]['message_text'] = text
@@ -562,7 +580,7 @@ def edit_message(data):
     messages[message_id]['edit_text'] = 'Message Edited'
     messages[message_id]['edit_date'] = datetime.now().strftime("%d %b %Y")
 
-    emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id]['message_text'], "edit_type": messages[message_id]['edit_text'], "edit_date": messages[message_id]['edit_date'], "deleted": False}, room=session['curr_ws_chan'])
+    emit("emit edited message", {"message_id": message_id, "timestamp": timestamp, "edited_text": messages[message_id]['message_text'], "edit_type": messages[message_id]['edit_text'], "edit_date": messages[message_id]['edit_date'], "deleted": False, "private": private}, room=room)
 
 
 @socketio.on('create channel')

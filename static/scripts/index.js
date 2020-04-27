@@ -97,8 +97,19 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('emit edited message', data => {
     console.log('Message edit request received:', data);
 
+    console.log('Private is: ', data.private, typeof data.private)
+
+    let selector;
+
+    if (!data.private) {
+      selector = '#messages .user-message'
+    } else {
+      selector = '#private-messages .user-message'
+    }
+
     // Select the correct message
-    messages = document.querySelectorAll('.user-message');
+    messages = document.querySelectorAll(selector);
+    console.log('Messages selected:', messages)
 
     for (let i = 0; i < messages.length; i++) {
       if (messages[i].dataset.message_id == data.message_id && messages[i].dataset.timestamp == data.timestamp) {
@@ -401,20 +412,6 @@ document.addEventListener('DOMContentLoaded', () => {
 const post_message = function (message, private) {
   // Helper function to post received messages to the chat panel
 
-  /*
-  {'user_id': session['user_id'],
-             'message_text': message_text,
-             'screen_name': screen_name,
-             'message_date': datetime.now().strftime("%d %b %Y"),
-             'message_timestamp': datetime.now(pytz.utc).timestamp(),
-             'profile_img': profile_img,
-             'edited': False,
-             'edit_text': None,
-             'edit_date': None,
-             'deleted' : False
-             'private' : False
-            }*/
-
   let client_message, panel;
 
   // Check which panel to add messages to:
@@ -464,10 +461,11 @@ const delete_message = function () {
   let message = event.target;
   let message_id = message.dataset.message_id;
   let timestamp = message.dataset.timestamp;
+  let private = (message.dataset.private === 'true');
 
   console.log('Deleting message: ', message_id, timestamp);
 
-  socket.emit('delete message', {'message_id': message_id, 'timestamp': timestamp});
+  socket.emit('delete message', {'message_id': message_id, 'timestamp': timestamp, 'private': private});
 };
 
 const message_editor = function () {
@@ -475,8 +473,12 @@ const message_editor = function () {
 
   event.preventDefault();
 
-  let message_id = event.target.dataset.message_id;
-  let timestamp = event.target.dataset.timestamp;
+  let message = event.target;
+  let message_id = message.dataset.message_id;
+  let timestamp = message.dataset.timestamp;
+  let private = (message.dataset.private === 'true');
+
+  console.log('PRIVATE is : ', private, typeof private);
 
   // Select the correct message and display the message editor form:
   messages = document.querySelectorAll('.user-message');
@@ -504,7 +506,7 @@ const message_editor = function () {
         // If there is edited message text, send message and hide the form:
         if (edited && edited !== message_text) {
           console.log('Editing message:', edited)
-          socket.emit('edit message', {'message_id': message_id, 'timestamp': timestamp, 'message_text': edited});
+          socket.emit('edit message', {'message_id': message_id, 'timestamp': timestamp, 'message_text': edited, 'private': private});
           message.querySelector('.cancel-edit').click();
         }
       });

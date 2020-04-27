@@ -167,8 +167,8 @@
       <p class="message-options hidden">
         {{# if client_message}}
         {{# unless message.deleted}}
-          <a href="#" onclick="message_editor()" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}"><i class="fas fa-pencil-alt"> </i> Edit Message</a>
-          <a href="#" onclick="delete_message()" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
+          <a href="#" onclick="message_editor()" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}" data-private="{{ message.private }}"><i class="fas fa-pencil-alt"> </i> Edit Message</a>
+          <a href="#" onclick="delete_message()" data-message_id="{{ message.message_id }}" data-timestamp="{{ message.message_timestamp }}" data-private="{{ message.private }}"><i class="fas fa-trash-alt"> </i> Delete Message</a>
         {{/unless}}
         {{else}}
         <a href="#" onclick="private_message()" data-target_id="{{ message.user_id }}"> <i class="fas fa-user"></i> Private Message</a>
