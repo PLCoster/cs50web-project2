@@ -47,8 +47,8 @@
         <img class="profile-icon" src="/static/Images/profile/default_4.png">
       </label>
       <br>
-      <label>
-        <input type="radio" id="user_img" name="profile" value="user_upload">
+      <label for="user_img">
+        <input type="radio" id="user_img" name="profile" value="user_upload" checked>
         <p>OR Upload your own profile icon:</p>
         <input type="file" accept=".png,.jpeg,.jpg,.gif" class="form-control-file" name="user_profile_img" onchange="loadFile(event)" autocomplete="off">
         <p class="mb-3 text-muted">File types accepted: .png, .jpg, .jpeg, .gif<br>Max File Size: 2 MB</p>

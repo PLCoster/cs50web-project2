@@ -196,6 +196,33 @@ def update_profile(update_val, update_key):
             private_channels['user_private_list'][user_id][private_id]['name'] = update_val
 
 
+def check_img_upload():
+  """ Helper Function to check if a custom profile icon has been uploaded successfully
+  """
+  # See https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
+  if 'user_profile_img' not in request.files:
+    return (False, 'No profile image uploaded for custom icon!')
+
+  file = request.files['user_profile_img']
+  print('FILE FOUND: ', file)
+  # If no filename:
+  if file.filename == '':
+    return (False, 'No custom profile image selected!')
+  if not file or not allowed_file(file.filename):
+    return (False, 'File type not supported! Please try again.')
+
+  return (True, file)
+
+
+def save_user_img(file):
+  """ Helper Function to save user profile image to the directory
+  file is an image file object
+  """
+  filename = secure_filename(str(session['user_id']) + '.' + file.filename.split('.')[-1])
+  file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+  session['profile_img'] = filename
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -299,21 +326,14 @@ def register():
 
       # Check that file is uploaded if own profile img selected:
       if profile_img == 'user_upload':
-        print('TRYING TO FIND USER IMAGE')
-        # See https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
-        if 'user_profile_img' not in request.files:
-          flash('No profile image uploaded for custom icon!')
-          return render_template('register.html')
 
-        file = request.files['user_profile_img']
-        print('FILE FOUND: ', file)
-        # If no filename:
-        if file.filename == '':
-          flash('No custom profile image selected!')
+        result = check_img_upload()
+
+        if not result[0]:
+          flash(result[1])
           return render_template('register.html')
-        if not file or not allowed_file(file.filename):
-          flash('File type not supported! Please try again.')
-          return render_template('register.html')
+        else :
+          file = result[1]
 
       # Otherwise information from registration is complete
       # Check username does not already exist, if it does then ask for a different name:
@@ -337,10 +357,8 @@ def register():
 
       # If user uploaded a custom image file, add its path to DB, and save in Images folder:
       if file:
-        filename = secure_filename(str(session['user_id']) + '.' + file.filename.split('.')[-1])
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        session['profile_img'] = filename
-        user_info.profile_img = filename
+        save_user_img(file)
+        user_info.profile_img = session['profile_img']
         db.session.commit()
 
       # Go to main chat page
@@ -447,39 +465,31 @@ def profile_img():
 
   # If profile_img is a custom image, get and check the custom image:
   if profile_img == 'user_upload':
-    # See https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
-    if 'user_profile_img' not in request.files:
-      flash('No profile image uploaded for custom icon!')
-      return redirect('/account')
 
-    file = request.files['user_profile_img']
-    print('FILE FOUND: ', file)
-    # If no filename:
-    if file.filename == '':
-      flash('No custom profile image selected!')
-      return redirect('/account')
-    if not file or not allowed_file(file.filename):
-      flash('File type not supported! Please try again.')
-      return redirect('/account')
+    result = check_img_upload()
 
-    # If user uploaded a custom image file, add its path to DB, and save in Images folder:
+    if not result[0]:
+      flash(result[1])
+      return redirect('/account')
+    else :
+      file = result[1]
+
+    # If user uploaded a custom image file,  save in Images folder:
     if file:
-      filename = secure_filename(str(session['user_id']) + '.' + file.filename.split('.')[-1])
-      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-      session['profile_img'] = filename
+      save_user_img(file)
 
   # Otherwise set user_profile img to default img:
   else:
     session['profile_img'] = profile_img
 
-  # Update screen_name in database and session:
+  # Update profile_img in database:
   user_info = User.query.get(session['user_id'])
   user_info.profile_img = session['profile_img']
   db.session.commit()
 
   update_profile(session['profile_img'], 'profile_img')
 
-  flash('Profile Image Successfully Changed!')
+  flash('Profile Image Successfully Changed! You may need to refresh the browser.')
   return redirect('/account')
 
 
