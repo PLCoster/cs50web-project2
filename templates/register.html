@@ -27,25 +27,25 @@
       <!-- Profile Icon Selection -->
       <p>Select your profile icon:</p>
       <label>
-        <input type="radio" class="radio-img" name="profile" value="default_1.png" checked required>
+        <input type="radio" name="profile" value="default_1.png" checked required>
         <img class="profile-icon" src="/static/Images/profile/default_1.png">
       </label>
       <label>
-        <input type="radio" class="radio-img" name="profile" value="default_2.png">
+        <input type="radio" name="profile" value="default_2.png">
         <img class="profile-icon" src="/static/Images/profile/default_2.png">
       </label>
       <label>
-        <input type="radio" class="radio-img" name="profile" value="default_3.png">
+        <input type="radio" name="profile" value="default_3.png">
         <img class="profile-icon" src="/static/Images/profile/default_3.png">
       </label>
       <label>
-        <input type="radio" class="radio-img" name="profile" value="default_4.png">
+        <input type="radio" name="profile" value="default_4.png">
         <img class="profile-icon" src="/static/Images/profile/default_4.png">
       </label>
       <br>
       <label>
         <input type="radio" id="user_img" name="profile" value="user_upload">
-        <label for="user_img"><p>OR Upload your own profile icon:</p></label>
+        <p>OR Upload your own profile icon:</p>
         <input type="file" accept=".png,.jpeg,.jpg,.gif" class="form-control-file" name="user_profile_img" onchange="loadFile(event)" autocomplete="off">
         <p class="mb-3 text-muted">File types accepted: .png, .jpg, .jpeg, .gif<br>Max File Size: 2 MB</p>
         <img id="user_upload" class="profile-icon" style="display: none; height: 60px; width: 60px; margin: auto;">

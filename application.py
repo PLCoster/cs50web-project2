@@ -170,6 +170,32 @@ def update_ws_users(ws_name):
   emit('ws_users amended', {'users' : num_users, 'user_details' : user_details}, room=ws_name)
 
 
+def update_profile(update_val, update_key):
+  """ Helper function to update a user's screen name or profile icon """
+
+  # Update screen_name in all channels:
+  for workspace in workspaces:
+    for channel in workspaces[workspace]['channels']:
+      for message in workspaces[workspace]['channels'][channel]['messages']:
+        if workspaces[workspace]['channels'][channel]['messages'][message]['user_id'] == session['user_id']:
+          workspaces[workspace]['channels'][channel]['messages'][message][update_key] = update_val
+
+  # Update screen_name in private chats:
+  for channel in private_channels['channels']:
+    if session['user_id'] in channel:
+      for message in private_channels['channels'][channel]['messages']:
+        if private_channels['channels'][channel]['messages'][message]['user_id'] == session['user_id']:
+          private_channels['channels'][channel]['messages'][message][update_key] = update_val
+
+  if update_key == 'screen_name':
+    # Update screen_name for private chat links:
+    for user_id in private_channels['user_private_list']:
+      if user_id != session['user_id']:
+        for private_id in private_channels['user_private_list'][user_id]:
+          if session['user_id'] in private_id:
+            private_channels['user_private_list'][user_id][private_id]['name'] = update_val
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -393,26 +419,7 @@ def screen_name():
   db.session.commit()
   session['screen_name'] = new_screen_name
 
-  # Update screen_name in all channels:
-  for workspace in workspaces:
-    for channel in workspaces[workspace]['channels']:
-      for message in workspaces[workspace]['channels'][channel]['messages']:
-        if workspaces[workspace]['channels'][channel]['messages'][message]['user_id'] == session['user_id']:
-          workspaces[workspace]['channels'][channel]['messages'][message]['screen_name'] = new_screen_name
-
-  # Update screen_name in private chats:
-  for channel in private_channels['channels']:
-    if session['user_id'] in channel:
-      for message in private_channels['channels'][channel]['messages']:
-        if private_channels['channels'][channel]['messages'][message]['user_id'] == session['user_id']:
-          private_channels['channels'][channel]['messages'][message]['screen_name'] = new_screen_name
-
-  # Update screen_name for private chat links:
-  for user_id in private_channels['user_private_list']:
-    if user_id != session['user_id']:
-      for private_id in private_channels['user_private_list'][user_id]:
-        if session['user_id'] in private_id:
-          private_channels['user_private_list'][user_id][private_id]['name'] = new_screen_name
+  update_profile(session['screen_name'], 'screen_name')
 
   flash('Your Screen Name has been changed to: ' + session['screen_name'])
   return redirect('/account')
@@ -470,19 +477,7 @@ def profile_img():
   user_info.profile_img = session['profile_img']
   db.session.commit()
 
-  # Update profile img in all channels:
-  for workspace in workspaces:
-    for channel in workspaces[workspace]['channels']:
-      for message in workspaces[workspace]['channels'][channel]['messages']:
-        if workspaces[workspace]['channels'][channel]['messages'][message]['user_id'] == session['user_id']:
-          workspaces[workspace]['channels'][channel]['messages'][message]['profile_img'] = session['profile_img']
-
-  # Update profile img in private chats:
-  for channel in private_channels['channels']:
-    if session['user_id'] in channel:
-      for message in private_channels['channels'][channel]['messages']:
-        if private_channels['channels'][channel]['messages'][message]['user_id'] == session['user_id']:
-          private_channels['channels'][channel]['messages'][message]['profile_img'] = session['profile_img']
+  update_profile(session['profile_img'], 'profile_img')
 
   flash('Profile Image Successfully Changed!')
   return redirect('/account')
