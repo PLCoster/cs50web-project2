@@ -6,20 +6,27 @@ from flask_session import Session
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
+from werkzeug.utils import secure_filename
 from models import *
 
 from datetime import datetime
 
 if not os.getenv('DATABASE_URL'):
-    raise RuntimeError('DATABASE_URL is not set')
+  raise RuntimeError('DATABASE_URL is not set')
 
 if not os.getenv('SECRET_KEY'):
-    raise RuntimeError('SECRET_KEY is not set')
+  raise RuntimeError('SECRET_KEY is not set')
 
+if not os.getenv('UPLOAD_FOLDER'):
+  raise RuntimeError('UPLOAD_FOLDER is not set')
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 # Flask App Configuration
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['UPLOAD_FOLDER'] = os.getenv('UPLOAD_FOLDER')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
@@ -154,6 +161,11 @@ def update_ws_users(ws_name):
   emit('ws_users amended', {'users' : num_users, 'user_details' : user_details}, room=ws_name)
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 """
 ================================================================================
 FLASK APP ROUTES
@@ -228,6 +240,7 @@ def register():
         password = request.form.get('password')
         confirm = request.form.get('confirmation')
         profile_img = request.form.get('profile')
+        file = None
 
         # If form is incomplete, return and flash apology:
         if not all([username, screen_name, password, confirm, profile_img]):
@@ -244,28 +257,56 @@ def register():
             flash('Password must be eight characters long with at least one number and one letter!')
             return render_template('register.html')
 
+        # Check that file is uploaded if own profile img selected:
+        if profile_img == 'user_upload':
+          print('TRYING TO FIND USER IMAGE')
+          # See https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
+          if 'user_profile_img' not in request.files:
+            flash('No profile image uploaded for custom icon!')
+            return render_template('register.html')
+
+          file = request.files['user_profile_img']
+          print('FILE FOUND: ', file)
+          # If no filename:
+          if file.filename == '':
+            flash('No custom profile image selected!')
+            return render_template('register.html')
+          if not file or not allowed_file(file.filename):
+            flash('File type not supported! Please try again.')
+            return render_template('register.html')
+
         # Otherwise information from registration is complete:
-        else:
-            # Check username does not already exist, if it does then ask for a different name:
 
-            user_query = User.query.filter_by(username=username).first()
+        # Check username does not already exist, if it does then ask for a different name:
+        user_query = User.query.filter_by(username=username).first()
 
-            if user_query:
-                flash('Sorry but that username is already in use, please pick a different username!')
-                return render_template('register.html')
+        if user_query:
+          flash('Sorry but that username is already in use, please pick a different username!')
+          return render_template('register.html')
 
-            # Otherwise add user to database using hashed password:
-            pass_hash = generate_password_hash(password)
+        # Otherwise add user to database using hashed password:
+        pass_hash = generate_password_hash(password)
 
-            # Add new user to users table:
-            new_user = User(username=username, screen_name=screen_name, pass_hash=pass_hash, profile_img=profile_img)
-            db.session.add(new_user)
-            db.session.commit()
+        # Add new user to users table:
+        new_user = User(username=username, screen_name=screen_name, pass_hash=pass_hash, profile_img=profile_img)
+        db.session.add(new_user)
+        db.session.commit()
 
-            # Put unique user ID and username into session:
-            user_info = User.query.filter_by(username=username).first()
-            load_user(user_info)
-            return redirect('/')
+        # Put unique user ID and username into session:
+        user_info = User.query.filter_by(username=username).first()
+        load_user(user_info)
+
+        # If user uploaded a custom image file, add its path to DB, and save in Images folder:
+        if file:
+
+          filename = secure_filename(str(session['user_id']) + '.' + file.filename.split('.')[-1])
+          file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+          session['profile_img'] = filename
+          user_info.profile_img = filename
+          db.session.commit()
+
+        # Go to main chat page
+        return redirect('/')
 
     # If User reaches Route via GET (e.g. clicking registration link):
     else:
