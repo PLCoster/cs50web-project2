@@ -353,11 +353,57 @@ def account():
     db.session.commit()
 
     flash('Password successfully updated!')
-    return redirect("/account")
+    return redirect('/account')
 
   # User reached route via GET (as by clicking acount link)
   else:
-    return render_template("account.html")
+    return render_template('account.html')
+
+
+@app.route('/screen_name', methods=['POST'])
+def screen_name():
+  """ Update a user's screen name in the database and all chat messages """
+
+  # If user not logged in return to login screen:
+  if session.get('user_id') == None:
+    return redirect('/login')
+
+  # Get input from form and check screen-name exists:
+  new_screen_name = request.form.get("new-screen-name")
+
+  if not new_screen_name:
+    flash('Please enter your new Screen Name to update it!')
+    return redirect('/account')
+
+  # Update screen_name in database and session:
+  user_info = User.query.get(session['user_id'])
+  user_info.screen_name = new_screen_name
+  db.session.commit()
+  session['screen_name'] = new_screen_name
+
+  # Update screen_name in all channels:
+  for workspace in workspaces:
+    for channel in workspaces[workspace]['channels']:
+      for message in workspaces[workspace]['channels'][channel]['messages']:
+        if workspaces[workspace]['channels'][channel]['messages'][message]['user_id'] == session['user_id']:
+          workspaces[workspace]['channels'][channel]['messages'][message]['screen_name'] = new_screen_name
+
+  # Update screen_name in private chats:
+  for channel in private_channels['channels']:
+    if session['user_id'] in channel:
+      for message in private_channels['channels'][channel]['messages']:
+        if private_channels['channels'][channel]['messages'][message]['user_id'] == session['user_id']:
+          private_channels['channels'][channel]['messages'][message]['screen_name'] = new_screen_name
+
+  # Update screen_name for private chat links:
+  for user_id in private_channels['user_private_list']:
+    if user_id != session['user_id']:
+      for private_id in private_channels['user_private_list'][user_id]:
+        if session['user_id'] in private_id:
+          private_channels['user_private_list'][user_id][private_id]['name'] = new_screen_name
+
+  flash('Your Screen Name has been changed to: ' + session['screen_name'])
+  return redirect('/account')
 
 
 @app.route('/logout')

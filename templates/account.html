@@ -6,7 +6,7 @@
   <!--Registration Container-->
   <div class="register container">
     <form class="form-signin" action="/account" method="post">
-      <img class="mb-4" src="/static/Images/page_logo.png" alt="" height="72">
+      <img class="mb-4" src="/static/Images/profile/{{session.profile_img}}" alt="" height="72">
       <h3 class="mb-3 font-weight-normal">Account Settings for {{session.username}}:</h3>
       <hr>
       <h4>Change your password using the fields below:</h4>
@@ -19,6 +19,13 @@
       <input type="password" id="check-pass" class="form-control" placeholder="Re-type Password" name="check-pass" required>
       <p>Note: Passwords must have a minimum of eight characters, including at least one number and letter.</p>
       <button class="btn btn-lg btn-primary btn-block" type="submit">Change Password</button>
+    </form>
+    <hr>
+    <form class="form-signin" action="/screen_name" method="post">
+      <h4>Your Current Screen Name: {{session.screen_name}}</h4>
+      <label for="new-screen-name" class="sr-only">New Screen Name:</label>
+      <input type="text" id="new-screen-name" class="form-control" placeholder="New Screen Name" name="new-screen-name" required>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Change Screen Name</button>
     </form>
     <!--
     <form class="form-signin">
