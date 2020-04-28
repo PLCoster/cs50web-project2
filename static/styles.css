@@ -216,7 +216,11 @@ SIDE NAV
   font-weight: 400;
 }
 .sidenav footer a {
+  display: inline-block;
   color: #e9ede6;
+}
+.sidenav footer a, .sidenav footer p {
+  margin-bottom: 10px;
 }
 
 .online {

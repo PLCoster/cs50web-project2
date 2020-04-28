@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block main %}
+  <!--Registration Container-->
+  <div class="register container">
+    <form class="form-signin" action="/account" method="post">
+      <img class="mb-4" src="/static/Images/page_logo.png" alt="" height="72">
+      <h3 class="mb-3 font-weight-normal">Account Settings for {{session.username}}:</h3>
+      <hr>
+      <h4>Change your password using the fields below:</h4>
+      <label for="curr-pass" class="sr-only">Current Password:</label>
+      <input type="password" id="curr-pass" class="form-control" placeholder="Current Password" name="curr-pass" required autofocus>
+      <br>
+      <label for="new-pass" class="sr-only">New Password:</label>
+      <input type="password" id="new-pass" class="form-control" placeholder="New Password" name="new-pass" required>
+      <label for="check-pass" class="sr-only">Confirm New Password</label>
+      <input type="password" id="check-pass" class="form-control" placeholder="Re-type Password" name="check-pass" required>
+      <p>Note: Passwords must have a minimum of eight characters, including at least one number and letter.</p>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Change Password</button>
+    </form>
+    <!--
+    <form class="form-signin">
+      <button class="btn btn-lg btn-danger btn-block delete"> Delete Your Account </button>
+      <button class="btn btn-lg btn-primary btn-block cancel"> Cancel Account Deletion </button>
+    </form>
+    <form class="form-signin delete_account" action="/delete_account" method="post">
+      <label for="del-pass" class="sr-only">Enter Your Password:</label>
+      <input type="password" id="del-pass" class="form-control" placeholder="Enter Password to Confirm Deletion" name="del-pass" required>
+      <button class="btn btn-lg btn-danger btn-block" type="submit">Delete Your Account</button>
+      <p style="color: red;"> Warning! Clicking the button above will permanently delete your account and all your book reviews!</p>
+    </form>
+    !-->
+  </div>
+  <script>
+    $(document).ready(function(){
+      // Clicking delete button shows account deletion form:
+      $(".delete").on('click', function() {
+        event.preventDefault();
+        $(".delete_account").css("display", "block");
+        $(".cancel").css("display", "inline-block");
+        $(".delete").css("display", "none");
+      })
+
+      // Clicking cancel button hides account deletion form:
+      $(".cancel").on('click', function() {
+        event.preventDefault();
+        $(".delete_account").css("display", "none");
+        $(".cancel").css("display", "none");
+        $(".delete").css("display", "inline-block");
+      })
+    })
+  </script>
+{% endblock %}

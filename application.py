@@ -102,6 +102,7 @@ def load_user(user):
   """ Loads a user's personal information from DB into the session """
 
   session['user_id'] = user.id
+  session['username'] = user.username
   session['screen_name'] = user.screen_name
   session['profile_img'] = user.profile_img
 
@@ -229,88 +230,134 @@ def register():
 
     # If user is already logged in, return to home screen:
     if session.get('user_id') != None:
-        return redirect('/')
+      return redirect('/')
 
     # If reached via POST by submitting form - try to register new user:
     if request.method == 'POST':
 
-        # Get input from registration form:
-        username = request.form.get('username')
-        screen_name = request.form.get('screenname')
-        password = request.form.get('password')
-        confirm = request.form.get('confirmation')
-        profile_img = request.form.get('profile')
-        file = None
+      # Get input from registration form:
+      username = request.form.get('username')
+      screen_name = request.form.get('screenname')
+      password = request.form.get('password')
+      confirm = request.form.get('confirmation')
+      profile_img = request.form.get('profile')
+      file = None
 
-        # If form is incomplete, return and flash apology:
-        if not all([username, screen_name, password, confirm, profile_img]):
-            flash('Please fill in all fields to register!')
-            return render_template('register.html')
+      # If form is incomplete, return and flash apology:
+      if not all([username, screen_name, password, confirm, profile_img]):
+        flash('Please fill in all fields to register!')
+        return render_template('register.html')
 
-        # If password and confirmation do not match, return and flash apology:
-        elif password != confirm:
-            flash('Password and confirmation did not match! Please try again.')
-            return render_template('register.html')
+      # If password and confirmation do not match, return and flash apology:
+      elif password != confirm:
+        flash('Password and confirmation did not match! Please try again.')
+        return render_template('register.html')
 
-        # Ensure password meets password requirements:
-        elif not validate_pass(password):
-            flash('Password must be eight characters long with at least one number and one letter!')
-            return render_template('register.html')
+      # Ensure password meets password requirements:
+      elif not validate_pass(password):
+        flash('Password must be eight characters long with at least one number and one letter!')
+        return render_template('register.html')
 
-        # Check that file is uploaded if own profile img selected:
-        if profile_img == 'user_upload':
-          print('TRYING TO FIND USER IMAGE')
-          # See https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
-          if 'user_profile_img' not in request.files:
-            flash('No profile image uploaded for custom icon!')
-            return render_template('register.html')
-
-          file = request.files['user_profile_img']
-          print('FILE FOUND: ', file)
-          # If no filename:
-          if file.filename == '':
-            flash('No custom profile image selected!')
-            return render_template('register.html')
-          if not file or not allowed_file(file.filename):
-            flash('File type not supported! Please try again.')
-            return render_template('register.html')
-
-        # Otherwise information from registration is complete:
-
-        # Check username does not already exist, if it does then ask for a different name:
-        user_query = User.query.filter_by(username=username).first()
-
-        if user_query:
-          flash('Sorry but that username is already in use, please pick a different username!')
+      # Check that file is uploaded if own profile img selected:
+      if profile_img == 'user_upload':
+        print('TRYING TO FIND USER IMAGE')
+        # See https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
+        if 'user_profile_img' not in request.files:
+          flash('No profile image uploaded for custom icon!')
           return render_template('register.html')
 
-        # Otherwise add user to database using hashed password:
-        pass_hash = generate_password_hash(password)
+        file = request.files['user_profile_img']
+        print('FILE FOUND: ', file)
+        # If no filename:
+        if file.filename == '':
+          flash('No custom profile image selected!')
+          return render_template('register.html')
+        if not file or not allowed_file(file.filename):
+          flash('File type not supported! Please try again.')
+          return render_template('register.html')
 
-        # Add new user to users table:
-        new_user = User(username=username, screen_name=screen_name, pass_hash=pass_hash, profile_img=profile_img)
-        db.session.add(new_user)
+      # Otherwise information from registration is complete:
+
+      # Check username does not already exist, if it does then ask for a different name:
+      user_query = User.query.filter_by(username=username).first()
+
+      if user_query:
+        flash('Sorry but that username is already in use, please pick a different username!')
+        return render_template('register.html')
+
+      # Otherwise add user to database using hashed password:
+      pass_hash = generate_password_hash(password)
+
+      # Add new user to users table:
+      new_user = User(username=username, screen_name=screen_name, pass_hash=pass_hash, profile_img=profile_img)
+      db.session.add(new_user)
+      db.session.commit()
+
+      # Put unique user ID and username into session:
+      user_info = User.query.filter_by(username=username).first()
+      load_user(user_info)
+
+      # If user uploaded a custom image file, add its path to DB, and save in Images folder:
+      if file:
+        filename = secure_filename(str(session['user_id']) + '.' + file.filename.split('.')[-1])
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        session['profile_img'] = filename
+        user_info.profile_img = filename
         db.session.commit()
 
-        # Put unique user ID and username into session:
-        user_info = User.query.filter_by(username=username).first()
-        load_user(user_info)
-
-        # If user uploaded a custom image file, add its path to DB, and save in Images folder:
-        if file:
-
-          filename = secure_filename(str(session['user_id']) + '.' + file.filename.split('.')[-1])
-          file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-          session['profile_img'] = filename
-          user_info.profile_img = filename
-          db.session.commit()
-
-        # Go to main chat page
-        return redirect('/')
+      # Go to main chat page
+      return redirect('/')
 
     # If User reaches Route via GET (e.g. clicking registration link):
     else:
-        return render_template('register.html')
+      return render_template('register.html')
+
+
+@app.route('/account', methods=['GET', 'POST'])
+def account():
+  """ Show user Account Settings Page, To Change Password, Screen-name or Icon """
+
+  # If user not logged in return to login screen:
+  if session.get('user_id') == None:
+    return redirect('/login')
+
+  # User reached route via POST (by submitting password change form):
+  if request.method == "POST":
+
+    # Get input from form:
+    curr_pass = request.form.get("curr-pass")
+    new_pass = request.form.get("new-pass")
+    confirm = request.form.get("check-pass")
+
+    # Check input fields are correct:
+    if not curr_pass or not new_pass or new_pass != confirm:
+      flash("Please fill in all password fields!")
+      return render_template("account.html")
+
+    # Get current password hash to check it matches:
+    user_info = User.query.get(session['user_id'])
+    logged_pass = user_info.pass_hash
+
+    if not check_password_hash(logged_pass, curr_pass):
+      flash("Incorrect current password entered, please try again!")
+      return render_template("account.html")
+
+    # Ensure password meets password requirements
+    elif not validate_pass(new_pass):
+      flash("New password does not meet requirements - must be at least eight chars long including one number and one letter!")
+      return render_template("account.html")
+
+    # Otherwise generate new password hash and update the password hash in DBfor this user:
+    new_pass_hash = generate_password_hash(new_pass)
+    user_info.pass_hash = new_pass_hash
+    db.session.commit()
+
+    flash('Password successfully updated!')
+    return redirect("/account")
+
+  # User reached route via GET (as by clicking acount link)
+  else:
+    return render_template("account.html")
 
 
 @app.route('/logout')
@@ -319,7 +366,7 @@ def logout():
 
     # If user not logged in return to login screen:
     if session.get('user_id') == None:
-        return redirect('/login')
+      return redirect('/login')
 
     # Forget any user session info
     session.clear()

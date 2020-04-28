@@ -245,7 +245,12 @@ SIDE NAV
     font-weight: 400;
 
     a {
+      display: inline-block;
       color: $theme-light;
+    }
+
+    a, p {
+      margin-bottom: 10px;
     }
   }
 }

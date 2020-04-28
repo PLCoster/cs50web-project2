@@ -36,20 +36,8 @@
           {% if session.user_id %}
           <!-- Navbar when logged in -->
             <ul class="navbar-nav ml-auto">
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  My READ-RATE
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  <a ><p> Logged in as {{session.username}}</p></a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="/recommended">Recommendations</a>
-                  <a class="dropdown-item" href="/user_details/{{session.user_id}}">My Reviews</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="/account">Account Settings</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="/logout">Sign Out</a>
-                </div>
+              <li class="nav-item">
+                <a class="nav-link" href="/"><i class="fas fa-arrow-left"></i>  Back to Flack-Teams</a>
               </li>
             </ul>
           {% else %}
