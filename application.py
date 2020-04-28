@@ -1,5 +1,6 @@
 import os
 import pytz
+import re
 
 from flask import Flask, session, flash, jsonify, redirect, render_template, request
 from flask_session import Session
@@ -74,6 +75,13 @@ def sanitize_name(name):
   """
 
   return name.replace('&', '').replace('"', '').replace('\'', '').replace('<', '').replace('>', '').replace('(', '').replace(')', '').replace('~', '').replace('`', '').replace('=', '')
+
+
+def is_whitespace(string):
+  """ Helper function to test if a string is all whitespace characters """
+
+  ws = re.compile('^\s+$')
+  return ws.match(string)
 
 
 def validate_pass(password):
@@ -258,6 +266,11 @@ def register():
         flash('Password must be eight characters long with at least one number and one letter!')
         return render_template('register.html')
 
+      # If any input is just whitespace chars, ask for new input:
+      if is_whitespace(username) or is_whitespace(screen_name) or is_whitespace(password):
+        flash('Please fill in all fields to register!')
+        return render_template('register.html')
+
       # Check that file is uploaded if own profile img selected:
       if profile_img == 'user_upload':
         print('TRYING TO FIND USER IMAGE')
@@ -276,8 +289,7 @@ def register():
           flash('File type not supported! Please try again.')
           return render_template('register.html')
 
-      # Otherwise information from registration is complete:
-
+      # Otherwise information from registration is complete
       # Check username does not already exist, if it does then ask for a different name:
       user_query = User.query.filter_by(username=username).first()
 
@@ -330,7 +342,7 @@ def account():
     confirm = request.form.get("check-pass")
 
     # Check input fields are correct:
-    if not curr_pass or not new_pass or new_pass != confirm:
+    if not curr_pass or not new_pass or new_pass != confirm or is_whitespace(new_pass):
       flash("Please fill in all password fields!")
       return render_template("account.html")
 
@@ -371,7 +383,7 @@ def screen_name():
   # Get input from form and check screen-name exists:
   new_screen_name = request.form.get("new-screen-name")
 
-  if not new_screen_name:
+  if not new_screen_name or is_whitespace(new_screen_name):
     flash('Please enter your new Screen Name to update it!')
     return redirect('/account')
 
@@ -403,6 +415,76 @@ def screen_name():
           private_channels['user_private_list'][user_id][private_id]['name'] = new_screen_name
 
   flash('Your Screen Name has been changed to: ' + session['screen_name'])
+  return redirect('/account')
+
+
+@app.route('/profile_img', methods=['POST'])
+def profile_img():
+  """ Update a user's profile image to a new one """
+
+  # If user not logged in return to login screen:
+  if session.get('user_id') == None:
+    return redirect('/login')
+
+  profile_img = request.form.get('profile')
+
+  # If none selected, prompt user for selection:
+  if not profile_img:
+    flash('Please select a default or custom Profile Icon!')
+    return redirect('/account')
+
+  # If choice is the same as current, do nothing:
+  if profile_img == session['profile_img']:
+    flash('The icon you selected is currently your Profile Icon!')
+    return redirect('/account')
+
+  # If profile_img is a custom image, get and check the custom image:
+  if profile_img == 'user_upload':
+    # See https://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/
+    if 'user_profile_img' not in request.files:
+      flash('No profile image uploaded for custom icon!')
+      return redirect('/account')
+
+    file = request.files['user_profile_img']
+    print('FILE FOUND: ', file)
+    # If no filename:
+    if file.filename == '':
+      flash('No custom profile image selected!')
+      return redirect('/account')
+    if not file or not allowed_file(file.filename):
+      flash('File type not supported! Please try again.')
+      return redirect('/account')
+
+    # If user uploaded a custom image file, add its path to DB, and save in Images folder:
+    if file:
+      filename = secure_filename(str(session['user_id']) + '.' + file.filename.split('.')[-1])
+      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+      session['profile_img'] = filename
+
+  # Otherwise set user_profile img to default img:
+  else:
+    session['profile_img'] = profile_img
+
+  # Update screen_name in database and session:
+  user_info = User.query.get(session['user_id'])
+  user_info.profile_img = session['profile_img']
+  db.session.commit()
+
+  # Update profile img in all channels:
+  for workspace in workspaces:
+    for channel in workspaces[workspace]['channels']:
+      for message in workspaces[workspace]['channels'][channel]['messages']:
+        if workspaces[workspace]['channels'][channel]['messages'][message]['user_id'] == session['user_id']:
+          workspaces[workspace]['channels'][channel]['messages'][message]['profile_img'] = session['profile_img']
+
+  # Update profile img in private chats:
+  for channel in private_channels['channels']:
+    if session['user_id'] in channel:
+      for message in private_channels['channels'][channel]['messages']:
+        if private_channels['channels'][channel]['messages'][message]['user_id'] == session['user_id']:
+          private_channels['channels'][channel]['messages'][message]['profile_img'] = session['profile_img']
+
+  flash('Profile Image Successfully Changed!')
   return redirect('/account')
 
 
@@ -596,8 +678,11 @@ def send_message(data):
   private = session['curr_private']
   profile_img = session['profile_img']
 
-  # Create message object:
+  # If message text is all whitespace, do nothing:
+  if is_whitespace(message_text):
+    return False
 
+  # Create message object:
   message = {'user_id': session['user_id'],
              'message_text': message_text,
              'screen_name': screen_name,
@@ -683,6 +768,10 @@ def edit_message(data):
   text = sanitize_message(data['message_text'])
   private = data['private']
 
+  # If message text is all whitespace, do nothing:
+  if is_whitespace(text):
+    return False
+
   if not private:
     # Check if message exists in workspaces
     messages = workspaces[session['curr_ws']]['channels'][session['curr_chan']]['messages']
@@ -709,6 +798,10 @@ def create_channel(data):
 
   chan_name = sanitize_name(data['new_channel'])
 
+  # If name is all whitespace, do nothing:
+  if is_whitespace(chan_name):
+    return False
+
   # Check name not already in use in current workspace:
   if chan_name in workspaces[session['curr_ws']]['channels'].keys():
     # This should send back some kind of error message
@@ -728,6 +821,10 @@ def create_workspace(data):
   """ Lets a user create a new workspace, with a unique name. The user then joins the new workspace """
 
   ws_name = sanitize_name(data['new_workspace'])
+
+  # If name is all whitespace, do nothing:
+  if is_whitespace(ws_name):
+    return False
 
   # Check new workspace name not already in use:
   if ws_name in workspaces.keys():

@@ -27,36 +27,40 @@
       <input type="text" id="new-screen-name" class="form-control" placeholder="New Screen Name" name="new-screen-name" required>
       <button class="btn btn-lg btn-primary btn-block" type="submit">Change Screen Name</button>
     </form>
-    <!--
-    <form class="form-signin">
-      <button class="btn btn-lg btn-danger btn-block delete"> Delete Your Account </button>
-      <button class="btn btn-lg btn-primary btn-block cancel"> Cancel Account Deletion </button>
+    <hr>
+    <form class="form-signin" action="/profile_img" method="post" enctype=multipart/form-data>
+      <label>
+        <input type="radio" class="radio-img" name="profile" value="default_1.png" required>
+        <img class="profile-icon" src="/static/Images/profile/default_1.png">
+      </label>
+      <label>
+        <input type="radio" class="radio-img" name="profile" value="default_2.png">
+        <img class="profile-icon" src="/static/Images/profile/default_2.png">
+      </label>
+      <label>
+        <input type="radio" class="radio-img" name="profile" value="default_3.png">
+        <img class="profile-icon" src="/static/Images/profile/default_3.png">
+      </label>
+      <label>
+        <input type="radio" class="radio-img" name="profile" value="default_4.png">
+        <img class="profile-icon" src="/static/Images/profile/default_4.png">
+      </label>
+      <br>
+      <label>
+        <input type="radio" id="user_img" name="profile" value="user_upload">
+        <label for="user_img"><p>OR Upload your own profile icon:</p></label>
+        <input type="file" accept=".png,.jpeg,.jpg,.gif" class="form-control-file" name="user_profile_img" onchange="loadFile(event)" autocomplete="off">
+        <p class="mb-3 text-muted">File types accepted: .png, .jpg, .jpeg, .gif<br>Max File Size: 2 MB</p>
+        <img id="user_upload" class="profile-icon" style="display: none; height: 60px; width: 60px; margin: auto;">
+      </label>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Change Profile Icon</button>
     </form>
-    <form class="form-signin delete_account" action="/delete_account" method="post">
-      <label for="del-pass" class="sr-only">Enter Your Password:</label>
-      <input type="password" id="del-pass" class="form-control" placeholder="Enter Password to Confirm Deletion" name="del-pass" required>
-      <button class="btn btn-lg btn-danger btn-block" type="submit">Delete Your Account</button>
-      <p style="color: red;"> Warning! Clicking the button above will permanently delete your account and all your book reviews!</p>
-    </form>
-    !-->
   </div>
   <script>
-    $(document).ready(function(){
-      // Clicking delete button shows account deletion form:
-      $(".delete").on('click', function() {
-        event.preventDefault();
-        $(".delete_account").css("display", "block");
-        $(".cancel").css("display", "inline-block");
-        $(".delete").css("display", "none");
-      })
-
-      // Clicking cancel button hides account deletion form:
-      $(".cancel").on('click', function() {
-        event.preventDefault();
-        $(".delete_account").css("display", "none");
-        $(".cancel").css("display", "none");
-        $(".delete").css("display", "inline-block");
-      })
-    })
+    var loadFile = function(event) {
+      var image = document.getElementById('user_upload');
+      image.src = URL.createObjectURL(event.target.files[0]);
+      image.style.display = 'block'
+    };
   </script>
 {% endblock %}
