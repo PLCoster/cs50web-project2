@@ -13,7 +13,7 @@ def sanitize_message(message):
   Returns the sanitized message string
   """
 
-  return message.replace('&', '&#38;').replace('"', '&#34;').replace('\'', '&#92;').replace('<', '&#60;').replace('>', '&#62;').replace('`', '&#96;').replace('=', '&#61;')
+  return message.replace('&', '&#38;').replace('"', '&#34;').replace('\'', '&#39;').replace('<', '&#60;').replace('>', '&#62;').replace('`', '&#96;').replace('=', '&#61;')
 
 
 def sanitize_name(name):

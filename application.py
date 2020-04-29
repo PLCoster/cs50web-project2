@@ -566,7 +566,7 @@ def send_message(data):
         channel = private_channels['user_private_list'][target_id][session['curr_private']]['name']
         target_room = f'{(target_id,)}'
 
-    emit('channel alert', {'channel': channel, 'private': True}, room=target_room)
+        emit('channel alert', {'channel': channel, 'private': True}, room=target_room)
 
 
 @socketio.on('delete message')

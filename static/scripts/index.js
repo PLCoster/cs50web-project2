@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Hide channel and show private messages:
+    hide_ws_users();
     show_private_chat();
   });
 
@@ -198,7 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Hide any open message editor:
       document.querySelectorAll('.user-message').forEach( el => {
         el.querySelector('.message-edit-form').style.display = 'none';
-        el.querySelector('.message-options').removeAttribute('style');
+        if (el.querySelector('.message-options')) {
+          el.querySelector('.message-options').removeAttribute('style');
+        }
         el.querySelector('.message-text').style.display = 'block';
       })
 
