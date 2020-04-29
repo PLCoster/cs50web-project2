@@ -33,8 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   socket.on('local storage setup', data => {
     // On initial log on, set up local storage for app functionality:
-
     localStorage.setItem('user_id', data['user_id']);
+    localStorage.setItem('channel', data['channel']);
+    localStorage.setItem('private', data['private']);
+    localStorage.setItem('viewing', data['channel']);
   });
 
   socket.on('workspace logon', data => {
@@ -46,6 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // When a new channel is joined, clear messages and display message history:
   socket.on('channel logon', data => {
+
+    // Set local storage and turn off alert:
+    localStorage.setItem('channel', data['channel_name']);
+    message_alert(data.channel_name, false, 'none');
 
     // Clear current messages
     document.querySelector('#messages').innerHTML = '';
@@ -66,6 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // When a new private chat is joined, clear the private channel and display message history:
   socket.on('private logon', data => {
+
+    // Set local storage:
+    localStorage.setItem('private', data['channel_name']);
+    message_alert(data.channel_name, true, 'none');
 
     // Clear current private messages
     document.querySelector('#private-messages').innerHTML = '';
@@ -97,8 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('emit edited message', data => {
     console.log('Message edit request received:', data);
 
-    console.log('Private is: ', data.private, typeof data.private)
-
     let selector;
 
     if (!data.private) {
@@ -109,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Select the correct message
     messages = document.querySelectorAll(selector);
-    console.log('Messages selected:', messages)
 
     for (let i = 0; i < messages.length; i++) {
       if (messages[i].dataset.message_id == data.message_id && messages[i].dataset.timestamp == data.timestamp) {
@@ -125,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
           messages[i].querySelector('.message-text').after(edit);
         }
 
-        console.log(data.deleted)
         // If message is deleted, and own user message remove further editing options:
         if (data.deleted && messages[i].dataset.user_id === localStorage.getItem('user_id')) {
           messages[i].querySelector('.message-options').remove();
@@ -157,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('ws_users amended', data => {
     console.log('updated user number received: ', data.users);
     document.querySelector('#workspace-users').innerHTML = data.users;
-    console.log(data.user_details)
 
     // Create message element using handlebars
     const template = Handlebars.compile(document.querySelector('#user-ws-template').innerHTML);
@@ -168,6 +173,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#workspace-users-list').innerHTML = content;
   });
 
+  // When a message is sent to a channel in the current ws, alert ws users:
+  socket.on('channel alert', data => {
+    console.log('New message in workspace channel: ', data.channel);
+
+    if (!data.private && localStorage.getItem('viewing') !== data.channel) {
+      message_alert(data.channel, false, 'inline');
+    } else if (data.private && localStorage.getItem('viewing') !== data.channel) {
+      message_alert(data.channel, true, 'inline');
+    }
+  });
 
   /*
   =============================================
@@ -261,7 +276,13 @@ document.addEventListener('DOMContentLoaded', () => {
       let channel_name = channel_list[i];
 
       const li = document.createElement('li');
-      li.innerHTML = channel_name;
+
+      const icon = document.createElement('i');
+      icon.classList.add("fas", "fa-exclamation-circle", "hidden");
+      icon.innerHTML = ' ';
+      li.appendChild(icon);
+
+      li.innerHTML += channel_name;
       li.className = 'channel-link';
       li.setAttribute('data-channel', channel_name);
       li.setAttribute('href', '');
@@ -294,8 +315,15 @@ document.addEventListener('DOMContentLoaded', () => {
       let private_name = private_list[i][2];
 
       const li = document.createElement('li');
-      li.innerHTML = private_name;
+
+      const icon = document.createElement('i');
+      icon.classList.add("fas", "fa-exclamation-circle", "hidden");
+      icon.innerHTML = ' ';
+      li.appendChild(icon);
+
+      li.innerHTML += private_name;
       li.className = 'private-link';
+      li.setAttribute('data-channel', private_name);
       li.setAttribute('data-user_id_1', user_id_1);
       li.setAttribute('data-user_id_2', user_id_2);
       li.setAttribute('href', '');
@@ -526,6 +554,7 @@ const show_private_chat = function () {
   document.querySelector('#private-panel').style.display = 'block';
   document.querySelector('#private-panel').style.opacity = '1';
   document.querySelector('#chatroom-panel').style.display = 'none';
+  localStorage.setItem('viewing', localStorage.getItem('private'));
 };
 
 const hide_private_chat = function () {
@@ -533,6 +562,7 @@ const hide_private_chat = function () {
   document.querySelector('#private-panel').style.display = 'none';
   document.querySelector('#private-panel').style.opacity = '0';
   document.querySelector('#chatroom-panel').style.display = 'block';
+  localStorage.setItem('viewing', localStorage.getItem('channel'));
 };
 
 const show_ws_users = function () {
@@ -548,4 +578,24 @@ const hide_ws_users = function () {
   let panel = document.querySelector('#workspace-user-panel')
   panel.removeAttribute('style');
   panel.style.paddingLeft = '0';
+};
+
+const message_alert = function (channel_id, private, style) {
+  // Adds/Removes Channel Alerts From Channel Links
+
+  let selector;
+
+  if (!private) {
+    selector = '.channel-link';
+  } else {
+    selector = '.private-link';
+  }
+
+  let channel_links = document.querySelectorAll(selector);
+
+  for (let i = 0; i < channel_links.length; i++) {
+    if (channel_links[i].dataset.channel === channel_id) {
+      channel_links[i].querySelector('i').style.display = style;
+    }
+  }
 };
