@@ -693,7 +693,7 @@ def create_workspace(data):
 def create_private_channel(data):
   """ Creates and joins a user to a private message channel between two users """
 
-  print('TYRING TO CREATE PRIVATE CHANNEL ', data)
+  print('TRYING TO CREATE PRIVATE CHANNEL ', data)
 
   # Determine the private channel name:
   target_id = int(data['target_id'])
@@ -738,12 +738,10 @@ def socket_logout():
 
   leave_room(session['curr_ws'])
   leave_room(session['curr_ws_chan'])
-  leave_room(f'{(session["user_id"],)}')
+  leave_room(session['curr_private'])
 
   # Forget any user session info
   session.clear()
-
-  return redirect('/login')
 
 
 if __name__ == '__main__':

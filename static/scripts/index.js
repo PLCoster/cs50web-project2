@@ -37,9 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('channel', data['channel']);
     localStorage.setItem('private', data['private']);
     localStorage.setItem('viewing', data['channel']);
-
-    console.log('VIEWING LOCAL STORAGE', localStorage.getItem('viewing'))
-    console.log('LOCALSTORAGE', localStorage)
   });
 
   socket.on('workspace logon', data => {
@@ -110,8 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('emit edited message', data => {
     console.log('Message edit request received:', data);
 
-    console.log('Private is: ', data.private, typeof data.private)
-
     let selector;
 
     if (!data.private) {
@@ -122,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Select the correct message
     messages = document.querySelectorAll(selector);
-    console.log('Messages selected:', messages)
 
     for (let i = 0; i < messages.length; i++) {
       if (messages[i].dataset.message_id == data.message_id && messages[i].dataset.timestamp == data.timestamp) {
@@ -138,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
           messages[i].querySelector('.message-text').after(edit);
         }
 
-        console.log(data.deleted)
         // If message is deleted, and own user message remove further editing options:
         if (data.deleted && messages[i].dataset.user_id === localStorage.getItem('user_id')) {
           messages[i].querySelector('.message-options').remove();
@@ -170,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
   socket.on('ws_users amended', data => {
     console.log('updated user number received: ', data.users);
     document.querySelector('#workspace-users').innerHTML = data.users;
-    console.log(data.user_details)
 
     // Create message element using handlebars
     const template = Handlebars.compile(document.querySelector('#user-ws-template').innerHTML);
@@ -184,8 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // When a message is sent to a channel in the current ws, alert ws users:
   socket.on('channel alert', data => {
     console.log('New message in workspace channel: ', data.channel);
-
-    console.log('Viewing channel: ', localStorage.getItem('viewing'));
 
     if (!data.private && localStorage.getItem('viewing') !== data.channel) {
       message_alert(data.channel, false, 'inline');
