@@ -55,6 +55,7 @@ def validate_pass(password):
     else:
         return False
 
+
 def load_user(user, session):
   """ Loads a user's personal information from DB into the session """
 
@@ -170,6 +171,7 @@ def save_user_img(file, app):
   filename = secure_filename(str(session['user_id']) + '.' + file.filename.split('.')[-1])
   file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
   session['profile_img'] = filename
+
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 

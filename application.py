@@ -9,7 +9,9 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 from datetime import datetime
 
 from models import *
-from helpers import sanitize_message, sanitize_name, is_whitespace, validate_pass, load_user, load_hist, load_private, update_ws_users, update_profile, check_img_upload, save_user_img, allowed_file
+from helpers import sanitize_message, sanitize_name, is_whitespace, validate_pass,\
+  load_user, load_hist, load_private, update_ws_users, update_profile, check_img_upload,\
+  save_user_img, allowed_file
 
 if not os.getenv('DATABASE_URL'):
   raise RuntimeError('DATABASE_URL is not set')
@@ -367,7 +369,7 @@ def init_logon():
 
   # Set up local storage for client
   user_sid = request.sid
-  emit('local storage setup', {'user_id' : session['user_id']}, room=user_sid)
+  emit('local storage setup', {'user_id' : session['user_id'], 'channel' : session['curr_chan'], 'private' : session['curr_private']}, room=user_sid)
 
 
 @socketio.on('join workspace')
@@ -541,6 +543,7 @@ def send_message(data):
       workspaces[workspace]['channels'][channel]['next_message'] = 1
 
     emit('emit message', {'message': message, 'private': False}, room=ws_channel)
+    emit('channel alert', {'channel': channel, 'private': False}, room=workspace)
 
   # If private channel message, save to private_channels
   else:
@@ -556,6 +559,14 @@ def send_message(data):
       private_channels['channels'][private]['next_message'] = 1
 
     emit('emit message', {'message': message, 'private': True}, room=private)
+
+    # Get correct room and channel name to emit alert to target user:
+    for target_id in session['curr_private']:
+      if target_id != session['user_id']:
+        channel = private_channels['user_private_list'][target_id][session['curr_private']]['name']
+        target_room = f'{(target_id,)}'
+
+    emit('channel alert', {'channel': channel, 'private': True}, room=target_room)
 
 
 @socketio.on('delete message')
