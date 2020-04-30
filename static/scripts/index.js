@@ -574,6 +574,7 @@ const show_ws_users = function () {
   panel.style.width = '250px';
   panel.style.opacity = '1';
   panel.style.paddingLeft = '20px';
+  panel.style.paddingRight = '20px';
 };
 
 const hide_ws_users = function () {
@@ -581,6 +582,7 @@ const hide_ws_users = function () {
   let panel = document.querySelector('#workspace-user-panel')
   panel.removeAttribute('style');
   panel.style.paddingLeft = '0';
+  panel.style.paddingRight = '0';
 };
 
 const message_alert = function (channel_id, private, style) {
